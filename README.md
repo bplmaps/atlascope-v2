@@ -8,5 +8,5 @@ Under development next generation version of the Atlascope map discovery app fro
 
 ## Preview server
 
-Currently set up to receive updates to the `main` branch and deploy to Netlify at [https://atlascope-v2-staging.netlify.app].
+Currently set up to receive updates to the `main` branch and deploy to Netlify at <https://atlascope-v2-dev.netlify.app>.
 
