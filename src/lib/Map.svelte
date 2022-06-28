@@ -1,63 +1,69 @@
 <script>
-    import {createEventDispatcher} from 'svelte';
+    import { createEventDispatcher, onMount } from "svelte";
 
-    import 'ol/ol.css';
-    import {Map, View} from 'ol';
-    import TileLayer from 'ol/layer/Tile';
-    import OSM from 'ol/source/OSM';
+    import MapControls from "./MapControls.svelte";
+
+    import "ol/ol.css";
+    import { Map, View } from "ol";
+    import TileLayer from "ol/layer/Tile";
+    import OSM from "ol/source/OSM";
 
     const dispatcher = createEventDispatcher();
 
     export let initialCenter;
     export let initialZoom;
 
-    let mapId = 'mapDiv';
     let map;
 
-    export let mapLayers = {
-        "base": new OSM(),
-        "overlay": new TileLayer()
-    }
-
     let view = new View({ center: initialCenter, zoom: initialZoom });
-    console.log(view);
 
-    export const changeCenterZoom = (center,zoom) => {
+    export const changeCenterZoom = (center, zoom) => {
         map.getView().setCenter(center);
         map.getView().setZoom(zoom);
+    };
+
+    function mapMoved() {
+        const extent = map.getView().calculateExtent(map.getSize());
+        dispatcher('changedExtent', {'extent': extent});
     }
 
-    function initializeMap(node, _id) {
-        let w = setInterval(()=> {
-            if(node.clientHeight > 0){
-                clearTimeout(w);
-                map = new Map({
-                target: _id,
-                controls: [],
-                view: view
-                });
+    onMount(() => {
+        map = new Map({
+            target: "map-div",
+            controls: [],
+            view: view,
+            layers: [
+                new TileLayer({
+                    source: new OSM(),
+                }),
+            ],
+        });
 
-                for (const [k,v] of Object.entries(mapLayers)) {
-                    v.setMap(map);
-                }
-
-                map.on('moveend', (e) => { dispatcher('changedExtent',{'extent': map.getView().calculateExtent() }); } );
-
-            } else { console.log("waiting for sized box"); }
-        }, 100
-        );
-
-    }
+        map.on('moveend', mapMoved);
+    });
 
 
 </script>
 
+<section id="map" class="ui-top-level-layer">
+    <div id="map-div" />
+
+    <MapControls />
+</section>
+
 <style>
-    div {
+    section {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    #map-div {
         width: 100%;
         height: 100%;
         margin: 0;
     }
 </style>
-
-<div id={mapId} use:initializeMap={mapId}></div>
