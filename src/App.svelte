@@ -1,70 +1,69 @@
 <script>
+  import { onMount } from "svelte";
+  import instanceVariables from "./config/instance.json";
+  import "./style/global.css";
 
-  import {onMount} from 'svelte';
-  import instanceVariables from './config/instance.json';
-  import './style/global.css';
+  import Map from "./lib/Map.svelte";
+  import Splash from "./lib/Splash.svelte";
 
-  import Map from './lib/Map.svelte'
-  import Splash from './lib/Splash.svelte'
-
-  import { availableLayerCount } from './lib/stores.js';
-
-  import {intersector} from './lib/helpers/intersector';
-
-  let allLayers = [];
+  import { allLayers } from "./lib/stores.js";
 
   let state = {
-    "splashActive": true,
-    "activeLayers": {
-      "base": null,
-      "overlay": null
-    }
-  }
+    splashActive: true,
+    activeLayers: {
+      base: null,
+      overlay: null,
+    },
+  };
 
   let map;
 
-  function handleSplashButton(action) {
+  function handleSplashButton(m) {
     state.splashActive = false;
+
+    if (m.detail.action === "start") {
+      map.changeCenterZoom(
+        instanceVariables.defaultStartLocation.center,
+        instanceVariables.defaultStartLocation.zoom
+      );
+    }
   }
 
-  const startAtDefault = () => {
-    map.changeCenterZoom(instanceVariables.defaultStartLocation.center, instanceVariables.defaultStartLocation.zoom);
-    state.primary = "map";
-  }
-
-  function handleChangedExtent(e) {
-    allLayers.forEach((layer)=>{ 
-      let vis = intersector(layer.geometry, e.detail.extent)
-      layer.extentVisible = vis; 
-     });
-
-    const c = allLayers.filter(layer => layer.extentVisible > 0.1).length;
-    availableLayerCount.set(c);
-  };
 
 
-  const goToMap = () => {
-    state.primary = "map";
-  }
-
+  // When the app is mounted, first thing we need to do is load the footprints file
+  // We stort it by year and then write it to the `allLayers` store which can be accessed 
+  // from any module
   onMount(() => {
     fetch(instanceVariables.historicLayersFootprintsFile)
-      .then(r => r.json())
-      .then(d => { 
-          allLayers = d.features;
-          allLayers.sort((a,b)=>{return a.properties.year - b.properties.year});
-       })
+      .then((r) => r.json())
+      .then((d) => {
+        let al = d.features;
+        al.sort((a, b) => {
+          return a.properties.year - b.properties.year;
+        });
+        allLayers.set(al);
+      })
       .catch();
   });
-
-
 </script>
 
+<div id="wraps-all">
+  <Map
+    bind:this={map}
+    defaultStartLocation={instanceVariables.defaultStartLocation}
+  />
+
+  {#if state.splashActive}
+    <Splash {instanceVariables} on:splashButton={handleSplashButton} />
+  {/if}
+</div>
+
 <style>
-  @import url('https://rsms.me/inter/inter.css');
+  @import url("https://rsms.me/inter/inter.css");
 
   :global(body) {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     overflow: hidden;
   }
 
@@ -74,7 +73,9 @@
   }
 
   @supports (font-variation-settings: normal) {
-  :global(body) { font-family: 'Inter var', sans-serif; }
+    :global(body) {
+      font-family: "Inter var", sans-serif;
+    }
   }
 
   #wraps-all {
@@ -88,17 +89,4 @@
     background-color: #222;
     overflow: auto;
   }
-
-
 </style>
-
-<div id="wraps-all">
-
-  <Map bind:this={map} initialCenter={instanceVariables.defaultStartLocation.center} initialZoom={instanceVariables.defaultStartLocation.zoom} on:changedExtent={handleChangedExtent} />
-
-  {#if state.splashActive}
-  <Splash instanceVariables={instanceVariables} availableLayers={allLayers.length} on:splashButton={handleSplashButton} />
-  {/if}
-
-
-</div>

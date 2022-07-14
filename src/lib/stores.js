@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store'
 
-export const availableLayerCount = writable(0);
+export const allLayers = writable([]);

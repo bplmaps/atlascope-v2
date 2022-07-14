@@ -12,8 +12,9 @@
 
     const dispatcher = createEventDispatcher();
 
+    import { allLayers } from './stores.js';
+
     export let instanceVariables;
-    export let availableLayers;
 
     function splashButton(b) {
         dispatcher('splashButton',{'action': b})
@@ -35,7 +36,7 @@
       </div>
 
       <div>
-        <p class="has-text-weight-semibold">Currently serving <span class="bg-gray-800 text-gray-200 text-s font-semibold mx-0.5 px-2.5 py-0.5 rounded">{availableLayers > 0 ? availableLayers : "..."}</span> atlas layers of {instanceVariables.geographicCoverage}</p>
+        <p class="font-semibold">Currently serving <span class="bg-yellow-900 text-gray-200 text-s font-semibold mx-0.5 px-2.5 py-0.5 rounded">{$allLayers.length > 0 ? $allLayers.length : "..."}</span> atlas layers of {instanceVariables.geographicCoverage}</p>
       </div>
     </div>
 </section>
@@ -61,5 +62,6 @@
   .teaser {
     font-weight: 800;
   }
+
 
 </style>
