@@ -9,11 +9,8 @@
   import { allLayers } from "./lib/stores.js";
 
   let state = {
-    splashActive: true,
-    activeLayers: {
-      base: null,
-      overlay: null,
-    },
+    layersLoaded: false,
+    splashActive: true
   };
 
   let map;
@@ -43,16 +40,21 @@
           return a.properties.year - b.properties.year;
         });
         allLayers.set(al);
+        state.layersLoaded = true;
+        
       })
       .catch();
+
   });
 </script>
 
 <div id="wraps-all">
+  {#if state.layersLoaded }
   <Map
     bind:this={map}
     defaultStartLocation={instanceVariables.defaultStartLocation}
   />
+  {/if}
 
   {#if state.splashActive}
     <Splash {instanceVariables} on:splashButton={handleSplashButton} />

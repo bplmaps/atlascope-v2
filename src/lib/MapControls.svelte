@@ -3,22 +3,43 @@
   import {
     faDraftingCompass,
     faLayerGroup,
-    faAngleUp,
-    faArrowsAltV,
-    faArrowsAltH,
-    faBorderStyle,
-    faCircle,
     faMagnifyingGlassArrowRight,
-faExclamationCircle,
+    faExclamationCircle,
+faBorderTopLeft,
+faArrowUpFromBracket,
   } from "@fortawesome/free-solid-svg-icons";
 
+  import { createEventDispatcher } from "svelte";
+
+  import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
+
+  import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
+  export let mapState;
+
+  let dispatch = createEventDispatcher();
 
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faDraftingCompass },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
-    { id: "research-controls", name: "Research", icon: faMagnifyingGlassArrowRight}
+    {
+      id: "research-controls",
+      name: "Research",
+      icon: faMagnifyingGlassArrowRight,
+    },
   ];
+
+  // we compose the possible layer choices out of both the $allLayers store of historic layers, and the reference layers
+  $: layerChoices = parseLayerChoices($allLayers, instanceVariables.referenceLayers);
+  
+  function parseLayerChoices(historicLayers, referenceLayers) {
+    let c = [];
+    // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
+    historicLayers.forEach(d => d.extentVisible > 0.2 ? c.push({"id": d.properties.id, "title": d.properties.year, "subtitle": d.properties.publisher}) : null);
+    // add the reference layers
+    referenceLayers.forEach(d=> c.push({"id": d.properties.id, "title": d.properties.name, "subtitle": ""}))
+    return c;
+  }
 
   let panelShown = null;
 
@@ -26,42 +47,66 @@ faExclamationCircle,
     panelShown = panelShown === e ? null : e;
   };
 
+  function handleChangeLayer(d,layer) {
+    dispatch('changeLayer',{id: d.detail.id, layer: layer});
+  }
+
 </script>
 
 <section>
-  {#if $allLayers.filter((layer) => layer.extentVisible > 0.1).length === 0 }
-    <div class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center">
-      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a location where no historic atlas layers are currently available.
-      <p class="font-light text-sm"><a href="">Learn more about our plans for adding coverage to Atlascope.</a></p>
+  {#if $allLayers.filter((layer) => layer.extentVisible > 0.1).length === 0}
+    <div
+      class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
+    >
+      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a
+      location where no historic atlas layers are currently available.
+      <p class="font-light text-sm">
+        <a href=""
+          >Learn more about our plans for adding coverage to Atlascope.</a
+        >
+      </p>
     </div>
   {/if}
 
   {#each controlGroups as cg}
     <div
       class="control-tab mr-2"
-      on:click={()=>{showHideControls(cg.id)}}
+      on:click={() => {
+        showHideControls(cg.id);
+      }}
     >
       <Fa icon={cg.icon} class="inline mr-2" />
       {#if cg.id === "layer-controls"}
-      <span class="bg-green-800 text-gray-200 text-s mr-1 px-1.5 py-0.5 rounded">{$allLayers.filter((layer) => layer.extentVisible > 0.1).length}</span>
+        <span
+          class="bg-green-800 text-gray-200 text-s mr-1 px-1.5 py-0.5 rounded"
+          >{$allLayers.filter((layer) => layer.extentVisible > 0.1)
+            .length}</span
+        >
       {/if}
       <span class="hidden md:inline control-tab-label">{cg.name}</span>
     </div>
   {/each}
 
-  {#if panelShown === 'map-controls'}
-    <div class="control-panel">
-      Map controls here
-    </div>
-  {:else if panelShown === 'layer-controls'}
+  {#if panelShown === "map-controls"}
+    <div class="control-panel">{mapState.viewMode}</div>
+  {:else if panelShown === "layer-controls"}
+    
   <div class="control-panel">
-    Layer controls here
-  </div>
-  {:else if panelShown === 'research-controls'}
-  <div class="control-panel">
-    Research controls here
-  </div>
+    <div class="flex">
+      <div class="mr-4">
+        <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.base.title}" label="Base" on:selectionMade={(d)=>{handleChangeLayer(d, "base")}} />
+      </div>
+      <div>
+        <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.overlay.title}" label="Overlay" on:selectionMade={(d)=>{handleChangeLayer(d, "overlay")}}/>
+      </div>
 
+
+    </div>
+
+  </div>
+  
+  {:else if panelShown === "research-controls"}
+    <div class="control-panel">Research controls here</div>
   {/if}
 </section>
 
@@ -75,7 +120,7 @@ faExclamationCircle,
 
   .control-tab {
     display: inline-block;
-    background-color: rgba(255, 255, 255, 0.97);
+    background-color: rgba(255, 255, 255, 0.848);
     padding: 10px 20px;
     font-weight: 650;
     cursor: pointer;

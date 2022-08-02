@@ -8,10 +8,12 @@
         "name": "BPL",
         "center": [-7912399.2865,5213434.3916],
         "zoom": 18,
-        "overlayLayerId": "39999059011526"
+        "overlayLayerId": "39999059011864"
     },
     "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/volume-extents-schema-v2.geojson",
     "referenceLayers": [
-        {"id": "modern-streets", "name": "Modern Streets", "source": {"type": "xyz", "url": ""}}
+       {"properties":
+        {"id": "modern-streets", "name": "Modern Streets", "source": {"type": "tilejson", "url": "https://api.maptiler.com/maps/streets/tiles.json?key=1HCKO0pQuPEfNXXzGgSM"}}
+        }
     ]
 }
