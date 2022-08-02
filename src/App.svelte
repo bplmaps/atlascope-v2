@@ -57,7 +57,7 @@
   {/if}
 
   {#if state.splashActive}
-    <Splash {instanceVariables} on:splashButton={handleSplashButton} />
+    <Splash {instanceVariables} on:splashButton={handleSplashButton} state="{state}" />
   {/if}
 </div>
 

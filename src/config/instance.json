@@ -3,8 +3,7 @@
     "name": "Boston",
     "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
     "geographicCoverage": "Boston and its inner suburbs",
-    "baseUrl": "https://atlascope.leventhalmap.org",
-    "insisitutionalSponsor": "Leventhal Map & Education Center at the Boston Public Library",
+    "institutionalSponsor": "Leventhal Map & Education Center at the Boston Public Library",
     "defaultStartLocation": {
         "name": "BPL",
         "center": [-7912399.2865,5213434.3916],

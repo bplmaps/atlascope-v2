@@ -104,6 +104,7 @@
                 return b.extentVisible - a.extentVisible;
             })[0].properties.id;
             changeLayer("overlay", bestNewLayer);
+            
         }
     }
 

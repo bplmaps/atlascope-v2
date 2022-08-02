@@ -75,10 +75,10 @@ faArrowUpFromBracket,
         showHideControls(cg.id);
       }}
     >
-      <Fa icon={cg.icon} class="inline mr-2" />
+      <Fa icon={cg.icon} class="inline" />
       {#if cg.id === "layer-controls"}
         <span
-          class="bg-green-800 text-gray-200 text-s mr-1 px-1.5 py-0.5 rounded"
+          class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
           >{$allLayers.filter((layer) => layer.extentVisible > 0.1)
             .length}</span
         >
@@ -88,15 +88,15 @@ faArrowUpFromBracket,
   {/each}
 
   {#if panelShown === "map-controls"}
-    <div class="control-panel">{mapState.viewMode}</div>
+    <div class="control-panel z-10">{mapState.viewMode}</div>
   {:else if panelShown === "layer-controls"}
     
   <div class="control-panel">
-    <div class="flex">
-      <div class="mr-4">
+    <div class="flex max-w-full flex-wrap">
+      <div class="mr-4 inline">
         <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.base.title}" label="Base" on:selectionMade={(d)=>{handleChangeLayer(d, "base")}} />
       </div>
-      <div>
+      <div class="inline">
         <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.overlay.title}" label="Overlay" on:selectionMade={(d)=>{handleChangeLayer(d, "overlay")}}/>
       </div>
 
@@ -115,7 +115,7 @@ faArrowUpFromBracket,
     position: absolute;
     bottom: 0;
     left: 20px;
-    right: 50px;
+    right: 20px;
   }
 
   .control-tab {
