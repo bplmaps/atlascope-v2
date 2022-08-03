@@ -3,5 +3,5 @@
 @tailwind base;
 
 button {
-    @apply font-bold py-2 px-4 rounded bg-blue-500 text-white;
+    @apply bg-white border border-blue-900 hover:border-blue-800 hover:text-blue-800 rounded-md shadow-sm px-3 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
   }

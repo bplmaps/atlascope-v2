@@ -22,7 +22,7 @@
     <div class="mt-1 relative">
       <button type="button" on:click={()=>{poppedFlag = !poppedFlag}} class="relative bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
         <span class="flex items-center">
-            <span class="text-gray-700 mr-2 font-light text-lg">{label}</span>
+            <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
           <span class="ml-1 block truncate text-gray-900 text-lg">{chosen}</span>
         </span>
         <span class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

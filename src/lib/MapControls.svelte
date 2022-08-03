@@ -7,11 +7,14 @@
     faExclamationCircle,
 faBorderTopLeft,
 faArrowUpFromBracket,
+faLocationArrow,
+faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
 
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
+  import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
 
   import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
@@ -51,6 +54,10 @@ faArrowUpFromBracket,
     dispatch('changeLayer',{id: d.detail.id, layer: layer});
   }
 
+  function handleChangeMode(d) {
+    dispatch('changeMode',{id: d.detail.id});
+  }
+
 </script>
 
 <section>
@@ -88,15 +95,25 @@ faArrowUpFromBracket,
   {/each}
 
   {#if panelShown === "map-controls"}
-    <div class="control-panel z-10">{mapState.viewMode}</div>
+    <div class="control-panel">
+      <div class="flex max-w-full flex-wrap">
+        <div class="mr-4">
+          <ViewModeDropupMenu chosen="{mapState.viewMode}" on:selectionMade="{handleChangeMode}" />
+        </div>
+        <div>
+          <button><Fa icon="{faLocationArrow}" class="mr-2 inline" />Search places</button>
+          <button><Fa icon="{faSearchLocation}" class="mr-2 inline" />Find my location</button>
+        </div>
+      </div>
+    </div>
   {:else if panelShown === "layer-controls"}
     
   <div class="control-panel">
     <div class="flex max-w-full flex-wrap">
-      <div class="mr-4 inline">
+      <div class="mr-4">
         <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.base.title}" label="Base" on:selectionMade={(d)=>{handleChangeLayer(d, "base")}} />
       </div>
-      <div class="inline">
+      <div>
         <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.overlay.title}" label="Overlay" on:selectionMade={(d)=>{handleChangeLayer(d, "overlay")}}/>
       </div>
 

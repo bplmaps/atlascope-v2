@@ -63,8 +63,13 @@
         console.log(newLayer);
 
         mapState.layers[layer].id = newLayer.properties.id;
-        mapState.layers[layer].title = newLayer.properties.year ? newLayer.properties.year : newLayer.properties.name;
-        if (newLayer.properties.source && newLayer.properties.source.type === "tilejson") {
+        mapState.layers[layer].title = newLayer.properties.year
+            ? newLayer.properties.year
+            : newLayer.properties.name;
+        if (
+            newLayer.properties.source &&
+            newLayer.properties.source.type === "tilejson"
+        ) {
             mapState.layers[layer].olLayer.setSource(
                 new TileJSON({
                     url: newLayer.properties.source.url,
@@ -79,6 +84,11 @@
                 })
             );
         }
+    };
+
+    export const changeMode = (id) => {
+        mapState.viewMode = id;
+        map.render();
     };
 
     // This function updates the `allLayers` store every time the map is moved, to figure out how many layers are available in the new viewport
@@ -104,14 +114,16 @@
                 return b.extentVisible - a.extentVisible;
             })[0].properties.id;
             changeLayer("overlay", bestNewLayer);
-            
         }
     }
 
     // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
     onMount(() => {
         changeLayer("base", "modern-streets");
-        changeLayer("overlay", instanceVariables.defaultStartLocation.overlayLayerId);
+        changeLayer(
+            "overlay",
+            instanceVariables.defaultStartLocation.overlayLayerId
+        );
 
         map = new Map({
             target: "map-div",
@@ -134,13 +146,19 @@
             ctx.lineWidth = 3;
             ctx.strokeStyle = "rgba(0,0,0,0.5)";
 
-            ctx.arc(
-                ctx.canvas.width / 2,
-                ctx.canvas.height / 2,
-                Math.abs(120),
-                0,
-                2 * Math.PI
-            );
+            if (mapState.viewMode === "swipe-y") {
+                ctx.rect(0, 0, ctx.canvas.width, 120);
+            } else if (mapState.viewMode === "swipe-x") {
+                ctx.rect(0, 0, 120, ctx.canvas.height);
+            } else if (mapState.viewMode === "glass") {
+                ctx.arc(
+                    ctx.canvas.width / 2,
+                    ctx.canvas.height / 2,
+                    Math.abs(120),
+                    0,
+                    2 * Math.PI
+                );
+            }
 
             ctx.fillStyle = "rgba(10,10,10,0.85)";
             ctx.fill();
@@ -166,6 +184,9 @@
         bind:mapState
         on:changeLayer={(d) => {
             changeLayer(d.detail.layer, d.detail.id);
+        }}
+        on:changeMode={(d) => {
+            changeMode(d.detail.id);
         }}
     />
 </section>

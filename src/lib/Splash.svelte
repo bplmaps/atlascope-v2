@@ -54,7 +54,7 @@
 
       <div class="my-5">
         {#each buttons as button}
-        <button class="mr-2 ring-1 ring-slate-100 drop-shadow hover:ring-slate-300 hover:text-gray-100 transition-all" class:bg-blue-100={!state.layersLoaded} disabled={!state.layersLoaded}  on:click="{()=>{splashButton(button.id)}}"><Fa icon={button.icon} class="inline mr-2" />{button.text}</button>
+        <button class="mr-2 mb-2 drop-shadow hover:ring-slate-300 transition-all" class:bg-blue-100={!state.layersLoaded} disabled={!state.layersLoaded}  on:click="{()=>{splashButton(button.id)}}"><Fa icon={button.icon} class="inline mr-2" />{button.text}</button>
         {/each}
         </div>
 
