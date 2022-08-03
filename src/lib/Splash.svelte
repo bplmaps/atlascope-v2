@@ -10,7 +10,7 @@
         faLandmark,
     } from "@fortawesome/free-solid-svg-icons";
 
-    const dispatcher = createEventDispatcher();
+    const dispatch = createEventDispatcher();
 
     import { allLayers } from './stores.js';
 
@@ -18,7 +18,7 @@
     export let state;
 
     function splashButton(b) {
-        dispatcher('splashButton',{'action': b})
+        dispatch('splashButton',{'action': b})
     }
 
     let buttons = [

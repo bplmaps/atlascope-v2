@@ -5,10 +5,10 @@
     faLayerGroup,
     faMagnifyingGlassArrowRight,
     faExclamationCircle,
-faBorderTopLeft,
-faArrowUpFromBracket,
-faLocationArrow,
-faSearchLocation,
+    faBorderTopLeft,
+    faArrowUpFromBracket,
+    faLocationArrow,
+    faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -33,14 +33,27 @@ faSearchLocation,
   ];
 
   // we compose the possible layer choices out of both the $allLayers store of historic layers, and the reference layers
-  $: layerChoices = parseLayerChoices($allLayers, instanceVariables.referenceLayers);
-  
+  $: layerChoices = parseLayerChoices(
+    $allLayers,
+    instanceVariables.referenceLayers
+  );
+
   function parseLayerChoices(historicLayers, referenceLayers) {
     let c = [];
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
-    historicLayers.forEach(d => d.extentVisible > 0.2 ? c.push({"id": d.properties.id, "title": d.properties.year, "subtitle": d.properties.publisher}) : null);
+    historicLayers.forEach((d) =>
+      d.extentVisible > 0.2
+        ? c.push({
+            id: d.properties.id,
+            title: d.properties.year,
+            subtitle: d.properties.publisher,
+          })
+        : null
+    );
     // add the reference layers
-    referenceLayers.forEach(d=> c.push({"id": d.properties.id, "title": d.properties.name, "subtitle": ""}))
+    referenceLayers.forEach((d) =>
+      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "" })
+    );
     return c;
   }
 
@@ -50,14 +63,13 @@ faSearchLocation,
     panelShown = panelShown === e ? null : e;
   };
 
-  function handleChangeLayer(d,layer) {
-    dispatch('changeLayer',{id: d.detail.id, layer: layer});
+  function handleChangeLayer(d, layer) {
+    dispatch("changeLayer", { id: d.detail.id, layer: layer });
   }
 
   function handleChangeMode(d) {
-    dispatch('changeMode',{id: d.detail.id});
+    dispatch("changeMode", { id: d.detail.id });
   }
-
 </script>
 
 <section>
@@ -77,7 +89,8 @@ faSearchLocation,
 
   {#each controlGroups as cg}
     <div
-      class="control-tab mr-2"
+      class="control-tab mr-2 select-none"
+      class:control-tab-active={cg.id === panelShown}
       on:click={() => {
         showHideControls(cg.id);
       }}
@@ -98,32 +111,50 @@ faSearchLocation,
     <div class="control-panel">
       <div class="flex max-w-full flex-wrap">
         <div class="mr-4">
-          <ViewModeDropupMenu chosen="{mapState.viewMode}" on:selectionMade="{handleChangeMode}" />
+          <ViewModeDropupMenu
+            chosen={mapState.viewMode}
+            on:selectionMade={handleChangeMode}
+          />
         </div>
         <div>
-          <button><Fa icon="{faLocationArrow}" class="mr-2 inline" />Search places</button>
-          <button><Fa icon="{faSearchLocation}" class="mr-2 inline" />Find my location</button>
+          <button
+            ><Fa icon={faLocationArrow} class="mr-2 inline" />Search places</button
+          >
+          <button
+            ><Fa icon={faSearchLocation} class="mr-2 inline" />Find my location</button
+          >
         </div>
       </div>
     </div>
   {:else if panelShown === "layer-controls"}
-    
-  <div class="control-panel">
-    <div class="flex max-w-full flex-wrap">
-      <div class="mr-4">
-        <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.base.title}" label="Base" on:selectionMade={(d)=>{handleChangeLayer(d, "base")}} />
+    <div class="control-panel">
+      <div class="flex max-w-full flex-wrap">
+        <div class="mr-4">
+          <LayerChooserDropupMenu
+            choices={layerChoices}
+            chosen={mapState.layers.base.title}
+            label="Base"
+            on:selectionMade={(d) => {
+              handleChangeLayer(d, "base");
+            }}
+          />
+        </div>
+        <div>
+          <LayerChooserDropupMenu
+            choices={layerChoices}
+            chosen={mapState.layers.overlay.title}
+            label="Overlay"
+            on:selectionMade={(d) => {
+              handleChangeLayer(d, "overlay");
+            }}
+          />
+        </div>
       </div>
-      <div>
-        <LayerChooserDropupMenu choices="{layerChoices}" chosen="{mapState.layers.overlay.title}" label="Overlay" on:selectionMade={(d)=>{handleChangeLayer(d, "overlay")}}/>
-      </div>
-
-
     </div>
-
-  </div>
-  
   {:else if panelShown === "research-controls"}
-    <div class="control-panel">Research controls here</div>
+    <div class="control-panel">
+      Research tools here
+    </div>
   {/if}
 </section>
 
@@ -137,7 +168,7 @@ faSearchLocation,
 
   .control-tab {
     display: inline-block;
-    background-color: rgba(255, 255, 255, 0.848);
+    background-color: rgba(252, 252, 240, 0.899);
     padding: 10px 20px;
     font-weight: 650;
     cursor: pointer;
@@ -146,8 +177,15 @@ faSearchLocation,
   }
 
   .control-tab:hover {
-    background-color: rgb(212, 213, 219);
+    background-color: rgba(255, 255, 255, 0.97);;
   }
+  
+  .control-tab-active {
+    background-color: rgba(255, 255, 255, 0.97);
+  }
+
+
+
 
   .control-panel {
     padding: 30px;

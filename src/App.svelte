@@ -5,12 +5,14 @@
 
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
+  import SearchModal from "./lib/SearchModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
 
   let state = {
     layersLoaded: false,
-    splashActive: true
+    splashActive: true,
+    searchActive: false
   };
 
   let map;
@@ -23,7 +25,16 @@
         instanceVariables.defaultStartLocation.center,
         instanceVariables.defaultStartLocation.zoom
       );
+    } 
+    else if (m.detail.action === "search") {
+      state.searchActive = true;
     }
+  }
+
+  function goToCoords(d) {
+    state.splashActive = false;
+    state.searchActive = false;
+    map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
 
@@ -54,6 +65,10 @@
     bind:this={map}
     defaultStartLocation={instanceVariables.defaultStartLocation}
   />
+  {/if}
+
+  {#if state.searchActive}
+    <SearchModal on:goToCoords={goToCoords} />
   {/if}
 
   {#if state.splashActive}

@@ -35,10 +35,10 @@
       <ul class:hidden="{!poppedFlag}" class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
 
         {#each choices as choice }
-        <li class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900" id="base-layer-option-" role="option"
+        <li class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900" id="{label}-layer-option-{choice.id}" role="option"
             on:click={()=>{handleSelection(choice.id)}}>
           <div class="flex items-center">
-            <span class="font-normal font-bold ml-1 mr-2 block truncate">{choice.title}</span> <span class="text-xs">{choice.subtitle}</span>
+            <span class="font-normal font-bold ml-1 mr-2 block">{choice.title}</span> <span class="text-xs">{choice.subtitle}</span>
           </div>
         </li>
         {/each}

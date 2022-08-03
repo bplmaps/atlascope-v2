@@ -4,6 +4,7 @@
     "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
     "geographicCoverage": "Boston and its inner suburbs",
     "institutionalSponsor": "Leventhal Map & Education Center at the Boston Public Library",
+    "maxExtent": [-71.29278,42.227911,-70.917872,42.449701],
     "defaultStartLocation": {
         "name": "BPL",
         "center": [-7912399.2865,5213434.3916],
