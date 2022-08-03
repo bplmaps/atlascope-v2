@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
-
+    import Fa from "svelte-fa";
     import MapControls from "./MapControls.svelte";
 
     import "ol/ol.css";
@@ -15,6 +15,7 @@
 
     import { allLayers } from "./stores.js";
     import instanceVariables from "../config/instance.json";
+    import { faHand } from "@fortawesome/free-solid-svg-icons";
 
     export let defaultStartLocation;
 
@@ -147,14 +148,27 @@
             ctx.strokeStyle = "rgba(0,0,0,0.5)";
 
             if (mapState.viewMode === "swipe-y") {
-                ctx.rect(0, 0, ctx.canvas.width, 120);
+                ctx.rect(0, 0, ctx.canvas.width, dragXY[1] + dragAdjuster);
             } else if (mapState.viewMode === "swipe-x") {
-                ctx.rect(0, 0, 120, ctx.canvas.height);
+                ctx.rect(0, 0, dragXY[0] + dragAdjuster, ctx.canvas.height);
             } else if (mapState.viewMode === "glass") {
                 ctx.arc(
                     ctx.canvas.width / 2,
                     ctx.canvas.height / 2,
-                    Math.abs(120),
+                    Math.abs(
+                        Math.floor(
+                            Math.sqrt(
+                                Math.pow(
+                                    dragXY[0] + dragAdjuster - window.innerWidth / 2,
+                                    2
+                                ) +
+                                    Math.pow(
+                                        dragXY[1] + dragAdjuster - window.innerHeight / 2,
+                                        2
+                                    )
+                            )
+                        )
+                    ),
                     0,
                     2 * Math.PI
                 );
@@ -175,10 +189,38 @@
 
         map.on("moveend", mapMoved);
     });
+
+    let draggingFlag = false;
+    let dragXY = [50, 50];
+    let dragAdjuster = 14;
+
+    function manipulateDrag(e) {
+        if (draggingFlag) {
+            dragXY = [Math.min(window.innerWidth-40, Math.max(10, e.clientX - dragAdjuster)), Math.min(window.innerHeight-100, Math.max(10, e.clientY - dragAdjuster))];
+        }
+        map.render();
+    }
 </script>
 
-<section id="map" class="ui-top-level-layer">
+<section
+    id="map"
+    on:mousemove={manipulateDrag}
+    on:mouseup={() => {
+        draggingFlag = false;
+    }}
+>
     <div id="map-div" />
+
+    <div
+        id="drag-handle"
+        class="select-none cursor-move rounded-full bg-pink-800 p-2 text-white drop-shadow"
+        style="left: {dragXY[0]}px; top: {dragXY[1]}px"
+        on:mousedown={() => {
+            draggingFlag = true;
+        }}
+    >
+        <Fa icon={faHand} />
+    </div>
 
     <MapControls
         bind:mapState
@@ -205,5 +247,9 @@
         width: 100%;
         height: 100%;
         margin: 0;
+    }
+
+    #drag-handle {
+        position: absolute;
     }
 </style>
