@@ -16,6 +16,7 @@
     import { allLayers } from "./stores.js";
     import instanceVariables from "../config/instance.json";
     import { faHand } from "@fortawesome/free-solid-svg-icons";
+import { fromLonLat } from "ol/proj";
 
     export let defaultStartLocation;
 
@@ -60,9 +61,6 @@
             );
         }
 
-        console.log(layer);
-        console.log(newLayer);
-
         mapState.layers[layer].id = newLayer.properties.id;
         mapState.layers[layer].title = newLayer.properties.year
             ? newLayer.properties.year
@@ -91,6 +89,10 @@
         mapState.viewMode = id;
         map.render();
     };
+
+    export const goToCoords = (lon, lat) => {
+        view.setCenter(fromLonLat([lon, lat]));
+    }
 
     // This function updates the `allLayers` store every time the map is moved, to figure out how many layers are available in the new viewport
     // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
@@ -159,11 +161,15 @@
                         Math.floor(
                             Math.sqrt(
                                 Math.pow(
-                                    dragXY[0] + dragAdjuster - window.innerWidth / 2,
+                                    dragXY[0] +
+                                        dragAdjuster -
+                                        window.innerWidth / 2,
                                     2
                                 ) +
                                     Math.pow(
-                                        dragXY[1] + dragAdjuster - window.innerHeight / 2,
+                                        dragXY[1] +
+                                            dragAdjuster -
+                                            window.innerHeight / 2,
                                         2
                                     )
                             )
@@ -191,12 +197,21 @@
     });
 
     let draggingFlag = false;
-    let dragXY = [50, 50];
+    let dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     let dragAdjuster = 14;
 
     function manipulateDrag(e) {
         if (draggingFlag) {
-            dragXY = [Math.min(window.innerWidth-40, Math.max(10, e.clientX - dragAdjuster)), Math.min(window.innerHeight-100, Math.max(10, e.clientY - dragAdjuster))];
+            dragXY = [
+                Math.min(
+                    window.innerWidth - 40,
+                    Math.max(10, e.clientX - dragAdjuster)
+                ),
+                Math.min(
+                    window.innerHeight - 100,
+                    Math.max(10, e.clientY - dragAdjuster)
+                ),
+            ];
         }
         map.render();
     }
@@ -213,7 +228,7 @@
 
     <div
         id="drag-handle"
-        class="select-none cursor-move rounded-full bg-pink-800 p-2 text-white drop-shadow"
+        class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow"
         style="left: {dragXY[0]}px; top: {dragXY[1]}px"
         on:mousedown={() => {
             draggingFlag = true;
