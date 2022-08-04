@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher, onMount } from "svelte";
     import Fa from "svelte-fa";
+    import { faHand } from "@fortawesome/free-solid-svg-icons";
+
     import MapControls from "./MapControls.svelte";
 
     import "ol/ol.css";
@@ -8,6 +10,7 @@
     import TileLayer from "ol/layer/Tile";
     import XYZ from "ol/source/XYZ";
     import TileJSON from "ol/source/TileJSON";
+    import { fromLonLat } from "ol/proj";
 
     import { intersector } from "./helpers/intersector";
 
@@ -15,10 +18,7 @@
 
     import { allLayers } from "./stores.js";
     import instanceVariables from "../config/instance.json";
-    import { faHand } from "@fortawesome/free-solid-svg-icons";
-import { fromLonLat } from "ol/proj";
 
-    export let defaultStartLocation;
 
     let map;
     let mapState = {
@@ -38,8 +38,8 @@ import { fromLonLat } from "ol/proj";
     };
 
     let view = new View({
-        center: defaultStartLocation.center,
-        zoom: defaultStartLocation.zoom,
+        center: instanceVariables.defaultStartLocation.center,
+        zoom: instanceVariables.defaultStartLocation.zoom,
     });
 
     export const changeCenterZoom = (center, zoom) => {
@@ -85,11 +85,13 @@ import { fromLonLat } from "ol/proj";
         }
     };
 
+    // function for changing the view mode
     export const changeMode = (id) => {
         mapState.viewMode = id;
         map.render();
     };
 
+    // function for jumping to a point
     export const goToCoords = (lon, lat) => {
         view.setCenter(fromLonLat([lon, lat]));
     }
@@ -137,6 +139,7 @@ import { fromLonLat } from "ol/proj";
                 mapState.layers.overlay.olLayer,
             ],
         });
+
 
         // This is the function that executes the rendering of the spyglass, swipe, or opacity feature for the overlay layer
         // It's bound to the `prerender` event on `overlayLayer`
@@ -215,6 +218,8 @@ import { fromLonLat } from "ol/proj";
         }
         map.render();
     }
+
+
 </script>
 
 <section
@@ -223,7 +228,9 @@ import { fromLonLat } from "ol/proj";
     on:mouseup={() => {
         draggingFlag = false;
     }}
->
+    on:touchend={()=> {
+        draggingFlag = false;
+    }}>
     <div id="map-div" />
 
     <div
@@ -233,6 +240,7 @@ import { fromLonLat } from "ol/proj";
         on:mousedown={() => {
             draggingFlag = true;
         }}
+        on:touchstart={() => { draggingFlag = true; }}
     >
         <Fa icon={faHand} />
     </div>

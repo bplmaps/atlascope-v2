@@ -55,8 +55,8 @@
         
       })
       .catch();
-
   });
+  
 </script>
 
 <div id="wraps-all">

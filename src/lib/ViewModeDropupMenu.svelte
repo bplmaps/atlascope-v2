@@ -36,7 +36,7 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block truncate text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === chosen).icon}" class="inline mr-2" />{choices.find(c=>c.id === chosen).label}</span>
+        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === chosen).icon}" class="inline mr-2" />{choices.find(c=>c.id === chosen).label}</span>
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
