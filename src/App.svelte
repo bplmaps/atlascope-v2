@@ -8,17 +8,13 @@
   import SearchModal from "./lib/SearchModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
+  import { appState } from "./lib/stores.js";
 
-  let state = {
-    layersLoaded: false,
-    splashActive: true,
-    searchActive: false
-  };
 
   let map;
 
   function handleSplashButton(m) {
-    state.splashActive = false;
+    $appState.modals.splash = false;
 
     if (m.detail.action === "start") {
       map.changeCenterZoom(
@@ -27,13 +23,13 @@
       );
     } 
     else if (m.detail.action === "search") {
-      state.searchActive = true;
+      $appState.modals.search = true;
     }
   }
 
   function goToCoords(d) {
-    state.splashActive = false;
-    state.searchActive = false;
+    $appState.modals.search = false;
+    $appState.modals.splash = false;
     map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
@@ -51,28 +47,27 @@
           return a.properties.year - b.properties.year;
         });
         allLayers.set(al);
-        state.layersLoaded = true;
+        $appState.layersLoaded = true;
         
       })
       .catch();
   });
-  
+
 </script>
 
 <div id="wraps-all">
-  {#if state.layersLoaded }
+  {#if $appState.layersLoaded }
   <Map
     bind:this={map}
-    defaultStartLocation={instanceVariables.defaultStartLocation}
   />
   {/if}
 
-  {#if state.searchActive}
-    <SearchModal on:goToCoords={goToCoords} />
+  {#if $appState.modals.search}
+    <SearchModal on:goToCoords={goToCoords} on:closeSelf={()=>{$appState.modals.search=false;}} />
   {/if}
 
-  {#if state.splashActive}
-    <Splash {instanceVariables} on:splashButton={handleSplashButton} state="{state}" />
+  {#if $appState.modals.splash}
+    <Splash {instanceVariables} on:splashButton={handleSplashButton} />
   {/if}
 </div>
 

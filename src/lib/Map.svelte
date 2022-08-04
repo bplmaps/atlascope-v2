@@ -17,6 +17,7 @@
     const dispatcher = createEventDispatcher();
 
     import { allLayers } from "./stores.js";
+    import { appState } from "./stores.js";
     import instanceVariables from "../config/instance.json";
 
 
@@ -243,6 +244,11 @@
         on:touchstart={() => { draggingFlag = true; }}
     >
         <Fa icon={faHand} />
+    </div>
+
+    <div on:click="{()=>{$appState.modals.splash = true;}}" class="absolute top-0 left-5 bg-white py-3 px-4 rounded-b-lg hover:pt-5 hover:text-red-900 cursor-pointer transition-all">
+        <h1 class="uppercase text-xs font-black tracking-widest">Atlascope
+        </h1>
     </div>
 
     <MapControls

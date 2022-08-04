@@ -5,8 +5,6 @@
     faLayerGroup,
     faMagnifyingGlassArrowRight,
     faExclamationCircle,
-    faBorderTopLeft,
-    faArrowUpFromBracket,
     faLocationArrow,
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
@@ -15,9 +13,12 @@
 
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
+  import LightIconButton from "./LightIconButton.svelte";
 
   import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
+  import { appState } from "./stores.js";
+
   export let mapState;
 
   let dispatch = createEventDispatcher();
@@ -80,7 +81,7 @@
       <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a
       location where no historic atlas layers are currently available.
       <p class="font-light text-sm">
-        <a href=""
+        <a href="./#"
           >Learn more about our plans for adding coverage to Atlascope.</a
         >
       </p>
@@ -116,14 +117,8 @@
             on:selectionMade={handleChangeMode}
           />
         </div>
-        <div>
-          <button
-            ><Fa icon={faLocationArrow} class="mr-2 inline" />Search places</button
-          >
-          <button
-            ><Fa icon={faSearchLocation} class="mr-2 inline" />Find my location</button
-          >
-        </div>
+        <LightIconButton label="Search places" icon={faSearchLocation} on:click="{()=>{$appState.modals.search=true}}" />
+        <LightIconButton label="Find my location" icon={faLocationArrow} />
       </div>
     </div>
   {:else if panelShown === "layer-controls"}
@@ -152,9 +147,7 @@
       </div>
     </div>
   {:else if panelShown === "research-controls"}
-    <div class="control-panel">
-      Research tools here
-    </div>
+    <div class="control-panel">Research tools here</div>
   {/if}
 </section>
 
@@ -177,15 +170,12 @@
   }
 
   .control-tab:hover {
-    background-color: rgba(255, 255, 255, 0.97);;
-  }
-  
-  .control-tab-active {
     background-color: rgba(255, 255, 255, 0.97);
   }
 
-
-
+  .control-tab-active {
+    background-color: rgba(255, 255, 255, 0.97);
+  }
 
   .control-panel {
     padding: 30px;

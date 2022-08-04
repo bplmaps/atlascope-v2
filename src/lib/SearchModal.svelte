@@ -1,10 +1,15 @@
 <script>
-  import { faSearchLocation } from "@fortawesome/free-solid-svg-icons";
+  import Fa from "svelte-fa";
+  import {
+    faCircleArrowRight,
+    faSearchLocation,
+  } from "@fortawesome/free-solid-svg-icons";
+  
   import { createEventDispatcher } from "svelte";
 
-  import instanceVariables from '../config/instance.json';
+  import ModalCloserButton from "./ModalCloserButton.svelte";
 
-  import Fa from "svelte-fa";
+  import instanceVariables from "../config/instance.json";
 
   let dispatch = createEventDispatcher();
   let searchResults;
@@ -14,33 +19,43 @@
   function debounceSearch(e) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      executeSearch(e.target.value)
+      executeSearch(e.target.value);
     }, 100);
   }
 
   function executeSearch(searchString) {
-    fetch(`https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text=${searchString}&f=json&searchExtent=${instanceVariables.maxExtent.join(',')}`)
-      .then(d=>d.json())
-      .then(d=>{ searchResults = d; })
+    fetch(
+      `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text=${searchString}&f=json&searchExtent=${instanceVariables.maxExtent.join(
+        ","
+      )}`
+    )
+      .then((d) => d.json())
+      .then((d) => {
+        searchResults = d;
+      });
   }
 
   function handleSelection(d) {
     searchResults = null;
     searchText = d.text;
-    fetch(`https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?&magicKey="${d.magicKey}"&f=json`)
-      .then(d=>d.json())
-      .then(d=>{
-        if(d.candidates.length > 0){
-          dispatch('goToCoords',{'lon': d.candidates[0].location.x, 'lat': d.candidates[0].location.y })
+    fetch(
+      `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?&magicKey="${d.magicKey}"&f=json`
+    )
+      .then((d) => d.json())
+      .then((d) => {
+        if (d.candidates.length > 0) {
+          dispatch("goToCoords", {
+            lon: d.candidates[0].location.x,
+            lat: d.candidates[0].location.y,
+          });
         }
-      })
+      });
   }
-
 </script>
 
 <section id="search-modal">
   <div class="modal-outer">
-    <div class="modal-inner">
+    <div class="modal-inner relative w-full">
       <h1 class="text-xl font-bold">
         <Fa icon={faSearchLocation} class="inline mr-2" />Search places
       </h1>
@@ -59,16 +74,31 @@
         />
       </div>
 
-      {#if searchResults && searchResults.suggestions && searchResults.suggestions.length > 0 }
-      <div>
-        <ul>
-          {#each searchResults.suggestions as result }
-            <li class="text-gray-700 hover:text-gray-900" on:click={()=>{handleSelection(result)}}>{result.text}</li>
-          {/each}
-        </ul>
-      </div>
+      {#if searchResults && searchResults.suggestions && searchResults.suggestions.length > 0}
+        <div>
+          <ul>
+            {#each searchResults.suggestions as result}
+              <li
+                class="text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
+                on:click={() => {
+                  handleSelection(result);
+                }}
+              >
+                <Fa
+                  icon={faCircleArrowRight}
+                  class="mr-2 inline text-sm opacity-0 group-hover:opacity-100 transition-all"
+                />{result.text}
+              </li>
+            {/each}
+          </ul>
+        </div>
       {/if}
 
+      <ModalCloserButton
+        on:click={() => {
+          dispatch("closeSelf");
+        }}
+      />
     </div>
   </div>
 </section>
