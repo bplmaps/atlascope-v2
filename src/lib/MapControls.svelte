@@ -53,18 +53,19 @@
   function parseLayerChoices(historicLayers, referenceLayers) {
     let c = [];
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
-    historicLayers.forEach((d) =>
+    historicLayers.sort((a,b)=>a.properties.year-b.properties.year).forEach((d) =>
       d.extentVisible > 0.2
         ? c.push({
             id: d.properties.id,
             title: d.properties.year,
             subtitle: d.properties.publisher,
+            pct: d.extentVisible
           })
         : null
     );
     // add the reference layers
     referenceLayers.forEach((d) =>
-      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "" })
+      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "", pct: 1.0 })
     );
     return c;
   }
