@@ -3,6 +3,8 @@
 
     export let label;
     export let icon;
+
+    let iconMargin = label === "" ? "mr-0" : "mr-2"
 </script>
 
 <div class="mt-1 mr-2 relative">
@@ -12,8 +14,8 @@
         class="relative bg-white border border-gray-300 rounded-md shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
     >
         <span class="flex items-center">
-            <span class="ml-1 block text-gray-900 text-lg"
-                ><Fa {icon} class="inline mr-2" />{label}</span
+            <span class="mx-1 block text-gray-900 text-lg"
+                ><Fa {icon} class="inline {iconMargin}" />{label}</span
             >
         </span>
     </button>

@@ -6,11 +6,10 @@
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
   import SearchModal from "./lib/SearchModal.svelte";
+  import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
-import ModalCloserButton from "./lib/ModalCloserButton.svelte";
-
 
   let map;
 
@@ -72,9 +71,15 @@ import ModalCloserButton from "./lib/ModalCloserButton.svelte";
     <SearchModal on:goToCoords={goToCoords} on:closeSelf={()=>{$appState.modals.search=false;}} />
   {/if}
 
+  {#if $appState.modals.biblio}
+     <BibliographicInfoModal on:closeSelf={()=>{$appState.modals.biblio=false;}} />
+  {/if}
+
   {#if $appState.modals.splash}
     <Splash {instanceVariables} on:splashButton={handleSplashButton} on:closeSelf={()=>{$appState.modals.splash=false;}} />
   {/if}
+
+
 </div>
 
 <style>

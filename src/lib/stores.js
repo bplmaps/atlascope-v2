@@ -6,6 +6,7 @@ export const appState = writable({
     layersLoaded: false,
     modals: {
         splash: true,
-        search: false
+        search: false,
+        biblio: false
     }
 });
