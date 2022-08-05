@@ -86,8 +86,9 @@
               >
                 <Fa
                   icon={faCircleArrowRight}
-                  class="mr-2 inline text-sm opacity-0 group-hover:opacity-100 transition-all"
-                />{result.text}
+                  class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
+                />
+                {result.text}
               </li>
             {/each}
           </ul>

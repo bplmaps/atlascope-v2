@@ -206,14 +206,20 @@
 
     function manipulateDrag(e) {
         if (draggingFlag) {
+
+			let posX = e.clientX || e.pageX;
+			let posY = e.clientY || e.pageY;
+
+            // console.log(e)
+
             dragXY = [
                 Math.min(
                     window.innerWidth - 40,
-                    Math.max(10, e.clientX - dragAdjuster)
+                    Math.max(10, posX - dragAdjuster)
                 ),
                 Math.min(
                     window.innerHeight - 100,
-                    Math.max(10, e.clientY - dragAdjuster)
+                    Math.max(10, posY - dragAdjuster)
                 ),
             ];
         }
@@ -226,6 +232,7 @@
 <section
     id="map"
     on:mousemove={manipulateDrag}
+    on:touchmove={manipulateDrag}
     on:mouseup={() => {
         draggingFlag = false;
     }}
@@ -236,7 +243,7 @@
 
     <div
         id="drag-handle"
-        class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow"
+        class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
         style="left: {dragXY[0]}px; top: {dragXY[1]}px"
         on:mousedown={() => {
             draggingFlag = true;

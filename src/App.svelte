@@ -9,6 +9,7 @@
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
+import ModalCloserButton from "./lib/ModalCloserButton.svelte";
 
 
   let map;
@@ -55,6 +56,11 @@
 
 </script>
 
+<svelte:head>
+	<title>Atlascope {instanceVariables.name} · v2 development</title>
+</svelte:head>
+
+
 <div id="wraps-all">
   {#if $appState.layersLoaded }
   <Map
@@ -67,7 +73,7 @@
   {/if}
 
   {#if $appState.modals.splash}
-    <Splash {instanceVariables} on:splashButton={handleSplashButton} />
+    <Splash {instanceVariables} on:splashButton={handleSplashButton} on:closeSelf={()=>{$appState.modals.splash=false;}} />
   {/if}
 </div>
 
