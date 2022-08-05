@@ -38,7 +38,7 @@
         <li class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900" id="{label}-layer-option-{choice.id}" role="option"
             on:click={()=>{handleSelection(choice.id)}}>
           <div class="flex items-center">
-            <span class="font-normal font-bold ml-1 mr-2 block">{choice.title}</span> <span class="text-sm">{choice.subtitle}</span> <span class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1">{Math.round(choice.pct * 100)}%</span>
+            <span class="font-bold text-lg ml-1 mr-2 block">{choice.title}</span><span class="text-sm">{choice.subtitle}</span><span class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1">{Math.round(choice.pct * 100)}%</span>
           </div>
         </li>
         {/each}
