@@ -7,6 +7,7 @@ export const appState = writable({
     modals: {
         splash: true,
         search: false,
-        biblio: false
+        biblio: false,
+        geolocation: false
     }
 });

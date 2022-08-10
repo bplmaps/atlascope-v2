@@ -4,6 +4,7 @@
   import { faHand } from "@fortawesome/free-solid-svg-icons";
 
   import MapControls from "./MapControls.svelte";
+  import GeolocationModal from "./GeolocationModal.svelte";
 
   import "ol/ol.css";
   import { Map, View } from "ol";
@@ -237,6 +238,14 @@
   >
     <h1 class="uppercase text-xs font-black tracking-widest">Atlascope</h1>
   </div>
+
+  
+  {#if $appState.modals.geolocation}
+  <div class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow">
+    <GeolocationModal on:goToCoords={(e)=>{goToCoords(e.detail.lon, e.detail.lat)}} />
+  </div>
+  {/if}
+
 
   <MapControls
     bind:mapState
