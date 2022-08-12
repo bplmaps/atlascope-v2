@@ -1,11 +1,11 @@
 <script>
-<<<<<<< HEAD
     import { createEventDispatcher, onMount } from "svelte";
     import Fa from "svelte-fa";
     import { faHand } from "@fortawesome/free-solid-svg-icons";
 
     import AtlascopeLogo from "./AtlascopeLogo.svelte";
     import MapControls from "./MapControls.svelte";
+    import GeolocationModal from "./GeolocationModal.svelte";
 
     import "ol/ol.css";
     import { Map, View } from "ol";
@@ -49,55 +49,7 @@
         map.getView().setCenter(center);
         map.getView().setZoom(zoom);
     };
-=======
-  import { createEventDispatcher, onMount } from "svelte";
-  import Fa from "svelte-fa";
-  import { faHand } from "@fortawesome/free-solid-svg-icons";
 
-  import MapControls from "./MapControls.svelte";
-  import GeolocationModal from "./GeolocationModal.svelte";
-
-  import "ol/ol.css";
-  import { Map, View } from "ol";
-  import TileLayer from "ol/layer/Tile";
-  import XYZ from "ol/source/XYZ";
-  import TileJSON from "ol/source/TileJSON";
-  import { fromLonLat } from "ol/proj";
-
-  import { intersector } from "./helpers/intersector";
-
-  const dispatcher = createEventDispatcher();
-
-  import { allLayers } from "./stores.js";
-  import { appState } from "./stores.js";
-  import instanceVariables from "../config/instance.json";
-
-  let map;
-  let mapState = {
-    layers: {
-      base: {
-        id: "",
-        title: "",
-        olLayer: new TileLayer(),
-      },
-      overlay: {
-        id: "",
-        title: "",
-        olLayer: new TileLayer(),
-      },
-    },
-    viewMode: "glass",
-  };
-
-  let view = new View({
-    center: instanceVariables.defaultStartLocation.center,
-    zoom: instanceVariables.defaultStartLocation.zoom,
-  });
-
-  export const changeCenterZoom = (center, zoom) => {
-    map.getView().setCenter(center);
-    map.getView().setZoom(zoom);
-  };
 
   // function for changing the layer, we export it so that the outer app can also access this function
   export const changeLayer = (layer, id) => {
@@ -110,7 +62,6 @@
         (l) => l.properties.id === id
       );
     }
->>>>>>> 7d0814a63f92288309e98d79534956c0dba4f06f
 
     mapState.layers[layer].id = newLayer.properties.id;
     mapState.layers[layer].title = newLayer.properties.year
@@ -256,122 +207,104 @@
 </script>
 
 <section
-  id="map"
-  on:mousemove={manipulateDrag}
-  on:touchmove={manipulateDrag}
-  on:mouseup={() => {
-    draggingFlag = false;
-  }}
-  on:touchend={() => {
-    draggingFlag = false;
-  }}
->
-  <div id="map-div" />
-
-  <div
-    id="drag-handle"
-    class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
-    style="left: {dragXY[0]}px; top: {dragXY[1]}px"
-    on:mousedown={() => {
-      draggingFlag = true;
-    }}
-<<<<<<< HEAD
-    on:touchend={()=> {
+    id="map"
+    on:mousemove={manipulateDrag}
+    on:touchmove={manipulateDrag}
+    on:mouseup={() => {
         draggingFlag = false;
-    }}>
+    }}
+    on:touchend={() => {
+        draggingFlag = false;
+    }}
+>
     <div id="map-div" />
 
     <div
         id="drag-handle"
-        class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow"
+        class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
         style="left: {dragXY[0]}px; top: {dragXY[1]}px"
         on:mousedown={() => {
             draggingFlag = true;
         }}
-        on:touchstart={() => { draggingFlag = true; }}
-    >
-        <Fa icon={faHand} />
-    </div>
-
-    <div on:click="{()=>{$appState.modals.splash = true;}}" class="absolute top-0 w-2/12 left-5 bg-white py-3 px-4 rounded-b-lg cursor-pointer transition-all">
-        <AtlascopeLogo />
-    </div>
-
-    <MapControls
-        bind:mapState
-        on:changeLayer={(d) => {
-            changeLayer(d.detail.layer, d.detail.id);
+        on:touchend={() => {
+            draggingFlag = false;
         }}
-        on:changeMode={(d) => {
-            changeMode(d.detail.id);
-        }}
-    />
-=======
-    on:touchstart={() => {
-      draggingFlag = true;
-    }}
-  >
-    <Fa icon={faHand} />
-  </div>
+    ><Fa icon={faHand} /></div>
+       
 
-  <div
-    on:click={() => {
-      $appState.modals.splash = true;
-    }}
-    class="absolute top-0 left-5 bg-white py-3 px-4 rounded-b-lg hover:pt-5 hover:text-red-900 cursor-pointer transition-all"
-  >
-    <h1 class="uppercase text-xs font-black tracking-widest">Atlascope</h1>
-  </div>
+        <div
+            on:click={() => {
+                $appState.modals.splash = true;
+            }}
+            class="absolute top-0 w-2/12 left-5 bg-white py-3 px-4 rounded-b-lg cursor-pointer transition-all"
+        >
+            <AtlascopeLogo />
+        </div>
 
-  
-  {#if $appState.modals.geolocation}
-  <div class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow">
-    <GeolocationModal on:goToCoords={(e)=>{goToCoords(e.detail.lon, e.detail.lat)}} />
-  </div>
-  {/if}
+        <MapControls
+            bind:mapState
+            on:changeLayer={(d) => {
+                changeLayer(d.detail.layer, d.detail.id);
+            }}
+            on:changeMode={(d) => {
+                changeMode(d.detail.id);
+            }}
+        />
 
 
-  <MapControls
-    bind:mapState
-    on:changeLayer={(d) => {
-      changeLayer(d.detail.layer, d.detail.id);
-    }}
-    on:changeMode={(d) => {
-      changeMode(d.detail.id);
-    }}
-    on:zoomIn={() => {
-      view.animate({ zoom: view.getZoom() + 1, duration: 500 });
-    }}
-    on:zoomOut={() => {
-      view.animate({ zoom: view.getZoom() - 1, duration: 500 });
-    }}
-    on:rotate={() => {
-      view.animate({
-        rotation: view.getRotation() + (2 * Math.PI) / 6,
-        duration: 500,
-      });
-    }}
-  />
->>>>>>> 7d0814a63f92288309e98d79534956c0dba4f06f
+
+        {#if $appState.modals.geolocation}
+            <div
+                class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
+            >
+                <GeolocationModal
+                    on:goToCoords={(e) => {
+                        goToCoords(e.detail.lon, e.detail.lat);
+                    }}
+                />
+            </div>
+        {/if}
+
+        <MapControls
+            bind:mapState
+            on:changeLayer={(d) => {
+                changeLayer(d.detail.layer, d.detail.id);
+            }}
+            on:changeMode={(d) => {
+                changeMode(d.detail.id);
+            }}
+            on:zoomIn={() => {
+                view.animate({ zoom: view.getZoom() + 1, duration: 500 });
+            }}
+            on:zoomOut={() => {
+                view.animate({ zoom: view.getZoom() - 1, duration: 500 });
+            }}
+            on:rotate={() => {
+                view.animate({
+                    rotation: view.getRotation() + (2 * Math.PI) / 6,
+                    duration: 500,
+                });
+            }}
+        />
 </section>
 
 <style>
-  section {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-  }
+    section {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
 
-  #map-div {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-  }
+    #map-div {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
 
-  #drag-handle {
-    position: absolute;
-  }
+    #drag-handle {
+        position: absolute;
+    }
 </style>
