@@ -3,6 +3,7 @@
     import Fa from "svelte-fa";
     import { faHand } from "@fortawesome/free-solid-svg-icons";
 
+    import AtlascopeLogo from "./AtlascopeLogo.svelte";
     import MapControls from "./MapControls.svelte";
 
     import "ol/ol.css";
@@ -246,9 +247,8 @@
         <Fa icon={faHand} />
     </div>
 
-    <div on:click="{()=>{$appState.modals.splash = true;}}" class="absolute top-0 left-5 bg-white py-3 px-4 rounded-b-lg hover:pt-5 hover:text-red-900 cursor-pointer transition-all">
-        <h1 class="uppercase text-xs font-black tracking-widest">Atlascope
-        </h1>
+    <div on:click="{()=>{$appState.modals.splash = true;}}" class="absolute top-0 w-2/12 left-5 bg-white py-3 px-4 rounded-b-lg cursor-pointer transition-all">
+        <AtlascopeLogo />
     </div>
 
     <MapControls

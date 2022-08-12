@@ -14,6 +14,7 @@
 
     import { allLayers } from './stores.js';
     import { appState } from './stores.js';
+import AtlascopeLogo from './AtlascopeLogo.svelte';
 
     export let instanceVariables;
 
@@ -33,6 +34,10 @@
 
 <section id="splash" class="ui-top-level-layer">
     <div id="splash-inner">
+      <div class="w-1/5 mx-auto mb-5">
+        <AtlascopeLogo />
+        </div>
+
       <p class="text-m"><strong class="has-background-primary has-text-white-ter p-1">Atlascope {instanceVariables.name}</strong> {instanceVariables.tagline}.</p>
       <p class="text-xl font-bold">How do you want to start exploring?</p>
 
