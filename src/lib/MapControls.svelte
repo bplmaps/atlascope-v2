@@ -7,6 +7,12 @@
     faExclamationCircle,
     faLocationArrow,
     faSearchLocation,
+    faShare,
+    faCopy,
+    faPlus,
+    faMinus,
+    faRotateRight,
+    faBookBookmark,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -31,6 +37,11 @@
       name: "Research",
       icon: faMagnifyingGlassArrowRight,
     },
+    {
+      id: "share-controls",
+      name: "Share",
+      icon: faShare,
+    },
   ];
 
   // we compose the possible layer choices out of both the $allLayers store of historic layers, and the reference layers
@@ -42,18 +53,19 @@
   function parseLayerChoices(historicLayers, referenceLayers) {
     let c = [];
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
-    historicLayers.forEach((d) =>
+    historicLayers.sort((a,b)=>a.properties.year-b.properties.year).forEach((d) =>
       d.extentVisible > 0.2
         ? c.push({
             id: d.properties.id,
             title: d.properties.year,
             subtitle: d.properties.publisher,
+            pct: d.extentVisible
           })
         : null
     );
     // add the reference layers
     referenceLayers.forEach((d) =>
-      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "" })
+      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "", pct: 1.0 })
     );
     return c;
   }
@@ -117,7 +129,35 @@
             on:selectionMade={handleChangeMode}
           />
         </div>
-        <LightIconButton label="Search places" icon={faSearchLocation} on:click="{()=>{$appState.modals.search=true}}" />
+        <LightIconButton
+          label=""
+          icon={faPlus}
+          on:click={() => {
+            dispatch("zoomIn");
+          }}
+        />
+        <LightIconButton
+          label=""
+          icon={faMinus}
+          on:click={() => {
+            dispatch("zoomOut");
+          }}
+        />
+        <LightIconButton
+          label=""
+          icon={faRotateRight}
+          on:click={() => {
+            dispatch("rotate");
+          }}
+        />
+
+        <LightIconButton
+          label="Search places"
+          icon={faSearchLocation}
+          on:click={() => {
+            $appState.modals.search = true;
+          }}
+        />
         <LightIconButton label="Find my location" icon={faLocationArrow} />
       </div>
     </div>
@@ -144,10 +184,46 @@
             }}
           />
         </div>
+        <div class="ml-4">
+          <LightIconButton
+            label="Bibliographic information"
+            icon={faBookBookmark}
+            on:click={() => { $appState.modals.biblio = true;
+            }}
+          />
+        </div>
       </div>
     </div>
   {:else if panelShown === "research-controls"}
     <div class="control-panel">Research tools here</div>
+  {:else if panelShown === "share-controls"}
+    <div class="control-panel">
+      <div class="mb-2 flex">
+        <label for="share-app-url" class="text-sm text-right pr-3"
+          >Share the Atlascope app</label
+        >
+        <input
+          type="text"
+          id="share-app-url"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          value="https://atlascope.leventhalmap.org"
+        />
+        <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+      </div>
+
+      <div class="flex">
+        <label for="share-app-url" class="text-sm text-right pr-3"
+          >Share this specific view</label
+        >
+        <input
+          type="text"
+          id="share-app-url"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          value="https://atlascope.leventhalmap.org/#/view/..."
+        />
+        <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+      </div>
+    </div>
   {/if}
 </section>
 

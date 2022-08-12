@@ -8,7 +8,11 @@
         faSearchLocation,
         faHiking,
         faLandmark,
+faChevronUp,
+faQuestionCircle,
     } from "@fortawesome/free-solid-svg-icons";
+
+    import SvelteMarkdown from 'svelte-markdown';
 
     const dispatch = createEventDispatcher();
 
@@ -19,6 +23,7 @@ import AtlascopeLogo from './AtlascopeLogo.svelte';
     export let instanceVariables;
 
     function splashButton(b) {
+        $appState.gateway = false;
         dispatch('splashButton',{'action': b})
     }
 
@@ -34,6 +39,12 @@ import AtlascopeLogo from './AtlascopeLogo.svelte';
 
 <section id="splash" class="ui-top-level-layer">
     <div id="splash-inner">
+      {#if !$appState.gateway }
+      <div class="my-3">
+        <button class="text-xl" on:click="{()=>{dispatch('closeSelf')}}"><Fa icon={faChevronUp} /></button>
+      </div>
+      {/if }
+      
       <div class="w-1/5 mx-auto mb-5">
         <AtlascopeLogo />
         </div>
@@ -68,7 +79,11 @@ import AtlascopeLogo from './AtlascopeLogo.svelte';
       </div>
 
       <div>
-        <p class="font-light text-sm mt-5">A project of {instanceVariables.institutionalSponsor}</p>
+        <p class="font-light text-sm mt-5"><SvelteMarkdown source={instanceVariables.institutionalCredit} /></p>
+      </div>
+
+      <div class="my-3">
+        <button class="text-xs" ><Fa icon={faQuestionCircle} class="inline mr-2" />About & Credits</button>
       </div>
     </div>
 </section>

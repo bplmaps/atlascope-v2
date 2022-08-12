@@ -6,10 +6,11 @@
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
   import SearchModal from "./lib/SearchModal.svelte";
+  import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
+  import GeolocationModal from "./lib/GeolocationModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
-
 
   let map;
 
@@ -21,10 +22,12 @@
         instanceVariables.defaultStartLocation.center,
         instanceVariables.defaultStartLocation.zoom
       );
-    } 
-    else if (m.detail.action === "search") {
+    } else if (m.detail.action === "search") {
       $appState.modals.search = true;
+    } else if (m.detail.action === "find" ) {
+      $appState.modals.geolocation = true;
     }
+    
   }
 
   function goToCoords(d) {
@@ -33,10 +36,8 @@
     map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
-
-
   // When the app is mounted, first thing we need to do is load the footprints file
-  // We stort it by year and then write it to the `allLayers` store which can be accessed 
+  // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
   onMount(() => {
     fetch(instanceVariables.historicLayersFootprintsFile)
@@ -48,26 +49,46 @@
         });
         allLayers.set(al);
         $appState.layersLoaded = true;
-        
       })
       .catch();
   });
-
 </script>
 
+<svelte:head>
+  <title>Atlascope {instanceVariables.name} · v2 development</title>
+</svelte:head>
+
 <div id="wraps-all">
-  {#if $appState.layersLoaded }
-  <Map
-    bind:this={map}
-  />
+  {#if $appState.layersLoaded}
+    <Map bind:this={map} />
   {/if}
 
   {#if $appState.modals.search}
-    <SearchModal on:goToCoords={goToCoords} on:closeSelf={()=>{$appState.modals.search=false;}} />
+    <SearchModal
+      on:goToCoords={goToCoords}
+      on:closeSelf={() => {
+        $appState.modals.search = false;
+      }}
+    />
+  {/if}
+
+
+  {#if $appState.modals.biblio}
+    <BibliographicInfoModal
+      on:closeSelf={() => {
+        $appState.modals.biblio = false;
+      }}
+    />
   {/if}
 
   {#if $appState.modals.splash}
-    <Splash {instanceVariables} on:splashButton={handleSplashButton} />
+    <Splash
+      {instanceVariables}
+      on:splashButton={handleSplashButton}
+      on:closeSelf={() => {
+        $appState.modals.splash = false;
+      }}
+    />
   {/if}
 </div>
 
