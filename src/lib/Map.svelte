@@ -226,8 +226,8 @@
         on:mousedown={() => {
             draggingFlag = true;
         }}
-        on:touchend={() => {
-            draggingFlag = false;
+        on:touchstart={() => {
+            draggingFlag = true;
         }}
     ><Fa icon={faHand} /></div>
        
