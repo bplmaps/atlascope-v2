@@ -195,8 +195,6 @@
       let posX = e.clientX || e.pageX;
       let posY = e.clientY || e.pageY;
 
-      // console.log(e)
-
       dragXY = [
         Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
         Math.min(window.innerHeight - 100, Math.max(10, posY - dragAdjuster)),
@@ -236,7 +234,7 @@
             on:click={() => {
                 $appState.modals.splash = true;
             }}
-            class="absolute top-0 w-2/12 left-5 bg-white py-3 px-4 rounded-b-lg cursor-pointer transition-all"
+            class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3"
         >
             <AtlascopeLogo />
         </div>

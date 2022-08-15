@@ -2,12 +2,28 @@
 
 import {cubicInOut} from "svelte/easing";
 import {tweened} from 'svelte/motion';
+import { onMount } from "svelte";
 
-const r = tweened(3.4, { easing: cubicInOut});
+const smallR = 3.4;
+const largeR = 4.9;
+const r = tweened(smallR, {easing: cubicInOut, duration: 1000});
+
+export let pulse = false;
+
+onMount(()=>{
+  if (pulse) {
+    let t = true;
+    function p() {
+      t = !t;
+      r.set(t ? smallR : largeR).then(p);
+    }
+    p();
+  }
+})
 
 </script>
 
-<div class="atlascope-logo-holder mx-auto" on:mouseover="{()=>{r.set(4.9)}}" on:mouseout="{()=>{r.set(3.6)}}" >
+<div class="atlascope-logo-holder mx-auto">
     <svg id="atlascope-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 83.54 15.25">
 
         <path class="cls-2" d="M2.56,11.99H0L2.88,3.26h3.24l2.88,8.73h-2.56l-1.91-6.32h-.07l-1.91,6.32Zm-.48-3.44H6.89v1.77H2.08v-1.77Z"/>
@@ -34,4 +50,5 @@ const r = tweened(3.4, { easing: cubicInOut});
 .cls-1 {
     fill: white;
 }
+
 </style>
