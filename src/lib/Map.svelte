@@ -1,46 +1,48 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
-    import Fa from "svelte-fa";
-    import { faHand } from "@fortawesome/free-solid-svg-icons";
+  import { createEventDispatcher, onMount } from "svelte";
+  import Fa from "svelte-fa";
+  import { faHand } from "@fortawesome/free-solid-svg-icons";
 
-    import AtlascopeLogo from "./AtlascopeLogo.svelte";
-    import MapControls from "./MapControls.svelte";
-    import GeolocationModal from "./GeolocationModal.svelte";
+  import AtlascopeLogo from "./AtlascopeLogo.svelte";
+  import MapControls from "./MapControls.svelte";
+  import GeolocationModal from "./GeolocationModal.svelte";
 
-    import "ol/ol.css";
-    import { Map, View } from "ol";
-    import TileLayer from "ol/layer/Tile";
-    import XYZ from "ol/source/XYZ";
-    import TileJSON from "ol/source/TileJSON";
-    import { fromLonLat } from "ol/proj";
+  import "ol/ol.css";
+  import { Map, View } from "ol";
+  import TileLayer from "ol/layer/Tile";
+  import XYZ from "ol/source/XYZ";
+  import TileJSON from "ol/source/TileJSON";
+  import { fromLonLat } from "ol/proj";
+  import {transformExtent} from 'ol/proj';
 
-    import { intersector } from "./helpers/intersector";
+  import { intersector } from "./helpers/intersector";
 
-    const dispatcher = createEventDispatcher();
+  const dispatcher = createEventDispatcher();
 
-    import { allLayers } from "./stores.js";
-    import { appState } from "./stores.js";
-    import instanceVariables from "../config/instance.json";
+  import { allLayers } from "./stores.js";
+  import { appState } from "./stores.js";
+  import instanceVariables from "../config/instance.json";
+  import { loop_guard } from "svelte/internal";
 
+  let map;
+  let mapState = {
+    layers: {
+      base: {
+        id: "",
+        title: "",
+        olLayer: new TileLayer(),
+      },
+      overlay: {
+        id: "",
+        title: "",
+        olLayer: new TileLayer(),
+      },
+    },
+    viewMode: "glass",
+    bbox: null,
+  };
 
-    let map;
-    let mapState = {
-        layers: {
-            base: {
-                id: "",
-                title: "",
-                olLayer: new TileLayer(),
-            },
-            overlay: {
-                id: "",
-                title: "",
-                olLayer: new TileLayer(),
-            },
-        },
-        viewMode: "glass",
-    };
-
-    let view = new View({
+  let view = new View({
         center: instanceVariables.defaultStartLocation.center,
         zoom: instanceVariables.defaultStartLocation.zoom,
     });
@@ -103,6 +105,8 @@
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
     const extent = map.getView().calculateExtent(map.getSize());
+    mapState.bbox = transformExtent(extent,'EPSG:3857','EPSG:4326');
+    
     allLayers.update((a) => {
       return a.map((layer) => {
         let l = layer;
@@ -122,6 +126,68 @@
       changeLayer("overlay", bestNewLayer);
     }
   }
+
+  // This function downloads the current view in Atlascope, without the Map Control overlays. 
+  // Thefunction is based on the OL documentation for exporting a map: 
+  // https://openlayers.org/en/main/examples/export-map.html
+  export const downloadMap = () => {
+    console.log("map download requested")
+    const mapCanvas = document.createElement('canvas');
+    const size = map.getSize();
+    mapCanvas.width = size[0];
+    mapCanvas.height = size[1];
+    const mapContext = mapCanvas.getContext('2d');
+    Array.prototype.forEach.call(
+      map.getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+      function (canvas) {
+        if (canvas.width > 0) {
+          const opacity =
+            canvas.parentNode.style.opacity || canvas.style.opacity;
+          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+
+          const backgroundColor = canvas.parentNode.style.backgroundColor;
+          if (backgroundColor) {
+            mapContext.fillStyle = backgroundColor;
+            mapContext.fillRect(0, 0, canvas.width, canvas.height);
+          }
+
+          let matrix;
+          const transform = canvas.style.transform;
+          if (transform) {
+            // Get the transform parameters from the style's transform matrix
+            matrix = transform
+              .match(/^matrix\(([^\(]*)\)$/)[1]
+              .split(',')
+              .map(Number);
+          } else {
+            matrix = [
+              parseFloat(canvas.style.width) / canvas.width,
+              0,
+              0,
+              parseFloat(canvas.style.height) / canvas.height,
+              0,
+              0,
+            ];
+          }
+          // Apply the transform to the export map context
+          CanvasRenderingContext2D.prototype.setTransform.apply(
+            mapContext,
+            matrix
+          );
+          mapContext.drawImage(canvas, 0, 0);
+        }
+      }
+    );
+    mapContext.globalAlpha = 1;
+    if (navigator.msSaveBlob) {
+      // link download attribute does not work on MS browsers
+      navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
+    } else {
+      const link = document.getElementById('image-download');
+      link.href = mapCanvas.toDataURL();
+      link.click();
+    }
+  };
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
@@ -236,20 +302,8 @@
             }}
             class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3"
         >
-            <AtlascopeLogo />
+          <AtlascopeLogo />
         </div>
-
-        <MapControls
-            bind:mapState
-            on:changeLayer={(d) => {
-                changeLayer(d.detail.layer, d.detail.id);
-            }}
-            on:changeMode={(d) => {
-                changeMode(d.detail.id);
-            }}
-        />
-
-
 
         {#if $appState.modals.geolocation}
             <div
@@ -282,6 +336,9 @@
                     rotation: view.getRotation() + (2 * Math.PI) / 6,
                     duration: 500,
                 });
+            }}
+            on:downloadMap={() => {
+              downloadMap();
             }}
         />
 </section>

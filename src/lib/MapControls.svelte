@@ -12,7 +12,8 @@
     faPlus,
     faMinus,
     faRotateRight,
-    faBookBookmark,
+    faBookBookmark, 
+    faFileDownload,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -24,6 +25,7 @@
   import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
+  import { View } from "ol";
 
   export let mapState;
 
@@ -82,6 +84,10 @@
 
   function handleChangeMode(d) {
     dispatch("changeMode", { id: d.detail.id });
+  }
+
+  function handleDownload() {
+    dispatch("downloadMap");
   }
 </script>
 
@@ -211,7 +217,7 @@
         <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
       </div>
 
-      <div class="flex">
+      <div class="mb-2 flex">
         <label for="share-app-url" class="text-sm text-right pr-3"
           >Share this specific view</label
         >
@@ -222,6 +228,11 @@
           value="https://atlascope.leventhalmap.org/#/view/..."
         />
         <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+      </div>
+    
+      <div class="flex">
+        <button class="ml-2" id="export-png" on:click= {handleDownload}><Fa icon={faFileDownload} class="inline px-2" />Download PNG</button>
+        <a id="image-download" download="Atlascope-{mapState.layers.overlay.title}.png"> </a>
       </div>
     </div>
   {/if}
