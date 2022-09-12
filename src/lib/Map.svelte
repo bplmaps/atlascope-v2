@@ -6,9 +6,10 @@
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import MapControls from "./MapControls.svelte";
   import GeolocationModal from "./GeolocationModal.svelte";
+  import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
 
   import "ol/ol.css";
-  import { Map, View } from "ol";
+  import { Map, Overlay, View } from "ol";
   import TileLayer from "ol/layer/Tile";
   import XYZ from "ol/source/XYZ";
   import TileJSON from "ol/source/TileJSON";
@@ -16,7 +17,6 @@
   import Draw, { createBox } from "ol/interaction/Draw";
 
   import { intersector } from "./helpers/intersector";
-  import { writeAnnotation } from "./helpers/writeAnnotation";
 
   const dispatcher = createEventDispatcher();
 
@@ -42,6 +42,7 @@
     },
     viewMode: "glass",
     annotationMode: false,
+    annotationEntry: false,
   };
 
   let view = new View({
@@ -54,6 +55,9 @@
   let annotationDrawerLayer = new VectorLayer({
     source: annotationDrawerGeometrySource,
   });
+
+  let annotationEntryCoords = [0, 0];
+  let annotationExtentCoords;
 
   export const changeCenterZoom = (center, zoom) => {
     map.getView().setCenter(center);
@@ -141,14 +145,27 @@
       geometryFunction: createBox(),
     });
 
-    annotationDrawer.on('drawend', writeAnnotation)
+    annotationDrawer.on("drawend", (e) => {
+      annotationExtentCoords = e.feature.getGeometry().getExtent();
+      annotationEntryCoords = [e.target.downPx_[0], e.target.downPx_[1]];
+      mapState.annotationEntry = true;
+      map.removeInteraction(annotationDrawer);
+    });
     map.addInteraction(annotationDrawer);
   }
 
   function disableAnnotationMode() {
     mapState.annotationMode = false;
+    mapState.annotationEntry = false;
+    annotationDrawerGeometrySource.clear();
     map.removeLayer(annotationDrawerLayer);
     map.removeInteraction(annotationDrawer);
+  }
+
+  function cancelAnnotation() {
+    map.addInteraction(annotationDrawer);
+    mapState.annotationEntry = false;
+    annotationDrawerGeometrySource.clear();
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
@@ -268,7 +285,6 @@
     <AtlascopeLogo />
   </div>
 
-
   {#if $appState.modals.geolocation}
     <div
       class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
@@ -280,39 +296,56 @@
       />
     </div>
   {/if}
-  
-  {#if mapState.annotationMode }
-  <div
-  class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
->
-  <strong><Fa icon={faDrawPolygon} class="inline mr-2" /> Annotation mode enabled</strong>
-  <p class="text-sm">Annotations are stored to the overlay layer. Click once to begin drawing a box, then click again to finish.</p>
-  <button on:click="{disableAnnotationMode}">Stop annotating</button>
-</div>
+
+  {#if mapState.annotationMode}
+    <div
+      class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
+    >
+      <strong
+        ><Fa icon={faDrawPolygon} class="inline mr-2" /> Annotation mode enabled</strong
+      >
+      <p class="text-sm">
+        Annotations are stored to the overlay layer, <strong
+          >{mapState.layers.overlay.title}</strong
+        >. Click once to begin drawing a box, then click again to finish.
+      </p>
+      <button on:click={disableAnnotationMode}>Stop annotating</button>
+    </div>
   {/if}
 
-  <MapControls
-    bind:mapState
-    on:changeLayer={(d) => {
-      changeLayer(d.detail.layer, d.detail.id);
-    }}
-    on:changeMode={(d) => {
-      changeMode(d.detail.id);
-    }}
-    on:zoomIn={() => {
-      view.animate({ zoom: view.getZoom() + 1, duration: 500 });
-    }}
-    on:zoomOut={() => {
-      view.animate({ zoom: view.getZoom() - 1, duration: 500 });
-    }}
-    on:rotate={() => {
-      view.animate({
-        rotation: view.getRotation() + (2 * Math.PI) / 6,
-        duration: 500,
-      });
-    }}
-    on:enableAnnotationMode={enableAnnotationMode}
-  />
+  {#if mapState.annotationMode && mapState.annotationEntry}
+    <AnnotationEntryForm
+      pos={annotationEntryCoords}
+      featureExtent={annotationExtentCoords}
+      layerID={mapState.layers.overlay.id}
+      on:cancel={cancelAnnotation}
+    />
+  {/if}
+
+  {#if !mapState.annotationMode}
+    <MapControls
+      bind:mapState
+      on:changeLayer={(d) => {
+        changeLayer(d.detail.layer, d.detail.id);
+      }}
+      on:changeMode={(d) => {
+        changeMode(d.detail.id);
+      }}
+      on:zoomIn={() => {
+        view.animate({ zoom: view.getZoom() + 1, duration: 500 });
+      }}
+      on:zoomOut={() => {
+        view.animate({ zoom: view.getZoom() - 1, duration: 500 });
+      }}
+      on:rotate={() => {
+        view.animate({
+          rotation: view.getRotation() + (2 * Math.PI) / 6,
+          duration: 500,
+        });
+      }}
+      on:enableAnnotationMode={enableAnnotationMode}
+    />
+  {/if}
 </section>
 
 <style>
