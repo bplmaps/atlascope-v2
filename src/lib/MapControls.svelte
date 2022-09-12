@@ -13,6 +13,7 @@
     faMinus,
     faRotateRight,
     faBookBookmark,
+    faDrawPolygon,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -53,19 +54,26 @@
   function parseLayerChoices(historicLayers, referenceLayers) {
     let c = [];
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
-    historicLayers.sort((a,b)=>a.properties.year-b.properties.year).forEach((d) =>
-      d.extentVisible > 0.2
-        ? c.push({
-            id: d.properties.id,
-            title: d.properties.year,
-            subtitle: d.properties.publisher,
-            pct: d.extentVisible
-          })
-        : null
-    );
+    historicLayers
+      .sort((a, b) => a.properties.year - b.properties.year)
+      .forEach((d) =>
+        d.extentVisible > 0.2
+          ? c.push({
+              id: d.properties.id,
+              title: d.properties.year,
+              subtitle: d.properties.publisher,
+              pct: d.extentVisible,
+            })
+          : null
+      );
     // add the reference layers
     referenceLayers.forEach((d) =>
-      c.push({ id: d.properties.id, title: d.properties.name, subtitle: "", pct: 1.0 })
+      c.push({
+        id: d.properties.id,
+        title: d.properties.name,
+        subtitle: "",
+        pct: 1.0,
+      })
     );
     return c;
   }
@@ -188,14 +196,23 @@
           <LightIconButton
             label="Bibliographic information"
             icon={faBookBookmark}
-            on:click={() => { $appState.modals.biblio = true;
+            on:click={() => {
+              $appState.modals.biblio = true;
             }}
           />
         </div>
       </div>
     </div>
   {:else if panelShown === "research-controls"}
-    <div class="control-panel">Research tools here</div>
+    <div class="control-panel">
+      <LightIconButton
+        label="Annotate map"
+        icon={faDrawPolygon}
+        on:click={() => {
+          dispatch("enableAnnotationMode");
+        }}
+      />
+    </div>
   {:else if panelShown === "share-controls"}
     <div class="control-panel">
       <div class="mb-2 flex">

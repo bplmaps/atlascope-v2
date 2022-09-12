@@ -16,5 +16,9 @@
        {"properties":
         {"id": "modern-streets", "name": "Modern Streets", "source": {"type": "tilejson", "url": "https://api.maptiler.com/maps/streets/tiles.json?key=1HCKO0pQuPEfNXXzGgSM"}}
         }
-    ]
+    ],
+    "faunaConfiguration": {
+        "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
+        "domain": "db.us.fauna.com"
+    }
 }
