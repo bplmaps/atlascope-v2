@@ -193,20 +193,22 @@
 
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(0,0,0,0.5)";
+      console.log(ctx.canvas.width);
 
       if (mapState.viewMode === "swipe-y") {
-        ctx.rect(0, 0, ctx.canvas.width, dragXY[1] + dragAdjuster);
+        ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster)*2);
       } else if (mapState.viewMode === "swipe-x") {
-        ctx.rect(0, 0, dragXY[0] + dragAdjuster, ctx.canvas.height);
+        ctx.rect(0, 0, (dragXY[0] + dragAdjuster)*2, ctx.canvas.height);
       } else if (mapState.viewMode === "glass") {
         ctx.arc(
+          
           ctx.canvas.width / 2,
           ctx.canvas.height / 2,
           Math.abs(
             Math.floor(
               Math.sqrt(
-                Math.pow(dragXY[0] + dragAdjuster - window.innerWidth / 2, 2) +
-                  Math.pow(dragXY[1] + dragAdjuster - window.innerHeight / 2, 2)
+                Math.pow((dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2, 2) +
+                  Math.pow((dragXY[1] + dragAdjuster - window.innerHeight / 2)*2, 2)
               )
             )
           ),
@@ -244,6 +246,7 @@
         Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
         Math.min(window.innerHeight - 100, Math.max(10, posY - dragAdjuster)),
       ];
+      
     }
     map.render();
   }
