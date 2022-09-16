@@ -8,6 +8,7 @@
   import SearchModal from "./lib/SearchModal.svelte";
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
   import TourListModal from "./lib/TourListModal.svelte";
+  import TourController from "./lib/TourController.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -15,7 +16,7 @@
   let map;
 
   function handleSplashButton(m) {
-    $appState.modals.splash = false;
+    closeAllModals();
 
     if (m.detail.action === "start") {
       map.changeCenterZoom(
@@ -31,9 +32,20 @@
     }
   }
 
+  function closeAllModals() {
+    Object.keys($appState.modals).forEach((key) => {
+      $appState.modals[key] = false;
+    });
+  }
+
+  function startTour(m) {
+    closeAllModals();
+    $appState.tour.id = m.detail.tourId;
+    $appState.tour.active = true;
+  }
+
   function goToCoords(d) {
-    $appState.modals.search = false;
-    $appState.modals.splash = false;
+    closeAllModals();
     map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
@@ -80,6 +92,7 @@
       on:closeSelf={() => {
         $appState.modals.tourList = false;
       }}
+      on:startTour={startTour}
     />
   {:else if $appState.modals.biblio}
     <BibliographicInfoModal
@@ -94,6 +107,10 @@
         $appState.modals.splash = false;
       }}
     />
+  {/if}
+
+  {#if $appState.tour.active}
+    <TourController tourId={$appState.tour.id} />
   {/if}
 </div>
 

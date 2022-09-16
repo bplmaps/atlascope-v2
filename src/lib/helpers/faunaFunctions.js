@@ -34,19 +34,28 @@ export const loadAllTours = async () => {
 
     return new Promise((resolve, reject) => {
 
-        console.log("loading tours")
-
         client.query(
             q.Paginate(q.Match(q.Index('tours-by-published-status'), true)),
         )
             .then((d) => { resolve(d); })
             .catch((err) => {
-                console.error(
-                    'Error: [%s] %s: %s',
-                    err.name,
-                    err.message,
-                    err.errors()[0].description,
-                );
+                console.error(err);
+                reject();
+            })
+    });
+
+}
+
+export const loadSingleTour = async (ref) => {
+
+    return new Promise((resolve, reject) => {
+
+        client.query(
+            q.Get(q.Ref(q.Collection('tours'), ref)),
+        )
+            .then((d) => { resolve(d); })
+            .catch((err) => {
+                console.error(err);
                 reject();
             })
     });

@@ -4,7 +4,7 @@
   import { createEventDispatcher, onMount } from "svelte";
 
   import ModalCloserButton from "./ModalCloserButton.svelte";
-  import { faHiking } from "@fortawesome/free-solid-svg-icons";
+  import { faArrowCircleRight, faHiking } from "@fortawesome/free-solid-svg-icons";
 
   import { loadAllTours } from "./helpers/faunaFunctions.js";
 
@@ -19,6 +19,7 @@
       loadingFlag = false;
     });
   });
+
 </script>
 
 <section id="search-modal">
@@ -55,7 +56,7 @@
           <ul>
       {#each tours as tour}
 
-      <li>{tour[1]}</li>
+      <li class="my-2">{tour[1]} <button on:click="{()=>{dispatch('startTour',{"tourId": tour[0].value.id})}}" class="text-sm border border-gray-500 text-gray-700 px-3 py-1 rounded">Start tour <Fa class="inline" icon="{faArrowCircleRight}" /></button></li>
 
       {/each}
 

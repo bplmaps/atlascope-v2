@@ -334,7 +334,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode}
+  {#if !mapState.annotationMode && !$appState.tour.active}
     <MapControls
       bind:mapState
       on:changeLayer={(d) => {

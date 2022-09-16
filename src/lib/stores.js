@@ -10,5 +10,9 @@ export const appState = writable({
         biblio: false,
         geolocation: false,
         tourList: false
+    },
+    tour: {
+        active: false,
+        id: null
     }
 });
