@@ -137,27 +137,36 @@
             on:selectionMade={handleChangeMode}
           />
         </div>
-        <LightIconButton
-          label=""
-          icon={faPlus}
-          on:click={() => {
-            dispatch("zoomIn");
-          }}
-        />
-        <LightIconButton
-          label=""
-          icon={faMinus}
-          on:click={() => {
-            dispatch("zoomOut");
-          }}
-        />
-        <LightIconButton
-          label=""
-          icon={faRotateRight}
-          on:click={() => {
-            dispatch("rotate");
-          }}
-        />
+
+        <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
+          <button
+            on:click={() => {
+              dispatch("zoomIn");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faPlus} />
+          </button>
+          <button
+            on:click={() => {
+              dispatch("zoomOut");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faMinus} />
+          </button>
+          <button
+            on:click={() => {
+              dispatch("rotate");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faRotateRight} />
+          </button>
+        </div>
 
         <LightIconButton
           label="Search places"

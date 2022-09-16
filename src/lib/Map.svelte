@@ -1,12 +1,13 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
   import Fa from "svelte-fa";
-  import { faDrawPolygon, faHand } from "@fortawesome/free-solid-svg-icons";
+  import { faDrawPolygon, faHand, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import MapControls from "./MapControls.svelte";
   import GeolocationModal from "./GeolocationModal.svelte";
   import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
+  import LightIconButton from "./LightIconButton.svelte";
 
   import "ol/ol.css";
   import { Map, Overlay, View } from "ol";
@@ -76,7 +77,6 @@
       );
     }
 
-    console.log(newLayer)
 
     mapState.layers[layer].id = newLayer.properties.id;
     mapState.layers[layer].title = newLayer.properties.year
@@ -199,7 +199,6 @@
 
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(0,0,0,0.5)";
-      console.log(ctx.canvas.width);
 
       if (mapState.viewMode === "swipe-y") {
         ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster) * 2);
@@ -318,11 +317,11 @@
         ><Fa icon={faDrawPolygon} class="inline mr-2" /> Annotation mode enabled</strong
       >
       <p class="text-sm">
-        Annotations are stored to the overlay layer, <strong
+        Annotations are written to the overlay layer, <strong
           >{mapState.layers.overlay.title}</strong
         >. Click once to begin drawing a box, then click again to finish.
       </p>
-      <button on:click={disableAnnotationMode}>Stop annotating</button>
+      <LightIconButton on:click={disableAnnotationMode} icon="{faStopCircle}" label="Stop annotating" size="sm" />
     </div>
   {/if}
 

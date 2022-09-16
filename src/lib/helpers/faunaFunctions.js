@@ -1,14 +1,14 @@
 import faunadb, { query as q } from "faunadb";
 import instanceVariables from "../../config/instance.json";
 
+const client = new faunadb.Client({
+    secret: instanceVariables.faunaConfiguration.secret,
+    domain: instanceVariables.faunaConfiguration.domain
+})
+
 export const writeAnnotation = async (extent, body, email, layerID) => {
 
     return new Promise((resolve, reject) => {
-
-        const client = new faunadb.Client({
-            secret: instanceVariables.faunaConfiguration.secret,
-            domain: instanceVariables.faunaConfiguration.domain
-        })
 
         client.query(
             q.Create(
@@ -26,8 +26,29 @@ export const writeAnnotation = async (extent, body, email, layerID) => {
                 );
                 reject();
             })
+    });
 
-    })
+}
 
+export const loadAllTours = async () => {
+
+    return new Promise((resolve, reject) => {
+
+        console.log("loading tours")
+
+        client.query(
+            q.Paginate(q.Match(q.Index('tours-by-published-status'), true)),
+        )
+            .then((d) => { resolve(d); })
+            .catch((err) => {
+                console.error(
+                    'Error: [%s] %s: %s',
+                    err.name,
+                    err.message,
+                    err.errors()[0].description,
+                );
+                reject();
+            })
+    });
 
 }

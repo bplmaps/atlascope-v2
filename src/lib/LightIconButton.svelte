@@ -3,6 +3,8 @@
 
     export let label;
     export let icon;
+    export let disabled = false;
+    export let size="lg"
 
     let iconMargin = label === "" ? "mr-0" : "mr-2"
 </script>
@@ -11,10 +13,11 @@
     <button
         on:click
         type="button"
-        class="relative bg-white border border-gray-300 rounded-md shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        disabled="{disabled}"
+        class="relative text-{size} bg-white border border-gray-300 rounded-md bg-white shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none hover:bg-sky-50 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
     >
-        <span class="flex items-center">
-            <span class="mx-1 block text-gray-900 text-lg"
+        <span class="flex items-center cursor-pointer">
+            <span class="mx-1 block text-gray-900"
                 ><Fa {icon} class="inline {iconMargin}" />{label}</span
             >
         </span>
