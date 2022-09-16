@@ -7,7 +7,8 @@
   import Splash from "./lib/Splash.svelte";
   import SearchModal from "./lib/SearchModal.svelte";
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
-  import GeolocationModal from "./lib/GeolocationModal.svelte";
+  import TourListModal from "./lib/TourListModal.svelte";
+  import TourController from "./lib/TourController.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -15,7 +16,7 @@
   let map;
 
   function handleSplashButton(m) {
-    $appState.modals.splash = false;
+    closeAllModals();
 
     if (m.detail.action === "start") {
       map.changeCenterZoom(
@@ -24,15 +25,27 @@
       );
     } else if (m.detail.action === "search") {
       $appState.modals.search = true;
-    } else if (m.detail.action === "find" ) {
+    } else if (m.detail.action === "find") {
       $appState.modals.geolocation = true;
+    } else if (m.detail.action === "tour") {
+      $appState.modals.tourList = true;
     }
-    
+  }
+
+  function closeAllModals() {
+    Object.keys($appState.modals).forEach((key) => {
+      $appState.modals[key] = false;
+    });
+  }
+
+  function startTour(m) {
+    closeAllModals();
+    $appState.tour.id = m.detail.tourId;
+    $appState.tour.active = true;
   }
 
   function goToCoords(d) {
-    $appState.modals.search = false;
-    $appState.modals.splash = false;
+    closeAllModals();
     map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
@@ -45,12 +58,16 @@
       .then((d) => {
         let al = d.features;
         al.sort((a, b) => {
-          return a.properties.year - b.properties.year;
+          return +a.properties.year - b.properties.year;
         });
         allLayers.set(al);
         $appState.layersLoaded = true;
       })
-      .catch();
+      .catch(() => {
+        window.alert(
+          "Unable to load map data. Check your internet connection and try reloading the page."
+        );
+      });
   });
 </script>
 
@@ -70,25 +87,30 @@
         $appState.modals.search = false;
       }}
     />
-  {/if}
-
-
-  {#if $appState.modals.biblio}
+  {:else if $appState.modals.tourList}
+    <TourListModal
+      on:closeSelf={() => {
+        $appState.modals.tourList = false;
+      }}
+      on:startTour={startTour}
+    />
+  {:else if $appState.modals.biblio}
     <BibliographicInfoModal
       on:closeSelf={() => {
         $appState.modals.biblio = false;
       }}
     />
-  {/if}
-
-  {#if $appState.modals.splash}
+  {:else if $appState.modals.splash}
     <Splash
-      {instanceVariables}
       on:splashButton={handleSplashButton}
       on:closeSelf={() => {
         $appState.modals.splash = false;
       }}
     />
+  {/if}
+
+  {#if $appState.tour.active}
+    <TourController tourId={$appState.tour.id} />
   {/if}
 </div>
 

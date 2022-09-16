@@ -1,7 +1,6 @@
 <script>
   import Fa from "svelte-fa";
   import {
-    faDraftingCompass,
     faLayerGroup,
     faMagnifyingGlassArrowRight,
     faExclamationCircle,
@@ -14,6 +13,7 @@
     faRotateRight,
     faBookBookmark,
     faDrawPolygon,
+    faMap,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -31,7 +31,7 @@
   let dispatch = createEventDispatcher();
 
   let controlGroups = [
-    { id: "map-controls", name: "Controls", icon: faDraftingCompass },
+    { id: "map-controls", name: "Controls", icon: faMap },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
     {
       id: "research-controls",
@@ -128,8 +128,10 @@
     </div>
   {/each}
 
-  {#if panelShown === "map-controls"}
-    <div class="control-panel">
+  <div class="bg-white p-4 { panelShown ? "block" : "hidden" }">
+
+    {#if panelShown === "map-controls"}
+      <h2 class="md:hidden text-xl font-bold mb-2">Controls</h2>
       <div class="flex max-w-full flex-wrap">
         <div class="mr-4">
           <ViewModeDropupMenu
@@ -137,27 +139,36 @@
             on:selectionMade={handleChangeMode}
           />
         </div>
-        <LightIconButton
-          label=""
-          icon={faPlus}
-          on:click={() => {
-            dispatch("zoomIn");
-          }}
-        />
-        <LightIconButton
-          label=""
-          icon={faMinus}
-          on:click={() => {
-            dispatch("zoomOut");
-          }}
-        />
-        <LightIconButton
-          label=""
-          icon={faRotateRight}
-          on:click={() => {
-            dispatch("rotate");
-          }}
-        />
+
+        <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
+          <button
+            on:click={() => {
+              dispatch("zoomIn");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faPlus} />
+          </button>
+          <button
+            on:click={() => {
+              dispatch("zoomOut");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faMinus} />
+          </button>
+          <button
+            on:click={() => {
+              dispatch("rotate");
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faRotateRight} />
+          </button>
+        </div>
 
         <LightIconButton
           label="Search places"
@@ -168,9 +179,8 @@
         />
         <LightIconButton label="Find my location" icon={faLocationArrow} />
       </div>
-    </div>
-  {:else if panelShown === "layer-controls"}
-    <div class="control-panel">
+    {:else if panelShown === "layer-controls"}
+    <h2 class="md:hidden text-xl font-bold mb-2">Atlases</h2>
       <div class="flex max-w-full flex-wrap">
         <div class="mr-4">
           <LayerChooserDropupMenu
@@ -182,7 +192,7 @@
             }}
           />
         </div>
-        <div>
+        <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
             chosen={mapState.layers.overlay.title}
@@ -192,7 +202,7 @@
             }}
           />
         </div>
-        <div class="ml-4">
+        <div>
           <LightIconButton
             label="Bibliographic information"
             icon={faBookBookmark}
@@ -202,9 +212,8 @@
           />
         </div>
       </div>
-    </div>
-  {:else if panelShown === "research-controls"}
-    <div class="control-panel">
+    {:else if panelShown === "research-controls"}
+    <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
       <LightIconButton
         label="Annotate map"
         icon={faDrawPolygon}
@@ -212,36 +221,37 @@
           dispatch("enableAnnotationMode");
         }}
       />
-    </div>
-  {:else if panelShown === "share-controls"}
-    <div class="control-panel">
-      <div class="mb-2 flex">
-        <label for="share-app-url" class="text-sm text-right pr-3"
-          >Share the Atlascope app</label
-        >
-        <input
-          type="text"
-          id="share-app-url"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          value="https://atlascope.leventhalmap.org"
-        />
-        <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
-      </div>
+    {:else if panelShown === "share-controls"}
+    <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
+      <div class="control-panel">
+        <div class="mb-2 flex">
+          <label for="share-app-url" class="text-sm text-right pr-3"
+            >Share the Atlascope app</label
+          >
+          <input
+            type="text"
+            id="share-app-url"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            value="https://atlascope.leventhalmap.org"
+          />
+          <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+        </div>
 
-      <div class="flex">
-        <label for="share-app-url" class="text-sm text-right pr-3"
-          >Share this specific view</label
-        >
-        <input
-          type="text"
-          id="share-app-url"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          value="https://atlascope.leventhalmap.org/#/view/..."
-        />
-        <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+        <div class="flex">
+          <label for="share-app-url" class="text-sm text-right pr-3"
+            >Share this specific view</label
+          >
+          <input
+            type="text"
+            id="share-app-url"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            value="https://atlascope.leventhalmap.org/#/share/map/{mapState.layers.base.id}"
+          />
+          <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+        </div>
       </div>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </section>
 
 <style>
@@ -270,8 +280,4 @@
     background-color: rgba(255, 255, 255, 0.97);
   }
 
-  .control-panel {
-    padding: 30px;
-    background-color: rgba(255, 255, 255, 0.97);
-  }
 </style>

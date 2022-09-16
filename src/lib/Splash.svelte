@@ -17,9 +17,9 @@
 
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
+  import instanceVariables from "../config/instance.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
-
-  export let instanceVariables;
+  import LightIconButton from "./LightIconButton.svelte";
 
   function splashButton(b) {
     $appState.gateway = false;
@@ -86,16 +86,18 @@
     {/if}
 
     <div class="my-5">
+      <div class="flex justify-center max-w-full flex-wrap">
       {#each buttons as button}
-        <button
-          class="mr-2 mb-2 drop-shadow hover:ring-slate-300 transition-all"
-          class:bg-blue-100={!$appState.layersLoaded}
-          disabled={!$appState.layersLoaded}
+        <LightIconButton
+          label={button.text}
+          icon={button.icon}
           on:click={() => {
             splashButton(button.id);
-          }}><Fa icon={button.icon} class="inline mr-2" />{button.text}</button
-        >
+          }}
+          disabled={!$appState.layersLoaded}
+        />
       {/each}
+    </div>
     </div>
 
     <div>
@@ -124,7 +126,7 @@
 
 <style>
   section#splash {
-    background-color: rgba(255, 255, 255, 0.93);
+    background-color: rgba(255, 255, 255, 0.95);
     width: 100%;
     height: 100%;
     overflow: hidden;
