@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
-    import { writeAnnotation } from "./helpers/writeAnnotation";
+    import { writeAnnotation } from "./helpers/faunaFunctions";
 
     export let pos = [0, 0];
     export let featureExtent = [0, 0, 0, 0];

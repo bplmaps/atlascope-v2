@@ -76,6 +76,8 @@
       );
     }
 
+    console.log(newLayer)
+
     mapState.layers[layer].id = newLayer.properties.id;
     mapState.layers[layer].title = newLayer.properties.year
       ? newLayer.properties.year
@@ -119,7 +121,11 @@
     allLayers.update((a) => {
       return a.map((layer) => {
         let l = layer;
-        l.extentVisible = intersector(l.geometry, extent);
+        if (l.properties.globalExtent) {
+          l.extentVisible = 1.0;
+        } else {
+          l.extentVisible = intersector(l.geometry, extent);
+        }
         return l;
       });
     });
@@ -170,7 +176,7 @@
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
-    changeLayer("base", "modern-streets");
+    changeLayer("base", "maptiler-streets");
     changeLayer(
       "overlay",
       instanceVariables.defaultStartLocation.overlayLayerId
@@ -196,19 +202,24 @@
       console.log(ctx.canvas.width);
 
       if (mapState.viewMode === "swipe-y") {
-        ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster)*2);
+        ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster) * 2);
       } else if (mapState.viewMode === "swipe-x") {
-        ctx.rect(0, 0, (dragXY[0] + dragAdjuster)*2, ctx.canvas.height);
+        ctx.rect(0, 0, (dragXY[0] + dragAdjuster) * 2, ctx.canvas.height);
       } else if (mapState.viewMode === "glass") {
         ctx.arc(
-          
           ctx.canvas.width / 2,
           ctx.canvas.height / 2,
           Math.abs(
             Math.floor(
               Math.sqrt(
-                Math.pow((dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2, 2) +
-                  Math.pow((dragXY[1] + dragAdjuster - window.innerHeight / 2)*2, 2)
+                Math.pow(
+                  (dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2,
+                  2
+                ) +
+                  Math.pow(
+                    (dragXY[1] + dragAdjuster - window.innerHeight / 2) * 2,
+                    2
+                  )
               )
             )
           ),
@@ -246,7 +257,6 @@
         Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
         Math.min(window.innerHeight - 100, Math.max(10, posY - dragAdjuster)),
       ];
-      
     }
     map.render();
   }

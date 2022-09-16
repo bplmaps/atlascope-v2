@@ -17,9 +17,8 @@
 
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
+  import instanceVariables from "../config/instance.json"
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
-
-  export let instanceVariables;
 
   function splashButton(b) {
     $appState.gateway = false;

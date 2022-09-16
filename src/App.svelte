@@ -7,7 +7,7 @@
   import Splash from "./lib/Splash.svelte";
   import SearchModal from "./lib/SearchModal.svelte";
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
-  import GeolocationModal from "./lib/GeolocationModal.svelte";
+  import TourListModal from "./lib/TourListModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -24,10 +24,11 @@
       );
     } else if (m.detail.action === "search") {
       $appState.modals.search = true;
-    } else if (m.detail.action === "find" ) {
+    } else if (m.detail.action === "find") {
       $appState.modals.geolocation = true;
+    } else if (m.detail.action === "tour") {
+      $appState.modals.tourList = true;
     }
-    
   }
 
   function goToCoords(d) {
@@ -45,12 +46,16 @@
       .then((d) => {
         let al = d.features;
         al.sort((a, b) => {
-          return a.properties.year - b.properties.year;
+          return +a.properties.year - b.properties.year;
         });
         allLayers.set(al);
         $appState.layersLoaded = true;
       })
-      .catch();
+      .catch(() => {
+        window.alert(
+          "Unable to load map data. Check your internet connection and try reloading the page."
+        );
+      });
   });
 </script>
 
@@ -70,20 +75,20 @@
         $appState.modals.search = false;
       }}
     />
-  {/if}
-
-
-  {#if $appState.modals.biblio}
+  {:else if $appState.modals.tourList}
+    <TourListModal
+      on:closeSelf={() => {
+        $appState.modals.tourList = false;
+      }}
+    />
+  {:else if $appState.modals.biblio}
     <BibliographicInfoModal
       on:closeSelf={() => {
         $appState.modals.biblio = false;
       }}
     />
-  {/if}
-
-  {#if $appState.modals.splash}
+  {:else if $appState.modals.splash}
     <Splash
-      {instanceVariables}
       on:splashButton={handleSplashButton}
       on:closeSelf={() => {
         $appState.modals.splash = false;

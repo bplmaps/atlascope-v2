@@ -8,6 +8,7 @@ export const appState = writable({
         splash: true,
         search: false,
         biblio: false,
-        geolocation: false
+        geolocation: false,
+        tourList: false
     }
 });
