@@ -23,12 +23,18 @@
   import Draw, { createBox } from "ol/interaction/Draw";
   import VectorSource from "ol/source/Vector";
   import VectorLayer from "ol/layer/Vector";
+  import Feature from 'ol/Feature';
+  import {fromExtent} from 'ol/geom/Polygon';
+  import {Fill, Stroke, Style} from 'ol/style';
+
+
 
   import { intersector } from "./helpers/intersector";
+  import { getAnnotationsWithinExtent, getSingleAnnotation } from "./helpers/faunaFunctions";
 
-  import { allLayers } from "./stores.js";
-  import { appState } from "./stores.js";
+  import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
+
 
   let map;
 
@@ -48,23 +54,42 @@
     viewMode: "glass",
     annotationMode: false,
     annotationEntry: false,
+    layerChangePopup: false,
     center: instanceVariables.defaultStartLocation.center,
     zoom: instanceVariables.defaultStartLocation.zoom,
     extent: null,
   };
-
 
   let view = new View({
     center: fromLonLat(instanceVariables.defaultStartLocation.center),
     zoom: instanceVariables.defaultStartLocation.zoom,
   });
 
-  view.on('change', ()=>{ mapState.center = toLonLat(view.getCenter()).map(d=>d.toFixed(5)); mapState.zoom = view.getZoom().toFixed(2); mapState.extent = transformExtent(view.calculateExtent(), 'EPSG:3857', 'EPSG:4326'); })
+  view.on("change", () => {
+    mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
+    mapState.zoom = view.getZoom().toFixed(2);
+    mapState.extent = transformExtent(
+      view.calculateExtent(),
+      "EPSG:3857",
+      "EPSG:4326"
+    );
+  });
 
   let annotationDrawer;
   let annotationDrawerGeometrySource = new VectorSource({ wrapX: false });
   let annotationDrawerLayer = new VectorLayer({
-    source: annotationDrawerGeometrySource,
+    source: annotationDrawerGeometrySource
+  });
+
+  let loadedAnnotationsGeometrySource = new VectorSource({ wrapX: false });
+  let loadedAnnotationsLayer = new VectorLayer({
+    source: loadedAnnotationsGeometrySource,
+    style: new Style({
+    stroke: new Stroke({
+      color: 'rgba(255, 255, 255, 0.9)',
+      width: 2,
+    })
+  })
   });
 
   let annotationEntryCoords = [0, 0];
@@ -72,7 +97,6 @@
 
   // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
   export const changeMapView = (options) => {
-    console.log(options);
     if (options.viewMode) {
       changeMode(options.viewMode);
     }
@@ -159,16 +183,18 @@
       });
     });
 
-    // // If our currently selected layer is less than 45% visible in viewport, let's choose another layer instead
-    // if (
-    //   $allLayers.find((l) => l.properties.id === mapState.layers.overlay.id)
-    //     .extentVisible < 0.45
-    // ) {
-    //   let bestNewLayer = $allLayers.sort((a, b) => {
-    //     return b.extentVisible - a.extentVisible;
-    //   })[0].properties.id;
-    //   changeLayer("overlay", bestNewLayer);
-    // }
+    // If our currently selected layer is less than 45% visible in viewport, let's choose another layer instead
+    if (getLayerDataById(mapState.layers.overlay.id).extentVisible < 0.45) {
+      let bestNewLayer = $allLayers.sort((a, b) => {
+        return b.extentVisible - a.extentVisible;
+      })[0].properties.identifier;
+
+      if(bestNewLayer != mapState.layers.overlay.id) {
+      changeLayer("overlay", bestNewLayer);
+      mapState.layerChangePopup = true;
+      setTimeout(()=>{ mapState.layerChangePopup = false; }, 5000);
+      }
+    }
   }
 
   function enableAnnotationMode() {
@@ -203,6 +229,23 @@
     annotationDrawerGeometrySource.clear();
   }
 
+  function loadAnnotations() {
+
+    getAnnotationsWithinExtent(view.calculateExtent())
+      .then((d)=>{
+        d.data.forEach((x)=>{
+          getSingleAnnotation(x.value.id)
+            .then((annotation)=>{
+              console.log(annotation);
+              let feature = new Feature(fromExtent(annotation.data.extent));
+              console.log(feature);
+              loadedAnnotationsGeometrySource.addFeature(feature);
+            })
+        })
+      })
+
+  }
+
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
     changeLayer("base", "maptiler-streets");
@@ -215,7 +258,7 @@
       target: "map-div",
       controls: [],
       view: view,
-      layers: [mapState.layers.base.olLayer, mapState.layers.overlay.olLayer],
+      layers: [mapState.layers.base.olLayer, mapState.layers.overlay.olLayer, loadedAnnotationsLayer],
     });
 
     // This is the function that executes the rendering of the spyglass, swipe, or opacity feature for the overlay layer
@@ -283,6 +326,7 @@
 
   function manipulateDrag(e) {
     if (draggingFlag) {
+      e.preventDefault();
       let posX = e.clientX || e.pageX;
       let posY = e.clientY || e.pageY;
 
@@ -297,8 +341,8 @@
 
 <section
   id="map"
-  on:mousemove|preventDefault={manipulateDrag}
-  on:touchmove|preventDefault={manipulateDrag}
+  on:mousemove={manipulateDrag}
+  on:touchmove={manipulateDrag}
   on:mouseup={() => {
     draggingFlag = false;
   }}
@@ -399,6 +443,7 @@
         });
       }}
       on:enableAnnotationMode={enableAnnotationMode}
+      on:loadAnnotations={loadAnnotations}
     />
   {/if}
 </section>
