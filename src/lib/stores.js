@@ -9,7 +9,8 @@ export const appState = writable({
         search: false,
         biblio: false,
         geolocation: false,
-        tourList: false
+        tourList: false,
+        about: false
     },
     tour: {
         active: false,

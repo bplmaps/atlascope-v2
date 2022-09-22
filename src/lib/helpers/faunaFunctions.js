@@ -61,3 +61,51 @@ export const loadSingleTour = async (ref) => {
     });
 
 }
+
+export const getAnnotationsWithinExtent = async (extent) => {
+
+    return new Promise((resolve, reject) => {
+        client.query(
+            q.Paginate(
+                q.Intersection(
+                    q.Join(
+                        q.Range(q.Match(q.Index("annotations-centroids-by-y")), [extent[1]], [extent[3]]),
+                        q.Lambda(
+                            ["value", "ref"],
+                            q.Match(q.Index("annotations-ref-by-ref"), q.Var("ref"))
+                        )
+                    ),
+                    q.Join(
+                        q.Range(q.Match(q.Index("annotations-centroids-by-x")), [extent[0]], [extent[2]]),
+                        q.Lambda(
+                            ["value", "ref"],
+                            q.Match(q.Index("annotations-ref-by-ref"), q.Var("ref"))
+                        )
+                    )
+                )
+            ))
+            .then((d) => { resolve(d); })
+            .catch((err) => {
+                console.error(err);
+                reject();
+            });
+    });
+
+}
+
+export const getSingleAnnotation = async(ref) => {
+
+    return new Promise((resolve, reject) => {
+
+        client.query(
+            q.Get(q.Ref(q.Collection('user-annotations'), ref)),
+        )
+            .then((d) => { resolve(d); })
+            .catch((err) => {
+                console.error(err);
+                reject();
+            })
+    });
+
+
+}

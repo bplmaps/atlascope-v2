@@ -14,6 +14,8 @@
     faBookBookmark,
     faDrawPolygon,
     faMap,
+    faMapLocationDot,
+    faMapPin,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -115,6 +117,18 @@
       </p>
     </div>
   {/if}
+
+  {#if mapState.layerChangePopup }
+    <div
+      class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
+    >
+      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You moved off the edge of the previous atlas.
+      <p class="font-light text-sm">
+        We automatically pulled up a new layer, <strong>{ mapState.layers.overlay.properties.fallbackTitle ? mapState.layers.overlay.properties.fallbackTitle : mapState.layers.overlay.properties.year } { mapState.layers.overlay.properties.fallbackSubtitle ? mapState.layers.overlay.properties.fallbackSubtitle : mapState.layers.overlay.properties.publisherShort }</strong>
+      </p>
+    </div>
+  {/if}
+
 
   {#each controlGroups as cg}
     <div
@@ -239,6 +253,13 @@
           dispatch("enableAnnotationMode");
         }}
       />
+      <LightIconButton
+      label="Load annotations"
+      icon={faMapPin}
+      on:click={() => {
+        dispatch("loadAnnotations");
+      }}
+    />
       <LightIconButton
       label="Search more maps here"
       icon={faMagnifyingGlassArrowRight}
