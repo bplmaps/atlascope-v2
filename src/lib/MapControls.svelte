@@ -56,22 +56,30 @@
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
     historicLayers
       .sort((a, b) => a.properties.year - b.properties.year)
-      .forEach((d) =>
-        d.extentVisible > 0.2
-          ? c.push({
-              id: d.properties.id,
-              title: d.properties.year,
-              subtitle: d.properties.publisher,
-              pct: d.extentVisible,
-            })
-          : null
-      );
+      .forEach((d) => {
+        if (d.extentVisible > 0.2) {
+          c.push({
+            id: d.properties.identifier,
+            title: d.properties.fallbackTitle
+              ? d.properties.fallbackTitle
+              : d.properties.year,
+            subtitle: d.properties.fallbackSubtitle
+              ? d.properties.fallbackSubtitle
+              : d.properties.publisherShort,
+            pct: d.extentVisible,
+          });
+        }
+      });
     // add the reference layers
     referenceLayers.forEach((d) =>
       c.push({
-        id: d.properties.id,
-        title: d.properties.name,
-        subtitle: "",
+        id: d.properties.identifier,
+        title: d.properties.fallbackTitle
+          ? d.properties.fallbackTitle
+          : d.properties.year,
+        subtitle: d.properties.fallbackSubtitle
+          ? d.properties.fallbackSubtitle
+          : d.properties.publisherShort,
         pct: 1.0,
       })
     );
@@ -120,7 +128,7 @@
       {#if cg.id === "layer-controls"}
         <span
           class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
-          >{$allLayers.filter((layer) => layer.extentVisible > 0.1)
+          >{$allLayers.filter((layer) => layer.extentVisible > 0.2)
             .length}</span
         >
       {/if}
@@ -128,8 +136,7 @@
     </div>
   {/each}
 
-  <div class="bg-white p-4 { panelShown ? "block" : "hidden" }">
-
+  <div class="bg-white p-4 {panelShown ? 'block' : 'hidden'}">
     {#if panelShown === "map-controls"}
       <h2 class="md:hidden text-xl font-bold mb-2">Controls</h2>
       <div class="flex max-w-full flex-wrap">
@@ -177,15 +184,23 @@
             $appState.modals.search = true;
           }}
         />
-        <LightIconButton label="Find my location" icon={faLocationArrow} />
+        <LightIconButton
+          label="Find my location"
+          icon={faLocationArrow}
+          on:click={() => {
+            $appState.modals.geolocation = true;
+          }}
+        />
       </div>
     {:else if panelShown === "layer-controls"}
-    <h2 class="md:hidden text-xl font-bold mb-2">Atlases</h2>
+      <h2 class="md:hidden text-xl font-bold mb-2">Atlases</h2>
       <div class="flex max-w-full flex-wrap">
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={mapState.layers.base.title}
+            chosen={mapState.layers.base.properties.fallbackTitle
+              ? mapState.layers.base.properties.fallbackTitle
+              : mapState.layers.base.properties.year}
             label="Base"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "base");
@@ -195,7 +210,9 @@
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={mapState.layers.overlay.title}
+            chosen={mapState.layers.overlay.properties.fallbackTitle
+              ? mapState.layers.overlay.properties.fallbackTitle
+              : mapState.layers.overlay.properties.year}
             label="Overlay"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "overlay");
@@ -213,16 +230,34 @@
         </div>
       </div>
     {:else if panelShown === "research-controls"}
-    <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
-      <LightIconButton
+      <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
+      <div class="flex flex-wrap">
+        <LightIconButton
         label="Annotate map"
         icon={faDrawPolygon}
         on:click={() => {
           dispatch("enableAnnotationMode");
         }}
       />
+      <LightIconButton
+      label="Search more maps here"
+      icon={faMagnifyingGlassArrowRight}
+      on:click={() => {
+        window.open(`https://collections.leventhalmap.org/search?q=&utf8=✓&view=split&bbox=${mapState.extent.join('%20')}`)
+      }}
+      />
+      <LightIconButton
+      label="Search Digital Commonwealth here"
+      icon={faMagnifyingGlassArrowRight}
+      on:click={() => {
+        window.open(`https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery`)
+      }}
+      />
+      </div>
+
+
     {:else if panelShown === "share-controls"}
-    <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
+      <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
       <div class="control-panel">
         <div class="mb-2 flex">
           <label for="share-app-url" class="text-sm text-right pr-3"
@@ -245,7 +280,8 @@
             type="text"
             id="share-app-url"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            value="https://atlascope.leventhalmap.org/#/share/map/{mapState.layers.base.id}"
+            value="https://atlascope.leventhalmap.org/#/share/$mode:{mapState.viewMode}$center:{mapState.center}:$zoom{mapState.zoom}:$base:{mapState
+              .layers.base.id}$overlay:{mapState.layers.overlay.id}"
           />
           <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
         </div>
@@ -279,5 +315,4 @@
   .control-tab-active {
     background-color: rgba(255, 255, 255, 0.97);
   }
-
 </style>

@@ -1,7 +1,12 @@
 <script>
-  import { createEventDispatcher, onMount } from "svelte";
+  import { onMount } from "svelte";
+
   import Fa from "svelte-fa";
-  import { faDrawPolygon, faHand, faStopCircle } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faDrawPolygon,
+    faHand,
+    faStopCircle,
+  } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import MapControls from "./MapControls.svelte";
@@ -10,46 +15,51 @@
   import LightIconButton from "./LightIconButton.svelte";
 
   import "ol/ol.css";
-  import { Map, Overlay, View } from "ol";
+  import { Map, View } from "ol";
   import TileLayer from "ol/layer/Tile";
   import XYZ from "ol/source/XYZ";
   import TileJSON from "ol/source/TileJSON";
-  import { fromLonLat } from "ol/proj";
+  import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
   import Draw, { createBox } from "ol/interaction/Draw";
+  import VectorSource from "ol/source/Vector";
+  import VectorLayer from "ol/layer/Vector";
 
   import { intersector } from "./helpers/intersector";
-
-  const dispatcher = createEventDispatcher();
 
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
-  import VectorSource from "ol/source/Vector";
-  import VectorLayer from "ol/layer/Vector";
 
   let map;
-  let mapState = {
+
+  export let mapState = {
     layers: {
       base: {
-        id: "",
-        title: "",
+        id: null,
+        properties: null,
         olLayer: new TileLayer(),
       },
       overlay: {
-        id: "",
-        title: "",
+        id: null,
+        properties: null,
         olLayer: new TileLayer(),
       },
     },
     viewMode: "glass",
     annotationMode: false,
     annotationEntry: false,
-  };
-
-  let view = new View({
     center: instanceVariables.defaultStartLocation.center,
     zoom: instanceVariables.defaultStartLocation.zoom,
+    extent: null,
+  };
+
+
+  let view = new View({
+    center: fromLonLat(instanceVariables.defaultStartLocation.center),
+    zoom: instanceVariables.defaultStartLocation.zoom,
   });
+
+  view.on('change', ()=>{ mapState.center = toLonLat(view.getCenter()).map(d=>d.toFixed(5)); mapState.zoom = view.getZoom().toFixed(2); mapState.extent = transformExtent(view.calculateExtent(), 'EPSG:3857', 'EPSG:4326'); })
 
   let annotationDrawer;
   let annotationDrawerGeometrySource = new VectorSource({ wrapX: false });
@@ -60,57 +70,76 @@
   let annotationEntryCoords = [0, 0];
   let annotationExtentCoords;
 
-  export const changeCenterZoom = (center, zoom) => {
-    map.getView().setCenter(center);
-    map.getView().setZoom(zoom);
+  // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
+  export const changeMapView = (options) => {
+    console.log(options);
+    if (options.viewMode) {
+      changeMode(options.viewMode);
+    }
+
+    if (options.overlay) {
+      changeLayer("overlay", options.overlay);
+    }
+
+    if (options.base) {
+      changeLayer("base", options.base);
+    }
+
+    if (options.center || options.zoom) {
+      let m = {};
+      if (options.center) {
+        m.center = fromLonLat(options.center);
+      }
+      if (options.zoom) {
+        m.zoom = options.zoom;
+      }
+
+      if (!options.duration) {
+        m.duration = 900;
+      }
+
+      view.animate(m);
+    }
+  };
+
+  // function for changing the view mode
+  const changeMode = (vm) => {
+    mapState.viewMode = vm;
+    map.render();
+  };
+
+  const getLayerDataById = (layerId) => {
+    let p = $allLayers.find((d) => d.properties.identifier === layerId);
+    if (!p) {
+      p = instanceVariables.referenceLayers.find(
+        (d) => d.properties.identifier === layerId
+      );
+    }
+    return p;
   };
 
   // function for changing the layer, we export it so that the outer app can also access this function
   export const changeLayer = (layer, id) => {
-    let newLayer;
-    let possibleHistoricLayer = $allLayers.find((l) => l.properties.id === id);
-    if (possibleHistoricLayer) {
-      newLayer = possibleHistoricLayer;
-    } else {
-      newLayer = instanceVariables.referenceLayers.find(
-        (l) => l.properties.id === id
-      );
-    }
+    let newLayer = getLayerDataById(id);
 
-
-    mapState.layers[layer].id = newLayer.properties.id;
-    mapState.layers[layer].title = newLayer.properties.year
-      ? newLayer.properties.year
-      : newLayer.properties.name;
-    if (
-      newLayer.properties.source &&
-      newLayer.properties.source.type === "tilejson"
-    ) {
+    if (newLayer.properties.source.type === "tilejson") {
       mapState.layers[layer].olLayer.setSource(
         new TileJSON({
           url: newLayer.properties.source.url,
           crossOrigin: "anonymous",
         })
       );
-    } else {
+    } else if (newLayer.properties.source.type === "xyz") {
       mapState.layers[layer].olLayer.setSource(
-        new TileJSON({
-          url: `https://s3.us-east-2.wasabisys.com/urbanatlases/${newLayer.properties.id}/tileset.json`,
+        new XYZ({
+          url: newLayer.properties.source.url,
           crossOrigin: "anonymous",
         })
       );
     }
-  };
 
-  // function for changing the view mode
-  export const changeMode = (id) => {
-    mapState.viewMode = id;
-    map.render();
-  };
-
-  // function for jumping to a point
-  export const goToCoords = (lon, lat) => {
-    view.setCenter(fromLonLat([lon, lat]));
+    mapState.layers[layer].id = newLayer.properties.identifier;
+    mapState.layers[layer].properties = newLayer.properties;
   };
 
   // This function updates the `allLayers` store every time the map is moved, to figure out how many layers are available in the new viewport
@@ -130,16 +159,16 @@
       });
     });
 
-    // If our currently selected layer is less than 45% visible in viewport, let's choose another layer instead
-    if (
-      $allLayers.find((l) => l.properties.id === mapState.layers.overlay.id)
-        .extentVisible < 0.45
-    ) {
-      let bestNewLayer = $allLayers.sort((a, b) => {
-        return b.extentVisible - a.extentVisible;
-      })[0].properties.id;
-      changeLayer("overlay", bestNewLayer);
-    }
+    // // If our currently selected layer is less than 45% visible in viewport, let's choose another layer instead
+    // if (
+    //   $allLayers.find((l) => l.properties.id === mapState.layers.overlay.id)
+    //     .extentVisible < 0.45
+    // ) {
+    //   let bestNewLayer = $allLayers.sort((a, b) => {
+    //     return b.extentVisible - a.extentVisible;
+    //   })[0].properties.id;
+    //   changeLayer("overlay", bestNewLayer);
+    // }
   }
 
   function enableAnnotationMode() {
@@ -192,46 +221,51 @@
     // This is the function that executes the rendering of the spyglass, swipe, or opacity feature for the overlay layer
     // It's bound to the `prerender` event on `overlayLayer`
     mapState.layers.overlay.olLayer.on("prerender", function (event) {
-      const ctx = event.context;
-
-      ctx.save();
-      ctx.beginPath();
-
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "rgba(0,0,0,0.5)";
-
-      if (mapState.viewMode === "swipe-y") {
-        ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster) * 2);
-      } else if (mapState.viewMode === "swipe-x") {
-        ctx.rect(0, 0, (dragXY[0] + dragAdjuster) * 2, ctx.canvas.height);
-      } else if (mapState.viewMode === "glass") {
-        ctx.arc(
-          ctx.canvas.width / 2,
-          ctx.canvas.height / 2,
-          Math.abs(
-            Math.floor(
-              Math.sqrt(
-                Math.pow(
-                  (dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2,
-                  2
-                ) +
-                  Math.pow(
-                    (dragXY[1] + dragAdjuster - window.innerHeight / 2) * 2,
-                    2
-                  )
-              )
-            )
-          ),
-          0,
-          2 * Math.PI
+      if (mapState.viewMode === "opacity") {
+        mapState.layers.overlay.olLayer.setOpacity(
+          1 - (dragXY[1] + dragAdjuster) / window.innerHeight
         );
+      } else {
+        mapState.layers.overlay.olLayer.setOpacity(1);
+        const ctx = event.context;
+
+        ctx.save();
+        ctx.beginPath();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(0,0,0,0.5)";
+
+        if (mapState.viewMode === "swipe-y") {
+          ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster) * 2);
+        } else if (mapState.viewMode === "swipe-x") {
+          ctx.rect(0, 0, (dragXY[0] + dragAdjuster) * 2, ctx.canvas.height);
+        } else if (mapState.viewMode === "glass") {
+          ctx.arc(
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2,
+            Math.abs(
+              Math.floor(
+                Math.sqrt(
+                  Math.pow(
+                    (dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2,
+                    2
+                  ) +
+                    Math.pow(
+                      (dragXY[1] + dragAdjuster - window.innerHeight / 2) * 2,
+                      2
+                    )
+                )
+              )
+            ),
+            0,
+            2 * Math.PI
+          );
+        } else ctx.fillStyle = "rgba(10,10,10,0.85)";
+        ctx.fill();
+
+        ctx.stroke();
+        ctx.clip();
       }
-
-      ctx.fillStyle = "rgba(10,10,10,0.85)";
-      ctx.fill();
-
-      ctx.stroke();
-      ctx.clip();
     });
 
     // after rendering the layer, restore the canvas context
@@ -254,7 +288,7 @@
 
       dragXY = [
         Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
-        Math.min(window.innerHeight - 100, Math.max(10, posY - dragAdjuster)),
+        Math.min(window.innerHeight - 150, Math.max(10, posY - dragAdjuster)),
       ];
     }
     map.render();
@@ -263,8 +297,8 @@
 
 <section
   id="map"
-  on:mousemove={manipulateDrag}
-  on:touchmove={manipulateDrag}
+  on:mousemove|preventDefault={manipulateDrag}
+  on:touchmove|preventDefault={manipulateDrag}
   on:mouseup={() => {
     draggingFlag = false;
   }}
@@ -290,6 +324,7 @@
 
   <div
     on:click={() => {
+      $appState.tour.active = false;
       $appState.modals.splash = true;
     }}
     class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3"
@@ -303,7 +338,10 @@
     >
       <GeolocationModal
         on:goToCoords={(e) => {
-          goToCoords(e.detail.lon, e.detail.lat);
+          changeMapView({
+            center: [e.detail.lon, e.detail.lat],
+            duration: 300,
+          });
         }}
       />
     </div>
@@ -321,7 +359,12 @@
           >{mapState.layers.overlay.title}</strong
         >. Click once to begin drawing a box, then click again to finish.
       </p>
-      <LightIconButton on:click={disableAnnotationMode} icon="{faStopCircle}" label="Stop annotating" size="sm" />
+      <LightIconButton
+        on:click={disableAnnotationMode}
+        icon={faStopCircle}
+        label="Stop annotating"
+        size="sm"
+      />
     </div>
   {/if}
 
@@ -336,7 +379,7 @@
 
   {#if !mapState.annotationMode && !$appState.tour.active}
     <MapControls
-      bind:mapState
+      {mapState}
       on:changeLayer={(d) => {
         changeLayer(d.detail.layer, d.detail.id);
       }}

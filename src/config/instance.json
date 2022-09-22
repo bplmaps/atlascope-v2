@@ -13,20 +13,19 @@
     "defaultStartLocation": {
         "name": "BPL",
         "center": [
-            -7912399.2865,
-            5213434.3916
+            -71.07733477136398,
+            42.34962571323688
         ],
         "zoom": 18,
-        "overlayLayerId": "39999059011864"
+        "overlayLayerId": "ark:/76611/al7rtfm98"
     },
-    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/volume-extents-schema-v2.geojson",
+    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.geojson",
     "referenceLayers": [
         {
             "properties": {
                 "globalExtent": true,
-                "id": "maptiler-streets",
-                "name": "Modern Streets",
-                "fallbackSubtitle": "OSM",
+                "identifier": "maptiler-streets",
+                "fallbackSubtitle": "Modern Streets",
                 "year": 2022,
                 "bibliographicEntry": "Modern street map data, [© MapTiler](https://www.maptiler.com/copyright/) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)",
                 "source": {
@@ -38,14 +37,13 @@
         {
             "properties": {
                 "globalExtent": true,
-                "id": "massgis-2022-orthos",
-                "name": "Modern Aerial",
-                "fallbackSubtitle": "MassGIS",
+                "identifier": "massgis-2021-orthos",
+                "fallbackSubtitle": "Aerial Imagery",
                 "year": 2021,
                 "bibliographicEntry": "Aerial imagery of Massachusetts from 2021, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery)",
                 "source": {
-                    "type": "tilejson",
-                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{x}/{y}"
+                    "type": "xyz",
+                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
                 }
             }
         }

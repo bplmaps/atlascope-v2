@@ -13,16 +13,17 @@
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
 
-  let map;
+  let changeMapView;
+  let mapState;
 
   function handleSplashButton(m) {
     closeAllModals();
 
     if (m.detail.action === "start") {
-      map.changeCenterZoom(
-        instanceVariables.defaultStartLocation.center,
-        instanceVariables.defaultStartLocation.zoom
-      );
+      changeMapView({
+        center: instanceVariables.defaultStartLocation.center,
+        zoom: instanceVariables.defaultStartLocation.zoom,
+      });
     } else if (m.detail.action === "search") {
       $appState.modals.search = true;
     } else if (m.detail.action === "find") {
@@ -36,17 +37,13 @@
     Object.keys($appState.modals).forEach((key) => {
       $appState.modals[key] = false;
     });
+    $appState.tour.active = false;
   }
 
   function startTour(m) {
     closeAllModals();
     $appState.tour.id = m.detail.tourId;
     $appState.tour.active = true;
-  }
-
-  function goToCoords(d) {
-    closeAllModals();
-    map.goToCoords(d.detail.lon, d.detail.lat);
   }
 
   // When the app is mounted, first thing we need to do is load the footprints file
@@ -77,12 +74,15 @@
 
 <div id="wraps-all">
   {#if $appState.layersLoaded}
-    <Map bind:this={map} />
+    <Map bind:changeMapView bind:mapState />
   {/if}
 
   {#if $appState.modals.search}
     <SearchModal
-      on:goToCoords={goToCoords}
+      on:goToCoords={(d) => {
+        closeAllModals();
+        changeMapView({ center: [d.detail.lon, d.detail.lat], zoom: 19 });
+      }}
       on:closeSelf={() => {
         $appState.modals.search = false;
       }}
@@ -99,6 +99,8 @@
       on:closeSelf={() => {
         $appState.modals.biblio = false;
       }}
+      base={mapState.layers.base.properties}
+      overlay={mapState.layers.overlay.properties}
     />
   {:else if $appState.modals.splash}
     <Splash
@@ -110,7 +112,11 @@
   {/if}
 
   {#if $appState.tour.active}
-    <TourController tourId={$appState.tour.id} />
+    <TourController
+      tourId={$appState.tour.id}
+      {changeMapView}
+      on:leaveTour={closeAllModals}
+    />
   {/if}
 </div>
 
