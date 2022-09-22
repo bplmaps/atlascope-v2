@@ -9,6 +9,7 @@
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
   import TourListModal from "./lib/TourListModal.svelte";
   import TourController from "./lib/TourController.svelte";
+  import AboutModal from "./lib/AboutModal.svelte";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -30,6 +31,8 @@
       $appState.modals.geolocation = true;
     } else if (m.detail.action === "tour") {
       $appState.modals.tourList = true;
+    } else if (m.detail.action === "about") {
+      $appState.modals.about = true;
     }
   }
 
@@ -101,6 +104,12 @@
       }}
       base={mapState.layers.base.properties}
       overlay={mapState.layers.overlay.properties}
+    />
+    {:else if $appState.modals.about}
+    <AboutModal
+      on:closeSelf={() => {
+        $appState.modals.about = false;
+      }}
     />
   {:else if $appState.modals.splash}
     <Splash

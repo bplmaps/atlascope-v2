@@ -51,5 +51,6 @@
     "faunaConfiguration": {
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
         "domain": "db.us.fauna.com"
-    }
+    },
+    "aboutPage": "Atlascope is a project of so and so\n\n## Development history\n\nHere's some more text\n\n## Funders\n\nCLIR, Associates etc"
 }

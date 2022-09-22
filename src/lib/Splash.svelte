@@ -117,9 +117,10 @@
     </div>
 
     <div class="my-3">
-      <button class="text-xs"
-        ><Fa icon={faQuestionCircle} class="inline mr-2" />About & Credits</button
-      >
+      <LightIconButton icon="{faQuestionCircle}" label="About & Credits" size="sm" on:click={() => {
+        splashButton("about");
+      }} />
+
     </div>
   </div>
 </section>
