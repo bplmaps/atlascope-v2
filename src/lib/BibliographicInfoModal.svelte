@@ -1,14 +1,19 @@
 <script>
   import Fa from "svelte-fa";
   import {
-faBookBookmark,
+    faBookBookmark,
   } from "@fortawesome/free-solid-svg-icons";
   
   import { createEventDispatcher } from "svelte";
+  import SvelteMarkdown from "svelte-markdown";
 
   let dispatch = createEventDispatcher();
 
   import ModalCloserButton from "./ModalCloserButton.svelte";
+
+  export let base, overlay;
+
+  let blocks = [{title: "Base Layer", p: base}, {title: "Overlay Layer", p: overlay}]
 
 </script>
 
@@ -19,13 +24,20 @@ faBookBookmark,
         <Fa icon={faBookBookmark} class="inline mr-2" />Bibliographic information
       </h1>
 
-      <h2>Base Layer</h2>
+      {#each blocks as block}
+      <div class="p-3 m-2 bg-gray-50 rounded">
 
-      <p>Info here...</p>
+      <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
 
-      <h2>Overlay Layer</h2>
+      <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
+      <p class="my-3">
+        {#if block.p.catalogPermalink}<a href="{block.p.catalogPermalink}" target="_blank" class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded">Catalog Record</a>{/if}
 
-      <p>Info here...</p>
+      </p>
+
+    </div>
+
+      {/each}
 
 
 

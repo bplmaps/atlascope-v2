@@ -5,6 +5,7 @@
 
   import SvelteMarkdown from "svelte-markdown";
 
+  let dispatch = createEventDispatcher();
 
   import { loadSingleTour } from "./helpers/faunaFunctions.js";
   import {
@@ -12,28 +13,42 @@
     faHiking,
     faArrowRight,
     faDoorOpen,
+    faArrowsTurnToDots,
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "./LightIconButton.svelte";
 
-  let dispatch = createEventDispatcher();
+  export let changeMapView;
 
   export let tourId;
   let loadingFlag = true;
   let tourData;
-  let currentStop = 0;
+  let currentStop = -1;
 
   function tourStepBack() {
     currentStop = currentStop - 1;
+    goToCurrentStop()
   }
 
   function tourStepForward() {
     currentStop = currentStop + 1;
+    goToCurrentStop()
+  }
+
+  function goToCurrentStop() {
+    let cs = tourData.stops[currentStop === -1 ? 0 : currentStop];
+    changeMapView({center: cs.center, zoom: cs.zoom, viewMode: cs.viewMode, overlay: cs.overlay, base: cs.base});
+  }
+
+  function startOver() {
+    currentStop = 0;
+    goToCurrentStop();
   }
 
   onMount(() => {
     loadSingleTour(tourId).then((d) => {
       tourData = d.data;
       loadingFlag = false;
+      goToCurrentStop();
     });
   });
 </script>
@@ -69,14 +84,14 @@
         <Fa icon={faHiking} class="inline mr-1" />Tour
       </div>
       <div class="p-3 grow">
-        <h2 class="inline text-lg font-bold">{tourData.metadata.title}</h2>
+        <h2 class="inline text-xl font-bold">{tourData.metadata.title}</h2>
       </div>
       <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
         <button
           on:click={tourStepBack}
-          disabled={currentStop===0}
+          disabled={currentStop===-1}
           type="button"
-          class="py-2 px-4 text-sm font-medium { currentStop===0 ? "text-gray-100" : "text-gray-900" } bg-white rounded-l-lg border border-gray-300 { currentStop === 0 ? null : " hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"}"
+          class="py-2 px-4 text-sm font-medium { currentStop===-1 ? "text-gray-100" : "text-gray-900" } bg-white rounded-l-lg border border-gray-300 { currentStop === -1 ? null : " hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"}"
         >
           <Fa icon={faArrowLeft} />
         </button>
@@ -89,11 +104,17 @@
           <Fa icon={faArrowRight} />
         </button>
       </div>
-      <LightIconButton label="Leave tour" size="xs" icon="{faDoorOpen}" />
+      <LightIconButton label="Leave tour" size="xs" icon="{faDoorOpen}" on:click="{()=>{dispatch('leaveTour')}}" />
     </div>
 
-    <div class="px-4 py-3">
+    <div class="px-4 py-3" id="captions">
+      {#if currentStop === -1}
+      <h2 class="text-lg">{tourData.metadata.subtitle}</h2>
+      <h3 class="text-sm text-gray-500">Written by {tourData.metadata.author} · {new Date(tourData.metadata.creationDate).toLocaleDateString('en-US', { year: 'numeric', day: 'numeric', month: 'long'})}</h3>
+      {:else}
       <SvelteMarkdown source={tourData.stops[currentStop].caption} />
+      {#if currentStop===tourData.stops.length-1 }<LightIconButton label="Back to the beginning" size="xs" icon="{faArrowsTurnToDots}" on:click="{startOver}" />{/if}
+      {/if}
     </div>
   {/if}
 </div>
@@ -106,4 +127,5 @@
     right: 10px;
     background-color: rgba(255, 255, 255, 0.95);
   }
+
 </style>
