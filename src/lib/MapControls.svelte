@@ -268,10 +268,10 @@
       }}
       />
       <LightIconButton
-      label="Search Digital Commonwealth here"
+      label="Search photographs here"
       icon={faMagnifyingGlassArrowRight}
       on:click={() => {
-        window.open(`https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery`)
+        window.open(`https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Photographs`)
       }}
       />
       </div>
