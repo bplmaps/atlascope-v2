@@ -77,14 +77,14 @@
 
 <div id="wraps-all">
   {#if $appState.layersLoaded}
-    <Map bind:changeMapView bind:mapState />
+    <Map bind:changeMapView bind:mapState  />
   {/if}
 
   {#if $appState.modals.search}
     <SearchModal
       on:goToCoords={(d) => {
         closeAllModals();
-        changeMapView({ center: [d.detail.lon, d.detail.lat], zoom: 19 });
+        changeMapView({ center: [d.detail.lon, d.detail.lat], zoom: 19, dropMarkerAtPoint: true });
       }}
       on:closeSelf={() => {
         $appState.modals.search = false;

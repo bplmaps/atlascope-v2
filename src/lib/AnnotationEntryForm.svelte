@@ -5,6 +5,7 @@
     export let pos = [0, 0];
     export let featureExtent = [0, 0, 0, 0];
     export let layerID;
+    export let layerName;
     const buffer = -15;
 
     let annotationBodyEntry;
@@ -51,16 +52,19 @@
     <div
         class="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
     >
+    <div class="text-sm text-gray-800 px-4 py-2 border-b">
+        Annotations are saved to the overlay layer, <strong>{layerName}</strong>.
+    </div>
         {#if !completed}
             <form>
-                <div class="py-2 px-4 bg-white rounded-t-lg dark:bg-gray-800">
+                <div class="py-1 px-2 bg-white rounded-t-lg">
                     <label for="comment" class="sr-only"
                         >Annotation text entry</label
                     >
                     <textarea
                         id="comment"
                         rows="4"
-                        class="p-3 w-full text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
+                        class="p-3 w-full text-sm text-gray-900 bg-white border-0 focus:ring-0 dark:text-white"
                         placeholder="Add an annotation by describing what is here, writing a story about this place, or posing a question"
                         name="annotation-input-body"
                         required
@@ -77,7 +81,7 @@
                     />
                 </div>
                 <div
-                    class="flex items-center py-2 px-3 border-t dark:border-gray-600"
+                    class="flex items-center py-2 px-3 border-t"
                 >
                     <button
                         on:click|preventDefault={processAnnotationSubmission}
@@ -105,7 +109,7 @@
 
 <style>
     #annotation-entry-holder {
-        width: 25vw;
+        width: 30vw;
         position: absolute;
         z-index: 99;
     }
