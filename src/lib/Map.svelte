@@ -3,8 +3,8 @@
 
   import Fa from "svelte-fa";
   import {
-    faDrawPolygon,
     faHand,
+    faPenToSquare,
     faStopCircle,
   } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,6 +12,7 @@
   import MapControls from "./MapControls.svelte";
   import GeolocationModal from "./GeolocationModal.svelte";
   import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
+  import AnnotationsListModal from "./AnnotationsListModal.svelte";
   import LightIconButton from "./LightIconButton.svelte";
 
   import "ol/ol.css";
@@ -23,18 +24,19 @@
   import Draw, { createBox } from "ol/interaction/Draw";
   import VectorSource from "ol/source/Vector";
   import VectorLayer from "ol/layer/Vector";
-  import Feature from 'ol/Feature';
-  import {fromExtent} from 'ol/geom/Polygon';
-  import {Fill, Stroke, Style} from 'ol/style';
-
-
+  import Feature from "ol/Feature";
+  import { fromExtent } from "ol/geom/Polygon";
+  import Point from "ol/geom/Point";
+  import { Fill, Stroke, Style, Circle } from "ol/style";
 
   import { intersector } from "./helpers/intersector";
-  import { getAnnotationsWithinExtent, getSingleAnnotation } from "./helpers/faunaFunctions";
+  import {
+    getAnnotationsWithinExtent,
+    getSingleAnnotation,
+  } from "./helpers/faunaFunctions";
 
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
-
 
   let map;
 
@@ -78,18 +80,32 @@
   let annotationDrawer;
   let annotationDrawerGeometrySource = new VectorSource({ wrapX: false });
   let annotationDrawerLayer = new VectorLayer({
-    source: annotationDrawerGeometrySource
+    source: annotationDrawerGeometrySource,
   });
 
   let loadedAnnotationsGeometrySource = new VectorSource({ wrapX: false });
   let loadedAnnotationsLayer = new VectorLayer({
     source: loadedAnnotationsGeometrySource,
     style: new Style({
-    stroke: new Stroke({
-      color: 'rgba(255, 255, 255, 0.9)',
-      width: 2,
-    })
-  })
+      stroke: new Stroke({
+        color: "rgba(255, 255, 255, 0.9)",
+        width: 5,
+      }),
+    }),
+  });
+
+  let loadedAnnotationsList = [];
+
+  let markerGeometrySource = new VectorSource({ wrapX: false });
+  let markerLayer = new VectorLayer({
+    source: markerGeometrySource,
+    style: new Style({
+      image: new Circle({
+        radius: 10,
+        stroke: new Stroke({ color: "rgba(25, 106, 247, 0.92)", width: 4 }),
+        fill: new Fill({ color: "rgba(255, 203, 230, 0.5)" }),
+      }),
+    }),
   });
 
   let annotationEntryCoords = [0, 0];
@@ -124,12 +140,13 @@
 
       view.animate(m);
     }
-  };
 
-  // function for changing the view mode
-  const changeMode = (vm) => {
-    mapState.viewMode = vm;
-    map.render();
+    if (options.dropMarkerAtPoint) {
+      const targetPoint = fromLonLat(options.center);
+      markerGeometrySource.addFeature(
+        new Feature({ geometry: new Point(targetPoint) })
+      );
+    }
   };
 
   const getLayerDataById = (layerId) => {
@@ -142,28 +159,36 @@
     return p;
   };
 
+  // function for changing the view mode
+  const changeMode = (vm) => {
+    mapState.viewMode = vm;
+    map.render();
+  };
+
   // function for changing the layer, we export it so that the outer app can also access this function
-  export const changeLayer = (layer, id) => {
-    let newLayer = getLayerDataById(id);
+  const changeLayer = (layer, id) => {
+    if (id != mapState.layers[layer].id) {
+      let newLayer = getLayerDataById(id);
 
-    if (newLayer.properties.source.type === "tilejson") {
-      mapState.layers[layer].olLayer.setSource(
-        new TileJSON({
-          url: newLayer.properties.source.url,
-          crossOrigin: "anonymous",
-        })
-      );
-    } else if (newLayer.properties.source.type === "xyz") {
-      mapState.layers[layer].olLayer.setSource(
-        new XYZ({
-          url: newLayer.properties.source.url,
-          crossOrigin: "anonymous",
-        })
-      );
+      if (newLayer.properties.source.type === "tilejson") {
+        mapState.layers[layer].olLayer.setSource(
+          new TileJSON({
+            url: newLayer.properties.source.url,
+            crossOrigin: "anonymous",
+          })
+        );
+      } else if (newLayer.properties.source.type === "xyz") {
+        mapState.layers[layer].olLayer.setSource(
+          new XYZ({
+            url: newLayer.properties.source.url,
+            crossOrigin: "anonymous",
+          })
+        );
+      }
+
+      mapState.layers[layer].id = newLayer.properties.identifier;
+      mapState.layers[layer].properties = newLayer.properties;
     }
-
-    mapState.layers[layer].id = newLayer.properties.identifier;
-    mapState.layers[layer].properties = newLayer.properties;
   };
 
   // This function updates the `allLayers` store every time the map is moved, to figure out how many layers are available in the new viewport
@@ -189,10 +214,12 @@
         return b.extentVisible - a.extentVisible;
       })[0].properties.identifier;
 
-      if(bestNewLayer != mapState.layers.overlay.id) {
-      changeLayer("overlay", bestNewLayer);
-      mapState.layerChangePopup = true;
-      setTimeout(()=>{ mapState.layerChangePopup = false; }, 5000);
+      if (bestNewLayer != mapState.layers.overlay.id) {
+        changeLayer("overlay", bestNewLayer);
+        mapState.layerChangePopup = true;
+        setTimeout(() => {
+          mapState.layerChangePopup = false;
+        }, 5000);
       }
     }
   }
@@ -216,11 +243,11 @@
   }
 
   function disableAnnotationMode() {
+    map.removeInteraction(annotationDrawer);
     mapState.annotationMode = false;
     mapState.annotationEntry = false;
     annotationDrawerGeometrySource.clear();
     map.removeLayer(annotationDrawerLayer);
-    map.removeInteraction(annotationDrawer);
   }
 
   function cancelAnnotation() {
@@ -230,20 +257,31 @@
   }
 
   function loadAnnotations() {
+    loadedAnnotationsList = [];
+    getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
+      d.data.forEach((x) => {
+        getSingleAnnotation(x.value.id).then((annotation) => {
+          loadedAnnotationsList = [...loadedAnnotationsList, annotation];
+        });
+      });
+    });
+  }
 
-    getAnnotationsWithinExtent(view.calculateExtent())
-      .then((d)=>{
-        d.data.forEach((x)=>{
-          getSingleAnnotation(x.value.id)
-            .then((annotation)=>{
-              console.log(annotation);
-              let feature = new Feature(fromExtent(annotation.data.extent));
-              console.log(feature);
-              loadedAnnotationsGeometrySource.addFeature(feature);
-            })
-        })
-      })
+  function moveMapToAnnotation(d) {
+    const selectedAnnotation =
+      loadedAnnotationsList[d.detail.annotationIndex].data;
+    loadedAnnotationsGeometrySource.clear();
+    loadedAnnotationsGeometrySource.addFeature(
+      new Feature(fromExtent(selectedAnnotation.extent))
+    );
+    console.log(selectedAnnotation.layer);
+    changeMapView({ overlay: selectedAnnotation.layer });
 
+    view.fit(selectedAnnotation.extent, {
+      padding: [100, 100, 300, 100],
+      duration: 1000,
+      maxZoom: 19,
+    });
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
@@ -258,7 +296,12 @@
       target: "map-div",
       controls: [],
       view: view,
-      layers: [mapState.layers.base.olLayer, mapState.layers.overlay.olLayer, loadedAnnotationsLayer],
+      layers: [
+        mapState.layers.base.olLayer,
+        mapState.layers.overlay.olLayer,
+        loadedAnnotationsLayer,
+        markerLayer,
+      ],
     });
 
     // This is the function that executes the rendering of the spyglass, swipe, or opacity feature for the overlay layer
@@ -278,10 +321,22 @@
         ctx.lineWidth = 3;
         ctx.strokeStyle = "rgba(0,0,0,0.5)";
 
+        const pixelRatio = window.devicePixelRatio;
+
         if (mapState.viewMode === "swipe-y") {
-          ctx.rect(0, 0, ctx.canvas.width, (dragXY[1] + dragAdjuster) * 2);
+          ctx.rect(
+            0,
+            0,
+            ctx.canvas.width,
+            (dragXY[1] + dragAdjuster) * pixelRatio
+          );
         } else if (mapState.viewMode === "swipe-x") {
-          ctx.rect(0, 0, (dragXY[0] + dragAdjuster) * 2, ctx.canvas.height);
+          ctx.rect(
+            0,
+            0,
+            (dragXY[0] + dragAdjuster) * pixelRatio,
+            ctx.canvas.height
+          );
         } else if (mapState.viewMode === "glass") {
           ctx.arc(
             ctx.canvas.width / 2,
@@ -290,11 +345,13 @@
               Math.floor(
                 Math.sqrt(
                   Math.pow(
-                    (dragXY[0] + dragAdjuster - window.innerWidth / 2) * 2,
+                    (dragXY[0] + dragAdjuster - window.innerWidth / 2) *
+                      pixelRatio,
                     2
                   ) +
                     Math.pow(
-                      (dragXY[1] + dragAdjuster - window.innerHeight / 2) * 2,
+                      (dragXY[1] + dragAdjuster - window.innerHeight / 2) *
+                        pixelRatio,
                       2
                     )
                 )
@@ -396,12 +453,10 @@
       class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
     >
       <strong
-        ><Fa icon={faDrawPolygon} class="inline mr-2" /> Annotation mode enabled</strong
+        ><Fa icon={faPenToSquare} class="inline mr-2" /> Annotation mode enabled</strong
       >
       <p class="text-sm">
-        Annotations are written to the overlay layer, <strong
-          >{mapState.layers.overlay.title}</strong
-        >. Click once to begin drawing a box, then click again to finish.
+        Click once to begin drawing a box, then click again to finish.
       </p>
       <LightIconButton
         on:click={disableAnnotationMode}
@@ -417,7 +472,22 @@
       pos={annotationEntryCoords}
       featureExtent={annotationExtentCoords}
       layerID={mapState.layers.overlay.id}
+      layerName={mapState.layers.overlay.properties.fallbackTitle
+        ? mapState.layers.overlay.properties.fallbackTitle
+        : mapState.layers.overlay.properties.year}
       on:cancel={cancelAnnotation}
+    />
+  {/if}
+
+  {#if loadedAnnotationsList.length > 0}
+    <AnnotationsListModal
+      annotationsList={loadedAnnotationsList}
+      on:moveMapToAnnotation={moveMapToAnnotation}
+      on:closeAnnotationListModal={() => {
+        loadedAnnotationsGeometrySource.clear();
+        loadedAnnotationsList = [];
+      }}
+      on:refreshAnnotations={loadAnnotations}
     />
   {/if}
 

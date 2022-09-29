@@ -12,10 +12,9 @@
     faMinus,
     faRotateRight,
     faBookBookmark,
-    faDrawPolygon,
     faMap,
-    faMapLocationDot,
     faMapPin,
+    faPenToSquare,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -248,7 +247,7 @@
       <div class="flex flex-wrap">
         <LightIconButton
         label="Annotate map"
-        icon={faDrawPolygon}
+        icon={faPenToSquare}
         on:click={() => {
           dispatch("enableAnnotationMode");
         }}
