@@ -13,6 +13,7 @@
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
+  import url from "./lib/helpers/urlRouter.js";
 
   let changeMapView;
   let mapState;
@@ -49,6 +50,7 @@
     $appState.tour.active = true;
   }
 
+
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
@@ -62,6 +64,16 @@
         });
         allLayers.set(al);
         $appState.layersLoaded = true;
+      })
+      .then(()=>{
+        let urlParams = {};
+        $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
+        
+        if(urlParams.view && urlParams.view === "share") {
+          console.log(urlParams);
+          closeAllModals();
+          changeMapView({center: urlParams.center.split(',').map(k=>+k), zoom: +urlParams.zoom, duration: 0})
+        }
       })
       .catch(() => {
         window.alert(
@@ -77,7 +89,7 @@
 
 <div id="wraps-all">
   {#if $appState.layersLoaded}
-    <Map bind:changeMapView bind:mapState  />
+    <Map bind:changeMapView bind:mapState />
   {/if}
 
   {#if $appState.modals.search}

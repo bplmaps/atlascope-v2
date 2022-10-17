@@ -1,5 +1,5 @@
 {
-    "baseURL": "https://atlascope-v2-dev.netlify.app",
+    "baseURL": "http://atlascope.org",
     "name": "Boston",
     "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
     "geographicCoverage": "Boston and its inner suburbs",
