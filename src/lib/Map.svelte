@@ -41,6 +41,7 @@
   let map;
 
   export let mapState = {
+    mounted: false,
     layers: {
       base: {
         id: null,
@@ -375,6 +376,7 @@
     });
 
     map.on("moveend", mapMoved);
+    mapState.mounted = true;
   });
 
   let draggingFlag = false;

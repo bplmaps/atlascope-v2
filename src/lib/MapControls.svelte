@@ -15,6 +15,10 @@
     faMap,
     faMapPin,
     faPenToSquare,
+    faMobile,
+    faMobileAlt,
+    faStreetView,
+    faLink,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -89,6 +93,12 @@
 
   let panelShown = null;
 
+  $: shareURLs = {
+    "app": instanceVariables.baseURL,
+    "view": `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center}$zoom:${mapState.zoom}$base:${mapState
+                .layers.base.id}$overlay:${mapState.layers.overlay.id}`
+  }
+
   const showHideControls = (e) => {
     panelShown = panelShown === e ? null : e;
   };
@@ -117,17 +127,24 @@
     </div>
   {/if}
 
-  {#if mapState.layerChangePopup }
+  {#if mapState.layerChangePopup}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
-      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You moved off the edge of the previous atlas.
+      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You moved off the edge
+      of the previous atlas.
       <p class="font-light text-sm">
-        We automatically pulled up a new layer, <strong>{ mapState.layers.overlay.properties.fallbackTitle ? mapState.layers.overlay.properties.fallbackTitle : mapState.layers.overlay.properties.year } { mapState.layers.overlay.properties.fallbackSubtitle ? mapState.layers.overlay.properties.fallbackSubtitle : mapState.layers.overlay.properties.publisherShort }</strong>
+        We automatically pulled up a new layer, <strong
+          >{mapState.layers.overlay.properties.fallbackTitle
+            ? mapState.layers.overlay.properties.fallbackTitle
+            : mapState.layers.overlay.properties.year}
+          {mapState.layers.overlay.properties.fallbackSubtitle
+            ? mapState.layers.overlay.properties.fallbackSubtitle
+            : mapState.layers.overlay.properties.publisherShort}</strong
+        >
       </p>
     </div>
   {/if}
-
 
   {#each controlGroups as cg}
     <div
@@ -246,65 +263,85 @@
       <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
       <div class="flex flex-wrap">
         <LightIconButton
-        label="Annotate map"
-        icon={faPenToSquare}
-        on:click={() => {
-          dispatch("enableAnnotationMode");
-        }}
-      />
-      <LightIconButton
-      label="Load annotations"
-      icon={faMapPin}
-      on:click={() => {
-        dispatch("loadAnnotations");
-      }}
-    />
-      <LightIconButton
-      label="Search more maps here"
-      icon={faMagnifyingGlassArrowRight}
-      on:click={() => {
-        window.open(`https://collections.leventhalmap.org/search?q=&utf8=✓&view=split&bbox=${mapState.extent.join('%20')}`)
-      }}
-      />
-      <LightIconButton
-      label="Search photographs here"
-      icon={faMagnifyingGlassArrowRight}
-      on:click={() => {
-        window.open(`https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Photographs`)
-      }}
-      />
+          label="Annotate map"
+          icon={faPenToSquare}
+          on:click={() => {
+            dispatch("enableAnnotationMode");
+          }}
+        />
+        <LightIconButton
+          label="Load annotations"
+          icon={faMapPin}
+          on:click={() => {
+            dispatch("loadAnnotations");
+          }}
+        />
+        <LightIconButton
+          label="Search more maps here"
+          icon={faMagnifyingGlassArrowRight}
+          on:click={() => {
+            window.open(
+              `https://collections.leventhalmap.org/search?q=&utf8=✓&view=split&bbox=${mapState.extent.join(
+                "%20"
+              )}`
+            );
+          }}
+        />
+        <LightIconButton
+          label="Search photographs here"
+          icon={faMagnifyingGlassArrowRight}
+          on:click={() => {
+            window.open(
+              `https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Photographs`
+            );
+          }}
+        />
       </div>
-
-
     {:else if panelShown === "share-controls"}
       <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
       <div class="control-panel">
-        <div class="mb-2 flex">
-          <label for="share-app-url" class="text-sm text-right pr-3"
-            >Share the Atlascope app</label
-          >
-          <input
-            type="text"
-            id="share-app-url"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            value="https://atlascope.leventhalmap.org"
-          />
-          <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+        {#if navigator.share}
+        <div class="flex">
+          <LightIconButton label="Share Atlascope" icon="{faMobileAlt}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.app})}} />
+          <LightIconButton label="Share this specific view" icon="{faStreetView}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.view})}} />
+          <div class="flex-grow mt-1">
+            <div class="relative">
+              <div class="flex absolute backbround-blue-900 inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                  <span class="bg-blue-900 py-1 px-2 text-xs rounded text-white"><Fa icon="{faStreetView}" class="inline mr-2" /> View link</span>
+              </div>
+              <input type="text" class="block p-3 pl-28 w-full text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" value="{shareURLs.view}" readonly>
+          </div>
+          </div>
         </div>
 
-        <div class="flex">
-          <label for="share-app-url" class="text-sm text-right pr-3"
-            >Share this specific view</label
-          >
-          <input
-            type="text"
-            id="share-app-url"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            value="https://atlascope.leventhalmap.org/#/share/$mode:{mapState.viewMode}$center:{mapState.center}:$zoom{mapState.zoom}:$base:{mapState
-              .layers.base.id}$overlay:{mapState.layers.overlay.id}"
-          />
-          <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
-        </div>
+        {:else}
+          <div class="mb-2 flex">
+            <label for="share-app-url" class="text-sm text-right pr-3"
+              >Share the Atlascope app</label
+            >
+            <input
+              type="text"
+              id="share-app-url"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={instanceVariables.baseURL}
+            />
+            <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+          </div>
+
+          <div class="flex">
+            <label for="share-app-url" class="text-sm text-right pr-3"
+              >Share this specific view</label
+            >
+            <input
+              type="text"
+              id="share-app-url"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value="{instanceVariables.baseURL}/#/view:share$mode:{mapState.viewMode}$center:{mapState.center}$zoom:{mapState.zoom}$base:{mapState
+                .layers.base.id}$overlay:{mapState.layers.overlay.id}"
+            />
+            <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
+          </div>
+        {/if}
       </div>
     {/if}
   </div>
