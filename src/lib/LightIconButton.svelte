@@ -16,7 +16,7 @@
         disabled="{disabled}"
         class="relative text-{size} bg-white border border-gray-300 rounded-md bg-white shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none hover:bg-sky-50 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
     >
-        <span class="flex items-center cursor-pointer">
+        <span class="flex flex-nowrap items-center cursor-pointer">
             <span class="mx-1 block text-gray-900"
                 ><Fa {icon} class="inline {iconMargin}" />{label}</span
             >
