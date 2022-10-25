@@ -114,6 +114,7 @@
 
   // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
   export const changeMapView = (options) => {
+    
     if (options.viewMode) {
       changeMode(options.viewMode);
     }
@@ -135,11 +136,17 @@
         m.zoom = options.zoom;
       }
 
-      if (!options.duration) {
+      if (!options.duration && options.duration != 0) {
         m.duration = 900;
+      } else {
+        m.duration = options.duration;
       }
 
       view.animate(m);
+
+      if(options.viewMode) {
+        changeMode(options.viewMode);
+      }
     }
 
     if (options.dropMarkerAtPoint) {

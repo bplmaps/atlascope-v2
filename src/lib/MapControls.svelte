@@ -301,13 +301,13 @@
       <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
       <div class="control-panel">
         {#if navigator.share}
-        <div class="flex">
+        <div class="flex flex-wrap">
           <LightIconButton label="Share Atlascope" icon="{faMobileAlt}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.app})}} />
           <LightIconButton label="Share this specific view" icon="{faStreetView}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.view})}} />
           <div class="flex-grow mt-1">
             <div class="relative">
-              <div class="flex absolute backbround-blue-900 inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                  <span class="bg-blue-900 py-1 px-2 text-xs rounded text-white"><Fa icon="{faStreetView}" class="inline mr-2" /> View link</span>
+              <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                  <span class="bg-yellow-900 py-1 px-2 text-xs rounded text-white"><Fa icon="{faStreetView}" class="inline mr-2" />Permalink</span>
               </div>
               <input type="text" class="block p-3 pl-28 w-full text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" value="{shareURLs.view}" readonly>
           </div>
