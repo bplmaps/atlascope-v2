@@ -10,18 +10,18 @@
 
 </script>
 
-<div class="bg-white absolute rounded shadow top-2 right-2 w-1/3 max-h-2/3">
-  <div class="flex flex-col max-h-full">
-  <div class="p-3 bg-gray-100">  <Fa icon={faPenToSquare} class="inline mr-2" /><span class="font-bold">
+<div class="bg-white absolute rounded shadow bottom-3 left-2 right-2">
+  <div class="flex flex-col">
+  <div class="p-3 rounded bg-gray-100">  <Fa icon={faPenToSquare} class="inline mr-2" /><span class="font-bold">
     Annotations from other users</span>
     <p class="text-sm mt-2 text-gray-500">Click an annotation to see its map location</p>
   </div>
 
 
-    <div class="overflow-scroll">
+    <div class="max-h-28 lg:max-h-44 overflow-y-scroll">
     {#each annotationsList as a, i}
 
-    <div class="py-2 px-3 border-t text-sm hover:bg-amber-50 text-gray-600 hover:text-gray-900 cursor-pointer {activeAnnotation===i ? 'bg-amber-100' : null}" on:click={()=>{activeAnnotation=i; dispatch('moveMapToAnnotation',{'annotationIndex': i})} }>{a.data.body}</div>
+    <div class="truncate py-2 px-3 border-t text-sm hover:bg-amber-50 text-gray-600 hover:text-gray-900 cursor-pointer {activeAnnotation===i ? 'bg-amber-100' : null}" on:click={()=>{activeAnnotation=i; dispatch('moveMapToAnnotation',{'annotationIndex': i})} }>{a.data.body}</div>
 
     {/each}
     </div>

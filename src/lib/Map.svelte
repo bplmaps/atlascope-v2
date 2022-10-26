@@ -459,7 +459,7 @@
 
   {#if mapState.annotationMode}
     <div
-      class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
+      class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
     >
       <strong
         ><Fa icon={faPenToSquare} class="inline mr-2" /> Annotation mode enabled</strong
@@ -500,7 +500,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode && !$appState.tour.active}
+  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active }
     <MapControls
       {mapState}
       on:changeLayer={(d) => {
