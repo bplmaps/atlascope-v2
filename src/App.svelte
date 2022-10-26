@@ -70,9 +70,9 @@
         $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
         
         if(urlParams.view && urlParams.view === "share") {
-          console.log(urlParams);
           closeAllModals();
-          changeMapView({center: urlParams.center.split(',').map(k=>+k), zoom: +urlParams.zoom, duration: 0})
+          let opts = {center: urlParams.center.split(',').map(k=>+k), zoom: +urlParams.zoom, overlay: urlParams.overlay, base: urlParams.base, viewMode: urlParams.mode, duration: 0}
+          changeMapView(opts);
         }
       })
       .catch(() => {

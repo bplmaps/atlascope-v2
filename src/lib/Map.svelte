@@ -114,6 +114,7 @@
 
   // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
   export const changeMapView = (options) => {
+    
     if (options.viewMode) {
       changeMode(options.viewMode);
     }
@@ -135,11 +136,17 @@
         m.zoom = options.zoom;
       }
 
-      if (!options.duration) {
+      if (!options.duration && options.duration != 0) {
         m.duration = 900;
+      } else {
+        m.duration = options.duration;
       }
 
       view.animate(m);
+
+      if(options.viewMode) {
+        changeMode(options.viewMode);
+      }
     }
 
     if (options.dropMarkerAtPoint) {
@@ -452,7 +459,7 @@
 
   {#if mapState.annotationMode}
     <div
-      class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
+      class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
     >
       <strong
         ><Fa icon={faPenToSquare} class="inline mr-2" /> Annotation mode enabled</strong
@@ -493,7 +500,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode && !$appState.tour.active}
+  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active }
     <MapControls
       {mapState}
       on:changeLayer={(d) => {
