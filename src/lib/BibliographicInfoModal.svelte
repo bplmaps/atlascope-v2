@@ -1,9 +1,7 @@
 <script>
   import Fa from "svelte-fa";
-  import {
-    faBookBookmark,
-  } from "@fortawesome/free-solid-svg-icons";
-  
+  import { faBookBookmark } from "@fortawesome/free-solid-svg-icons";
+
   import { createEventDispatcher } from "svelte";
   import SvelteMarkdown from "svelte-markdown";
 
@@ -13,33 +11,53 @@
 
   export let base, overlay;
 
-  let blocks = [{title: "Base Layer", p: base}, {title: "Overlay Layer", p: overlay}]
-
+  let blocks = [
+    { title: "Base Layer", p: base },
+    { title: "Overlay Layer", p: overlay },
+  ];
 </script>
 
 <section id="bibliographic-info-modal">
   <div class="modal-outer">
     <div class="modal-inner relative w-full">
       <h1 class="text-xl font-bold">
-        <Fa icon={faBookBookmark} class="inline mr-2" />Bibliographic information
+        <Fa icon={faBookBookmark} class="inline mr-2" />Bibliographic
+        information
       </h1>
 
       {#each blocks as block}
-      <div class="p-3 m-2 bg-gray-50 rounded">
+        <div class="p-3 m-2 bg-gray-50 rounded">
+          <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
 
-      <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
+          <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
+          {#if block.p.heldBy}
+          <p class="my-3">
+            <span class="font-semibold">Held by</span>
 
-      <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
-      <p class="my-3">
-        {#if block.p.catalogPermalink}<a href="{block.p.catalogPermalink}" target="_blank" class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded">Catalog Record</a>{/if}
+            {#each block.p.heldBy as holder}
+            <span class="bg-indigo-50 px-2 py-1 rounded text-xs">{holder}</span>
 
-      </p>
-
-    </div>
-
+            {/each}
+          </p>{/if}
+          {#if block.p.catalogPermalink}
+            <p class="my-3">
+              <a
+                href={block.p.catalogPermalink}
+                rel="noreferrer"
+                target="_blank"
+                class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded"
+                >Catalog Record</a
+              >
+            </p>
+          {/if}
+          {#if block.p.source && !block.p.source.hidden}
+            <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
+              <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>
+              <div class="flex"><span class="font-semibold pr-3 whitespace-nowrap">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
+            </div>
+          {/if}
+        </div>
       {/each}
-
-
 
       <ModalCloserButton
         on:click={() => {

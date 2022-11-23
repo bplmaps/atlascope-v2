@@ -29,6 +29,7 @@
                 "year": 2022,
                 "bibliographicEntry": "Modern street map data, [© MapTiler](https://www.maptiler.com/copyright/) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)",
                 "source": {
+                    "hidden": true,
                     "type": "tilejson",
                     "url": "https://api.maptiler.com/maps/streets/tiles.json?key=1HCKO0pQuPEfNXXzGgSM"
                 }
@@ -52,5 +53,5 @@
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
         "domain": "db.us.fauna.com"
     },
-    "aboutPage": "Atlascope is a project of so and so\n\n## Development history\n\nHere's some more text\n\n## Funders\n\nCLIR, Associates etc"
+    "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/"
 }

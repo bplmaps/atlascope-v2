@@ -118,7 +118,7 @@
 
     <div class="my-3">
       <LightIconButton icon="{faQuestionCircle}" label="About & Credits" size="sm" on:click={() => {
-        splashButton("about");
+        window.open(instanceVariables.aboutPage);
       }} />
 
     </div>
