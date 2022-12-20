@@ -80,7 +80,7 @@
           />
         </svg>
       </div>
-      Loading tours ...
+      Loading tour ...
     </div>
   {:else}
     <div class="w-full border-b-2 px-1 pb-2 flex flex-col md:flex-row">

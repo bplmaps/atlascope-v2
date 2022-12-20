@@ -31,6 +31,8 @@
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
 
+  import { bboxFunctions } from "../config/research-connections";
+
   export let mapState;
 
   let dispatch = createEventDispatcher();
@@ -276,26 +278,19 @@
             dispatch("loadAnnotations");
           }}
         />
+
+        {#each bboxFunctions as f }
+
         <LightIconButton
-          label="Search more maps here"
+          label={f.name}
           icon={faMagnifyingGlassArrowRight}
-          on:click={() => {
-            window.open(
-              `https://collections.leventhalmap.org/search?q=&utf8=✓&view=split&bbox=${mapState.extent.join(
-                "%20"
-              )}`
-            );
-          }}
+          on:click={()=>{ let url = f.searchFunction(mapState.extent); window.open(url); }}
         />
-        <LightIconButton
-          label="Search photographs here"
-          icon={faMagnifyingGlassArrowRight}
-          on:click={() => {
-            window.open(
-              `https://www.digitalcommonwealth.org/search?coordinates=%5B${mapState.extent[1]}%2C${mapState.extent[0]}%20TO%20${mapState.extent[3]}%2C${mapState.extent[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Photographs`
-            );
-          }}
-        />
+
+
+        {/each}
+
+
       </div>
     {:else if panelShown === "share-controls"}
       <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>

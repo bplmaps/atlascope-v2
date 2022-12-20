@@ -18,6 +18,8 @@
   let changeMapView;
   let mapState;
 
+  let urlParams = {};
+
   function handleSplashButton(m) {
     closeAllModals();
 
@@ -55,6 +57,8 @@
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
   onMount(() => {
+    $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
+
     fetch(instanceVariables.historicLayersFootprintsFile)
       .then((r) => r.json())
       .then((d) => {
@@ -66,14 +70,15 @@
         $appState.layersLoaded = true;
       })
       .then(()=>{
-        let urlParams = {};
-        $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
-        
+              
         if(urlParams.view && urlParams.view === "share") {
           closeAllModals();
-          let opts = {center: urlParams.center.split(',').map(k=>+k), zoom: +urlParams.zoom, overlay: urlParams.overlay, base: urlParams.base, viewMode: urlParams.mode, duration: 0}
-          changeMapView(opts);
         }
+
+        else if(urlParams.view && urlParams.view === "tour") {
+          startTour({detail: {"tourId": urlParams.tour}});
+        }
+
       })
       .catch(() => {
         window.alert(
@@ -89,7 +94,7 @@
 
 <div id="wraps-all">
   {#if $appState.layersLoaded}
-    <Map bind:changeMapView bind:mapState />
+    <Map urlParams={urlParams} bind:changeMapView bind:mapState />
   {/if}
 
   {#if $appState.modals.search}

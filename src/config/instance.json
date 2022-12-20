@@ -17,7 +17,8 @@
             42.34962571323688
         ],
         "zoom": 18,
-        "overlayLayerId": "ark:/76611/al7rtfm98"
+        "overlayLayerId": "ark:/76611/al7rtfm98",
+        "baseLayerId": "maptiler-streets"
     },
     "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.geojson",
     "referenceLayers": [
