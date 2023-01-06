@@ -38,6 +38,8 @@
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
 
+  const pixelRatio = window.devicePixelRatio;
+
   let map;
 
   export let mapState = {
@@ -65,11 +67,17 @@
 
   export let urlParams = {};
 
-console.log(urlParams);
+  console.log(urlParams);
 
   let view = new View({
-    center: urlParams.view && urlParams.center ? fromLonLat(urlParams.center.split(",").map(k=>+k)) : fromLonLat(instanceVariables.defaultStartLocation.center),
-    zoom: urlParams.view && urlParams.zoom ? +urlParams.zoom : instanceVariables.defaultStartLocation.zoom,
+    center:
+      urlParams.view && urlParams.center
+        ? fromLonLat(urlParams.center.split(",").map((k) => +k))
+        : fromLonLat(instanceVariables.defaultStartLocation.center),
+    zoom:
+      urlParams.view && urlParams.zoom
+        ? +urlParams.zoom
+        : instanceVariables.defaultStartLocation.zoom,
   });
 
   view.on("change", () => {
@@ -118,7 +126,6 @@ console.log(urlParams);
 
   // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
   export const changeMapView = (options) => {
-    
     if (options.viewMode) {
       changeMode(options.viewMode);
     }
@@ -148,7 +155,7 @@ console.log(urlParams);
 
       view.animate(m);
 
-      if(options.viewMode) {
+      if (options.viewMode) {
         changeMode(options.viewMode);
       }
     }
@@ -298,11 +305,17 @@ console.log(urlParams);
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
-    changeLayer("base",
-      urlParams.view && urlParams.base ? urlParams.base : instanceVariables.defaultStartLocation.baseLayerId );
+    changeLayer(
+      "base",
+      urlParams.view && urlParams.base
+        ? urlParams.base
+        : instanceVariables.defaultStartLocation.baseLayerId
+    );
     changeLayer(
       "overlay",
-      urlParams.view && urlParams.overlay ? urlParams.overlay : instanceVariables.defaultStartLocation.overlayLayerId
+      urlParams.view && urlParams.overlay
+        ? urlParams.overlay
+        : instanceVariables.defaultStartLocation.overlayLayerId
     );
 
     map = new Map({
@@ -333,8 +346,6 @@ console.log(urlParams);
 
         ctx.lineWidth = 3;
         ctx.strokeStyle = "rgba(0,0,0,0.5)";
-
-        const pixelRatio = window.devicePixelRatio;
 
         if (mapState.viewMode === "swipe-y") {
           ctx.rect(
@@ -393,13 +404,21 @@ console.log(urlParams);
 
   let draggingFlag = false;
   let dragXY = [window.innerWidth / 4, window.innerHeight / 4];
-  let dragAdjuster = 14;
+  const dragAdjuster = 14;
 
   function manipulateDrag(e) {
     if (draggingFlag) {
       e.preventDefault();
-      let posX = e.clientX || e.pageX;
-      let posY = e.clientY || e.pageY;
+
+      let posX, posY;
+
+      if (e.touches) {
+        posX = e.targetTouches.item(0).clientX;
+        posY = e.targetTouches.item(0).clientY;
+      } else {
+        posX = e.clientX || e.pageX;
+        posY = e.clientY || e.pageY;
+      }
 
       dragXY = [
         Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
@@ -505,7 +524,7 @@ console.log(urlParams);
     />
   {/if}
 
-  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active }
+  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
     <MapControls
       {mapState}
       on:changeLayer={(d) => {
