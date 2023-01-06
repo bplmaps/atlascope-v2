@@ -15,10 +15,8 @@
     faMap,
     faMapPin,
     faPenToSquare,
-    faMobile,
     faMobileAlt,
     faStreetView,
-    faLink,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -230,9 +228,7 @@
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={mapState.layers.base.properties.fallbackTitle
-              ? mapState.layers.base.properties.fallbackTitle
-              : mapState.layers.base.properties.year}
+            chosen={ layerChoices.find(d=>d.id === mapState.layers.base.id) }
             label="Base"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "base");
@@ -242,9 +238,7 @@
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={mapState.layers.overlay.properties.fallbackTitle
-              ? mapState.layers.overlay.properties.fallbackTitle
-              : mapState.layers.overlay.properties.year}
+            chosen={ layerChoices.find(d=>d.id === mapState.layers.overlay.id) }
             label="Overlay"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "overlay");

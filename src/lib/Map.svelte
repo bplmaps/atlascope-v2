@@ -67,8 +67,6 @@
 
   export let urlParams = {};
 
-  console.log(urlParams);
-
   let view = new View({
     center:
       urlParams.view && urlParams.center
