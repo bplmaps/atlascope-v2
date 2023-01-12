@@ -8,6 +8,9 @@
     export let layerName;
     const buffer = -15;
 
+    let topPos = window.innerWidth > 768 ? Math.min((window.innerHeight - 300), (pos[1] + buffer)) + "px" : "50vh";
+    let leftPos = window.innerWidth > 768 ? Math.min((0.68 * window.innerWidth), (pos[0] + buffer)) + "px" : "10vw";
+
     let annotationBodyEntry;
     let annotationEmailEntry;
 
@@ -46,8 +49,8 @@
 
 <div
     id="annotation-entry-holder"
-    class="p-0"
-    style="top: {pos[1] + buffer}px; left: {pos[0] + buffer}px;"
+    class="fixed z-50 p-0 w-[80vw] md:w-[30vw]"
+    style="top: {topPos}; left: {leftPos}"
 >
     <div
         class="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
@@ -76,7 +79,7 @@
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 text-xs focus:outline-none focus:shadow-outline"
                         type="text"
                         name="annotation-input-email"
-                        placeholder="Your email (optional)"
+                        placeholder="Your email (optional, not public)"
                         bind:value={annotationEmailEntry}
                     />
                 </div>
@@ -108,9 +111,5 @@
 </div>
 
 <style>
-    #annotation-entry-holder {
-        width: 30vw;
-        position: absolute;
-        z-index: 99;
-    }
+
 </style>
