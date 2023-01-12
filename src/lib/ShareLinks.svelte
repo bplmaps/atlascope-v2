@@ -44,7 +44,7 @@
               type="text"
               id="share-app-url"
               class="flex-grow shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value="{showView ? appURL : viewURL}"
+              value="{showView ? viewURL : appURL}"
               bind:this="{urlField}"
             />
             <button class="ml-2" on:click={copyURL}><Fa icon={faCopy} class="inline" /></button>
