@@ -24,6 +24,7 @@
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
   import LightIconButton from "./LightIconButton.svelte";
+  import ShareLinks from "./ShareLinks.svelte";
 
   import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
@@ -289,48 +290,7 @@
     {:else if panelShown === "share-controls"}
       <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
       <div class="control-panel">
-        {#if navigator.share}
-        <div class="flex flex-wrap">
-          <LightIconButton label="Share Atlascope" icon="{faMobileAlt}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.app})}} />
-          <LightIconButton label="Share this specific view" icon="{faStreetView}" on:click={()=>{navigator.share({title: "Atlascope", url: shareURLs.view})}} />
-          <div class="flex-grow mt-1">
-            <div class="relative">
-              <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
-                  <span class="bg-yellow-900 py-1 px-2 text-xs rounded text-white"><Fa icon="{faStreetView}" class="inline mr-2" />Permalink</span>
-              </div>
-              <input type="text" class="block p-3 pl-28 w-full text-sm text-gray-700 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" value="{shareURLs.view}" readonly>
-          </div>
-          </div>
-        </div>
-
-        {:else}
-          <div class="mb-2 flex">
-            <label for="share-app-url" class="text-sm text-right pr-3"
-              >Share the Atlascope app</label
-            >
-            <input
-              type="text"
-              id="share-app-url"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={instanceVariables.baseURL}
-            />
-            <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
-          </div>
-
-          <div class="flex">
-            <label for="share-app-url" class="text-sm text-right pr-3"
-              >Share this specific view</label
-            >
-            <input
-              type="text"
-              id="share-app-url"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value="{instanceVariables.baseURL}/#/view:share$mode:{mapState.viewMode}$center:{mapState.center}$zoom:{mapState.zoom}$base:{mapState
-                .layers.base.id}$overlay:{mapState.layers.overlay.id}"
-            />
-            <button class="ml-2"><Fa icon={faCopy} class="inline" /></button>
-          </div>
-        {/if}
+        <ShareLinks baseURL={instanceVariables.baseURL} mapState={mapState} />
       </div>
     {/if}
   </div>

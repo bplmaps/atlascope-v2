@@ -89,7 +89,7 @@
 </script>
 
 <svelte:head>
-  <title>Atlascope {instanceVariables.name} · v2 development</title>
+  <title>Atlascope {instanceVariables.name} · {instanceVariables.institutionalShortName}</title>
 </svelte:head>
 
 <div id="wraps-all">

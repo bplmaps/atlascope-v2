@@ -76,6 +76,7 @@
       urlParams.view && urlParams.zoom
         ? +urlParams.zoom
         : instanceVariables.defaultStartLocation.zoom,
+    minZoom: 14
   });
 
   view.on("change", () => {
