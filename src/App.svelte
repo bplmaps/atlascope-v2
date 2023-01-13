@@ -11,6 +11,8 @@
   import TourController from "./lib/TourController.svelte";
   import AboutModal from "./lib/AboutModal.svelte";
 
+  import { GoogleAnalytics } from "@beyonk/svelte-google-analytics";
+
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
   import url from "./lib/helpers/urlRouter.js";
@@ -144,6 +146,10 @@
       on:leaveTour={closeAllModals}
     />
   {/if}
+
+
+  <GoogleAnalytics properties={[ instanceVariables.gaMeasurementId ]} />
+
 </div>
 
 <style>
