@@ -445,6 +445,7 @@
   <div id="qr-box" class="rounded-lg bg-white p-1 drop-shadow-xl ring-2 ring-gray-400">
     <div class="w-auto h-auto">
       <QR url="{viewURL}" />
+
     </div>
 
       <div class="max-w-full font-bold text-sm px-3 text-center">Scan to open this view</div>
