@@ -40,26 +40,11 @@
 
 <section id="splash" class="ui-top-level-layer">
   <div id="splash-inner">
-    {#if !$appState.gateway}
-      <div class="my-3">
-        <button
-          class="text-xl"
-          on:click={() => {
-            dispatch("closeSelf");
-          }}><Fa icon={faChevronUp} /></button
-        >
-      </div>
-    {/if}
+
 
     <div class="p-0 mx-auto w-48 mb-3">
       <AtlascopeLogo pulse={true} />
     </div>
-
-    <p class="text-sm mb-2">
-      <strong>Atlascope {instanceVariables.name}</strong>
-      {instanceVariables.tagline}.
-    </p>
-    <p class="text-xl font-bold">How do you want to start exploring?</p>
 
     {#if !$appState.layersLoaded}
       <div class="grid place-items-center mt-3">
@@ -85,43 +70,6 @@
       </div>
     {/if}
 
-    <div class="my-5">
-      <div class="flex justify-center max-w-full flex-wrap">
-      {#each buttons as button}
-        <LightIconButton
-          label={button.text}
-          icon={button.icon}
-          on:click={() => {
-            splashButton(button.id);
-          }}
-          disabled={!$appState.layersLoaded}
-        />
-      {/each}
-    </div>
-    </div>
-
-    <div>
-      <p class="font-semibold">
-        Currently serving <span
-          class="bg-yellow-900 text-gray-200 text-s font-semibold mx-0.5 px-2.5 py-0.5 rounded"
-          >{$allLayers.length > 0 ? $allLayers.length : "..."}</span
-        >
-        atlas layers of {instanceVariables.geographicCoverage}
-      </p>
-    </div>
-
-    <div>
-      <p class="font-light text-sm mt-5">
-        <SvelteMarkdown source={instanceVariables.institutionalCredit} />
-      </p>
-    </div>
-
-    <div class="my-3">
-      <LightIconButton icon="{faQuestionCircle}" label="About & Credits" size="sm" on:click={() => {
-        window.open(instanceVariables.aboutPage);
-      }} />
-
-    </div>
   </div>
 </section>
 

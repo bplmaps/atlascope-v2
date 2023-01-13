@@ -8,12 +8,9 @@
     faStopCircle,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import MapControls from "./MapControls.svelte";
-  import GeolocationModal from "./GeolocationModal.svelte";
-  import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
   import AnnotationsListModal from "./AnnotationsListModal.svelte";
-  import LightIconButton from "./LightIconButton.svelte";
+  import QR from "./QR.svelte";
 
   import "ol/ol.css";
   import { Map, View } from "ol";
@@ -76,7 +73,7 @@
       urlParams.view && urlParams.zoom
         ? +urlParams.zoom
         : instanceVariables.defaultStartLocation.zoom,
-    minZoom: 14
+    minZoom: 14,
   });
 
   view.on("change", () => {
@@ -398,6 +395,7 @@
     });
 
     map.on("moveend", mapMoved);
+    mapMoved();
     mapState.mounted = true;
   });
 
@@ -426,6 +424,9 @@
     }
     map.render();
   }
+
+  $: viewURL = `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center}$zoom:${mapState.zoom}$base:${mapState.layers.base.id}$overlay:${mapState.layers.overlay.id}`;
+
 </script>
 
 <section
@@ -441,6 +442,14 @@
 >
   <div id="map-div" />
 
+  <div id="qr-box" class="rounded-lg bg-white p-1 drop-shadow-xl ring-2 ring-gray-400">
+    <div class="w-auto h-auto">
+      <QR url="{viewURL}" />
+    </div>
+
+      <div class="max-w-full font-bold text-sm px-3 text-center">Scan to open this view</div>
+  </div>
+
   <div
     id="drag-handle"
     class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
@@ -455,62 +464,6 @@
     <Fa icon={faHand} />
   </div>
 
-  <div
-    on:click={() => {
-      $appState.tour.active = false;
-      $appState.modals.splash = true;
-    }}
-    class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3"
-  >
-    <AtlascopeLogo />
-  </div>
-
-  {#if $appState.modals.geolocation}
-    <div
-      class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
-    >
-      <GeolocationModal
-        on:goToCoords={(e) => {
-          changeMapView({
-            center: [e.detail.lon, e.detail.lat],
-            duration: 300,
-          });
-        }}
-      />
-    </div>
-  {/if}
-
-  {#if mapState.annotationMode}
-    <div
-      class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
-    >
-      <strong
-        ><Fa icon={faPenToSquare} class="inline mr-2" /> Annotation mode enabled</strong
-      >
-      <p class="text-sm">
-        Click once to begin drawing a box, then click again to finish.
-      </p>
-      <LightIconButton
-        on:click={disableAnnotationMode}
-        icon={faStopCircle}
-        label="Stop annotating"
-        size="sm"
-      />
-    </div>
-  {/if}
-
-  {#if mapState.annotationMode && mapState.annotationEntry}
-    <AnnotationEntryForm
-      pos={annotationEntryCoords}
-      featureExtent={annotationExtentCoords}
-      layerID={mapState.layers.overlay.id}
-      layerName={mapState.layers.overlay.properties.fallbackTitle
-        ? mapState.layers.overlay.properties.fallbackTitle
-        : mapState.layers.overlay.properties.year}
-      on:cancel={cancelAnnotation}
-    />
-  {/if}
-
   {#if loadedAnnotationsList.length > 0}
     <AnnotationsListModal
       annotationsList={loadedAnnotationsList}
@@ -523,7 +476,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
+  {#if mapState.mounted && loadedAnnotationsList.length === 0}
     <MapControls
       {mapState}
       on:changeLayer={(d) => {
@@ -568,5 +521,11 @@
 
   #drag-handle {
     position: absolute;
+  }
+
+  #qr-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
 </style>

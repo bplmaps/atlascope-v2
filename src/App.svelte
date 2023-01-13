@@ -95,6 +95,14 @@
 <div id="wraps-all">
   {#if $appState.layersLoaded}
     <Map urlParams={urlParams} bind:changeMapView bind:mapState />
+  {:else}
+  <Splash
+  on:splashButton={handleSplashButton}
+  on:closeSelf={() => {
+    $appState.modals.splash = false;
+  }}
+/>
+
   {/if}
 
   {#if $appState.modals.search}
@@ -107,43 +115,8 @@
         $appState.modals.search = false;
       }}
     />
-  {:else if $appState.modals.tourList}
-    <TourListModal
-      on:closeSelf={() => {
-        $appState.modals.tourList = false;
-      }}
-      on:startTour={startTour}
-    />
-  {:else if $appState.modals.biblio}
-    <BibliographicInfoModal
-      on:closeSelf={() => {
-        $appState.modals.biblio = false;
-      }}
-      base={mapState.layers.base.properties}
-      overlay={mapState.layers.overlay.properties}
-    />
-    {:else if $appState.modals.about}
-    <AboutModal
-      on:closeSelf={() => {
-        $appState.modals.about = false;
-      }}
-    />
-  {:else if $appState.modals.splash}
-    <Splash
-      on:splashButton={handleSplashButton}
-      on:closeSelf={() => {
-        $appState.modals.splash = false;
-      }}
-    />
-  {/if}
-
-  {#if $appState.tour.active}
-    <TourController
-      tourId={$appState.tour.id}
-      {changeMapView}
-      on:leaveTour={closeAllModals}
-    />
-  {/if}
+    {/if}
+  
 </div>
 
 <style>
