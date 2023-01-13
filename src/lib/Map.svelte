@@ -42,6 +42,8 @@
 
   let map;
 
+  export let urlParams = {};
+
   export let mapState = {
     mounted: false,
     layers: {
@@ -56,16 +58,14 @@
         olLayer: new TileLayer(),
       },
     },
-    viewMode: "glass",
+    viewMode: urlParams.mode ? urlParams.mode : "glass",
     annotationMode: false,
     annotationEntry: false,
     layerChangePopup: false,
-    center: instanceVariables.defaultStartLocation.center,
-    zoom: instanceVariables.defaultStartLocation.zoom,
+    center: null,
+    zoom: null,
     extent: null,
   };
-
-  export let urlParams = {};
 
   let view = new View({
     center:
@@ -77,16 +77,6 @@
         ? +urlParams.zoom
         : instanceVariables.defaultStartLocation.zoom,
     minZoom: 14
-  });
-
-  view.on("change", () => {
-    mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
-    mapState.zoom = view.getZoom().toFixed(2);
-    mapState.extent = transformExtent(
-      view.calculateExtent(),
-      "EPSG:3857",
-      "EPSG:4326"
-    );
   });
 
   let annotationDrawer;
@@ -213,6 +203,15 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
+
+    mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
+    mapState.zoom = view.getZoom().toFixed(2);
+    mapState.extent = transformExtent(
+      view.calculateExtent(),
+      "EPSG:3857",
+      "EPSG:4326"
+    );
+
     const extent = map.getView().calculateExtent(map.getSize());
     allLayers.update((a) => {
       return a.map((layer) => {
@@ -398,6 +397,7 @@
     });
 
     map.on("moveend", mapMoved);
+    mapMoved();
     mapState.mounted = true;
   });
 
