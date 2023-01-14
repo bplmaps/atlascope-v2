@@ -61,7 +61,7 @@
   onMount(() => {
     $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
 
-    fetch(instanceVariables.historicLayersFootprintsFile)
+    fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
       .then((r) => r.json())
       .then((d) => {
         let al = d.features;
