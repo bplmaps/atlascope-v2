@@ -53,7 +53,7 @@
     style="top: {topPos}; left: {leftPos}"
 >
     <div
-        class="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
+        class="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200"
     >
     <div class="text-sm text-gray-800 px-4 py-2 border-b">
         Annotations are saved to the overlay layer, <strong>{layerName}</strong>.
@@ -67,7 +67,7 @@
                     <textarea
                         id="comment"
                         rows="4"
-                        class="p-3 w-full text-sm text-gray-900 bg-white border-0 focus:ring-0 dark:text-white"
+                        class="p-3 w-full text-sm text-gray-900 bg-white border-0 focus:ring-0"
                         placeholder="Add an annotation by describing what is here, writing a story about this place, or posing a question"
                         name="annotation-input-body"
                         required
