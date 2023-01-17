@@ -56,5 +56,33 @@
         "domain": "db.us.fauna.com"
     },
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
-    "gaMeasurementId": "G-5K9LGW88CS"
+    "gaMeasurementId": "G-5K9LGW88CS",
+    "metaTags": {
+        "title": "Atlascope Boston",
+        "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
+        "canonical": "https://www.atlascope.org",
+        "openGraph": {
+            "url": "https://www.atlascope.org",
+            "title": "Atlascope Boston",
+            "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
+            "images": [
+                {
+                    "url": "https://iiif.digitalcommonwealth.org/iiif/2/commonwealth:9g54z607b/913,353,4051,2501/,800/0/default.jpg",
+                    "width": 1296,
+                    "height": 800,
+                    "alt": "Excerpt from an 1898 atlas plate showing the Boston Public Library and buildings, streets, and other urban features nearby in Copley Square."
+                }
+            ],
+            "site_name": "Leventhal Map & Education Center"
+        },
+        "twitter": {
+            "handle": "@bplmaps",
+            "site": "@bplmaps",
+            "cardType": "summary_large_image",
+            "title": "Atlascope Boston",
+            "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
+            "image": "https://iiif.digitalcommonwealth.org/iiif/2/commonwealth:9g54z607b/913,353,4051,2501/,800/0/default.jpg",
+            "imageAlt": "Excerpt from an 1898 atlas plate showing the Boston Public Library and buildings, streets, and other urban features nearby in Copley Square."
+        }
+    }
 }
