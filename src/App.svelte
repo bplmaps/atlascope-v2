@@ -12,7 +12,6 @@
   import AboutModal from "./lib/AboutModal.svelte";
 
   import { GoogleAnalytics } from "@beyonk/svelte-google-analytics";
-  import { MetaTags } from "svelte-meta-tags";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -159,13 +158,7 @@
 
   <GoogleAnalytics properties={[instanceVariables.gaMeasurementId]} />
 
-  <MetaTags
-    title={instanceVariables.metaTags.title}
-    description={instanceVariables.metaTags.description}
-    canonical={instanceVariables.metaTags.canonical}
-    openGraph={instanceVariables.metaTags.openGraph}
-    twitter={instanceVariables.metaTags.twitter}
-  />
+
 </div>
 
 <style>
