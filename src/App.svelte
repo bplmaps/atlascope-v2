@@ -12,6 +12,7 @@
   import AboutModal from "./lib/AboutModal.svelte";
 
   import { GoogleAnalytics } from "@beyonk/svelte-google-analytics";
+  import { MetaTags } from "svelte-meta-tags";
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -21,6 +22,8 @@
   let mapState;
 
   let urlParams = {};
+  let pageTitle = `Atlascope ${instanceVariables.name} · ${instanceVariables.institutionalShortName}`
+  let pageDescription = `Atlascope ${instanceVariables.name} ${instanceVariables.description}`
 
   function handleSplashButton(m) {
     closeAllModals();
@@ -54,12 +57,19 @@
     $appState.tour.active = true;
   }
 
-
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
   onMount(() => {
-    $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
+    $url.hash
+      .substring(2)
+      .split("$")
+      .map((kv) => {
+        const i = kv.indexOf(":");
+        const k = kv.slice(0, i);
+        const v = kv.slice(i + 1);
+        urlParams[k] = v;
+      });
 
     fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
       .then((r) => r.json())
@@ -71,16 +81,12 @@
         allLayers.set(al);
         $appState.layersLoaded = true;
       })
-      .then(()=>{
-              
-        if(urlParams.view && urlParams.view === "share") {
+      .then(() => {
+        if (urlParams.view && urlParams.view === "share") {
           closeAllModals();
+        } else if (urlParams.view && urlParams.view === "tour") {
+          startTour({ detail: { tourId: urlParams.tour } });
         }
-
-        else if(urlParams.view && urlParams.view === "tour") {
-          startTour({detail: {"tourId": urlParams.tour}});
-        }
-
       })
       .catch(() => {
         window.alert(
@@ -96,14 +102,18 @@
 
 <div id="wraps-all">
   {#if $appState.layersLoaded}
-    <Map urlParams={urlParams} bind:changeMapView bind:mapState />
+    <Map {urlParams} bind:changeMapView bind:mapState />
   {/if}
 
   {#if $appState.modals.search}
     <SearchModal
       on:goToCoords={(d) => {
         closeAllModals();
-        changeMapView({ center: [d.detail.lon, d.detail.lat], zoom: 19, dropMarkerAtPoint: true });
+        changeMapView({
+          center: [d.detail.lon, d.detail.lat],
+          zoom: 19,
+          dropMarkerAtPoint: true,
+        });
       }}
       on:closeSelf={() => {
         $appState.modals.search = false;
@@ -124,7 +134,7 @@
       base={mapState.layers.base.properties}
       overlay={mapState.layers.overlay.properties}
     />
-    {:else if $appState.modals.about}
+  {:else if $appState.modals.about}
     <AboutModal
       on:closeSelf={() => {
         $appState.modals.about = false;
@@ -147,9 +157,15 @@
     />
   {/if}
 
+  <GoogleAnalytics properties={[instanceVariables.gaMeasurementId]} />
 
-  <GoogleAnalytics properties={[ instanceVariables.gaMeasurementId ]} />
-
+  <MetaTags
+    title={instanceVariables.metaTags.title}
+    description={instanceVariables.metaTags.description}
+    canonical={instanceVariables.metaTags.canonical}
+    openGraph={instanceVariables.metaTags.openGraph}
+    twitter={instanceVariables.metaTags.twitter}
+  />
 </div>
 
 <style>
