@@ -333,9 +333,7 @@
     // It's bound to the `prerender` event on `overlayLayer`
     mapState.layers.overlay.olLayer.on("prerender", function (event) {
       if (mapState.viewMode === "opacity") {
-        mapState.layers.overlay.olLayer.setOpacity(
-          opacitySliderValue/100
-        );
+        mapState.layers.overlay.olLayer.setOpacity(opacitySliderValue / 100);
       } else {
         mapState.layers.overlay.olLayer.setOpacity(1);
         const ctx = event.context;
@@ -462,12 +460,17 @@
   <div
     id="opacity-control-holder"
     class="absolute top-2 right-2 w-1/3 bg-gray-50 p-2 rounded {mapState.viewMode ===
-      'opacity'
-        ? ''
-        : 'hidden'}"
+    'opacity'
+      ? ''
+      : 'hidden'}"
   >
-  <input id="default-range" type="range" bind:value={opacitySliderValue} class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900">
-  <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
+    <input
+      id="default-range"
+      type="range"
+      bind:value={opacitySliderValue}
+      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
+    />
+    <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
   </div>
 
   <div
@@ -584,5 +587,4 @@
   #drag-handle {
     position: absolute;
   }
-
 </style>
