@@ -67,6 +67,8 @@
     extent: null,
   };
 
+  let opacitySliderValue = 50;
+
   let view = new View({
     center:
       urlParams.view && urlParams.center
@@ -76,7 +78,7 @@
       urlParams.view && urlParams.zoom
         ? +urlParams.zoom
         : instanceVariables.defaultStartLocation.zoom,
-    minZoom: 14
+    minZoom: 14,
   });
 
   let annotationDrawer;
@@ -203,7 +205,6 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
-
     mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
     mapState.zoom = view.getZoom().toFixed(2);
     mapState.extent = transformExtent(
@@ -332,9 +333,7 @@
     // It's bound to the `prerender` event on `overlayLayer`
     mapState.layers.overlay.olLayer.on("prerender", function (event) {
       if (mapState.viewMode === "opacity") {
-        mapState.layers.overlay.olLayer.setOpacity(
-          1 - (dragXY[1] + dragAdjuster) / window.innerHeight
-        );
+        mapState.layers.overlay.olLayer.setOpacity(opacitySliderValue / 100);
       } else {
         mapState.layers.overlay.olLayer.setOpacity(1);
         const ctx = event.context;
@@ -443,7 +442,10 @@
 
   <div
     id="drag-handle"
-    class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
+    class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition {mapState.viewMode ===
+    'opacity'
+      ? 'hidden'
+      : ''}"
     style="left: {dragXY[0]}px; top: {dragXY[1]}px"
     on:mousedown={() => {
       draggingFlag = true;
@@ -453,6 +455,22 @@
     }}
   >
     <Fa icon={faHand} />
+  </div>
+
+  <div
+    id="opacity-control-holder"
+    class="absolute top-2 right-2 w-1/3 bg-gray-50 p-2 rounded {mapState.viewMode ===
+    'opacity'
+      ? ''
+      : 'hidden'}"
+  >
+    <input
+      id="default-range"
+      type="range"
+      bind:value={opacitySliderValue}
+      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
+    />
+    <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
   </div>
 
   <div
