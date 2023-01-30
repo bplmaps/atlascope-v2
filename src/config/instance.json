@@ -33,7 +33,7 @@
                 "source": {
                     "hidden": true,
                     "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=1HCKO0pQuPEfNXXzGgSM"
+                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
                 }
             }
         },
