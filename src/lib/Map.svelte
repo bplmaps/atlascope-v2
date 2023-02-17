@@ -226,8 +226,11 @@
       });
     });
 
-    // If our currently selected layer is less than 45% visible in viewport, let's choose another layer instead
-    if (getLayerDataById(mapState.layers.overlay.id).extentVisible < 0.45) {
+    let currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
+
+    // Implement a double check process
+    // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
+    if (currentLayerInfo.extentVisible < 0.4 && $allLayers.filter(d=>d.extentVisible > (currentLayerInfo.extentVisible+0.2)).length > 0 ) {
       let bestNewLayer = $allLayers.sort((a, b) => {
         return b.extentVisible - a.extentVisible;
       })[0].properties.identifier;
