@@ -180,7 +180,15 @@
     if (id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
 
-      if (newLayer.properties.source.type === "tilejson") {
+      if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier === "maptiler-streets") {
+        mapState.layers[layer].olLayer.setSource(
+          new TileJSON({
+            url: newLayer.properties.source.url,
+            crossOrigin: "anonymous",
+            tileSize: 512,
+          })
+        );
+      } else if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier !== "maptiler-streets") {
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({
             url: newLayer.properties.source.url,
