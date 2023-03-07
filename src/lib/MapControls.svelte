@@ -6,6 +6,7 @@
     faPlus,
     faMinus,
     faRotateRight,
+    faSyncAlt,
   } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
@@ -116,6 +117,17 @@
     </div>
 
     <div class="flex max-w-full flex-wrap">
+      <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm">
+        <button
+            on:click={() => {
+              window.location.reload();
+            }}
+            type="button"
+            class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-md border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          >
+            <Fa icon={faSyncAlt} />
+        </button>
+      </div>
       <div class="mr-4">
         <ViewModeDropupMenu
           chosen={mapState.viewMode}
@@ -124,6 +136,7 @@
       </div>
 
       <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
+        
         <button
           on:click={() => {
             dispatch("zoomIn");

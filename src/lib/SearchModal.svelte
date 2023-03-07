@@ -3,11 +3,14 @@
   import {
     faCircleArrowRight,
     faSearchLocation,
+    faSearch,
   } from "@fortawesome/free-solid-svg-icons";
   
   import { createEventDispatcher } from "svelte";
 
   import ModalCloserButton from "./ModalCloserButton.svelte";
+
+  import LightIconButton from "./LightIconButton.svelte";
 
   import instanceVariables from "../config/instance.json";
 
@@ -16,10 +19,11 @@
   let searchText = "";
 
   let debounceTimer;
-  function debounceSearch(e) {
+
+  function debounceSearch(text) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      executeSearch(e.target.value);
+      executeSearch(text);
     }, 100);
   }
 
@@ -69,9 +73,16 @@
           id="search-input"
           type="text"
           placeholder="Enter address or location ..."
-          on:input={debounceSearch}
+          on:keypress={(e) => e.key === 'Enter' && debounceSearch(searchText)}
           bind:value={searchText}
         />
+        <div class="">
+          <LightIconButton
+            label="Search"
+            icon={faSearch}
+            on:click={debounceSearch(searchText)}
+          />
+        </div>
       </div>
 
       {#if searchResults && searchResults.suggestions && searchResults.suggestions.length > 0}
