@@ -185,7 +185,15 @@
     if (id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
 
-      if (newLayer.properties.source.type === "tilejson") {
+      if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier === "maptiler-streets") {
+         mapState.layers[layer].olLayer.setSource(
+           new TileJSON({
+             url: newLayer.properties.source.url,
+             crossOrigin: "anonymous",
+             tileSize: 512,
+           })
+         );
+       } else if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier !== "maptiler-streets") {
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({
             url: newLayer.properties.source.url,
@@ -401,7 +409,7 @@
 
   let draggingFlag = false;
   let dragXY = [window.innerWidth / 4, window.innerHeight / 4];
-  const dragAdjuster = 14;
+  const dragAdjuster = 25;
 
   function manipulateDrag(e) {
     if (draggingFlag) {
@@ -453,7 +461,7 @@
 
   <div
     id="drag-handle"
-    class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
+    class="select-none text-4xl cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition"
     style="left: {dragXY[0]}px; top: {dragXY[1]}px"
     on:mousedown={() => {
       draggingFlag = true;
@@ -463,6 +471,10 @@
     }}
   >
     <Fa icon={faHand} />
+  </div>
+
+  <div id="dragme-text" class="{draggingFlag ? "hidden": true } text-lg rounded-tl-lg rounded-tr-lg rounded-br-lg font-semibold py-1 px-2 uppercase text-white border-4 border-pink-800 bg-gray-800" style="left: {dragXY[0]+50}px; top: {dragXY[1]-35}px">
+    Drag here!
   </div>
 
   {#if loadedAnnotationsList.length > 0}
@@ -480,6 +492,7 @@
   {#if mapState.mounted && loadedAnnotationsList.length === 0}
     <MapControls
       {mapState}
+      {changeMapView}
       on:changeLayer={(d) => {
         changeLayer(d.detail.layer, d.detail.id);
       }}
@@ -521,6 +534,10 @@
   }
 
   #drag-handle {
+    position: absolute;
+  }
+
+  #dragme-text {
     position: absolute;
   }
 

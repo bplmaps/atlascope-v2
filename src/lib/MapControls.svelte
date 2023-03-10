@@ -15,12 +15,18 @@
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
   import LightIconButton from "./LightIconButton.svelte";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
+  import JumpToLocationDropupMenu from "./JumpToLocationDropupMenu.svelte";
 
   import instanceVariables from "../config/instance.json";
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
 
+  import { parseShareURL } from "./helpers/parseShareURL";
+
   export let mapState;
+  export let changeMapView;
+
+
 
   let dispatch = createEventDispatcher();
 
@@ -29,6 +35,13 @@
     $allLayers,
     instanceVariables.referenceLayers
   );
+
+  function handleJumpToLocation(e) {
+
+    let parsed = parseShareURL(e.detail.shareURL);
+    changeMapView(parsed);
+    
+  }
 
   function parseLayerChoices(historicLayers, referenceLayers) {
     let c = [];
@@ -165,15 +178,9 @@
           <Fa icon={faRotateRight} />
         </button>
       </div>
-
+      
       <div class="mr-4">
-        <LightIconButton
-          label="Search places"
-          icon={faSearchLocation}
-          on:click={() => {
-            $appState.modals.search = true;
-          }}
-        />
+        <JumpToLocationDropupMenu on:selectionMade={handleJumpToLocation} />
       </div>
 
       <div class="mr-4">
@@ -209,21 +216,4 @@
     right: 20px;
   }
 
-  .control-tab {
-    display: inline-block;
-    background-color: rgba(252, 252, 240, 0.899);
-    padding: 10px 20px;
-    font-weight: 650;
-    cursor: pointer;
-    border-radius: 5px 5px 0 0;
-    transition: color 0.5s, background-color 0.5s;
-  }
-
-  .control-tab:hover {
-    background-color: rgba(255, 255, 255, 0.97);
-  }
-
-  .control-tab-active {
-    background-color: rgba(255, 255, 255, 0.97);
-  }
 </style>
