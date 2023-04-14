@@ -122,6 +122,16 @@
       }} />
 
     </div>
+    {#if instanceVariables.splashPageNoteMessage}
+    <div class="mt-2">
+      <p>
+        <a href="{instanceVariables.splashPageNoteMessage.url}" target="_blank" class="text-sm font-semibold ">
+          {instanceVariables.splashPageNoteMessage.text}
+    </a>
+      </p>
+
+    </div>
+    {/if}
   </div>
 </section>
 

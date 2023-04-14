@@ -121,8 +121,8 @@
       <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a
       location where no historic atlas layers are currently available.
       <p class="font-light text-sm">
-        <a href="./#"
-          >Learn more about our plans for adding coverage to Atlascope.</a
+        <a href="{instanceVariables.outOfBoundsMessage.url}" target="_blank" rel="noreferrer"
+          >{instanceVariables.outOfBoundsMessage.text}</a
         >
       </p>
     </div>
