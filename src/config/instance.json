@@ -56,6 +56,14 @@
         "domain": "db.us.fauna.com"
     },
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
+    "outOfBoundsMessage": {
+        "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",
+        "text": "Help us extend the coverage in Atlascope by sponsoring an atlas"
+    },
+    "splashPageNoteMessage": {
+        "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",
+        "text": "Help us extend the coverage in Atlascope by sponsoring an atlas"
+    },
     "gaMeasurementId": "G-5K9LGW88CS",
     "metaTags": {
         "title": "Atlascope Boston",
