@@ -57,7 +57,7 @@
                 rel="noreferrer"
                 target="_blank"
                 class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded"
-                ><Fa icon={faBookBookmark} class="inline mr-2" />Catalog Record</a
+                >Catalog Record</a
               >
             </p>
           {/if}
