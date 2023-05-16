@@ -1,8 +1,10 @@
 <script>
   import Fa from "svelte-fa";
-  import { faBookBookmark } from "@fortawesome/free-solid-svg-icons";
+  import { faBookBookmark, faCopy } from "@fortawesome/free-solid-svg-icons";
 
   import { createEventDispatcher } from "svelte";
+  import { onMount } from 'svelte';
+
   import SvelteMarkdown from "svelte-markdown";
 
   let dispatch = createEventDispatcher();
@@ -15,6 +17,15 @@
     { title: "Base Layer", p: base },
     { title: "Overlay Layer", p: overlay },
   ];
+
+  let d;
+
+  onMount(async () => {
+    const r = await fetch(blocks[1].p.source.url);
+    d = await r.json()
+  })
+
+
 </script>
 
 <section id="bibliographic-info-modal">
@@ -50,10 +61,11 @@
               >
             </p>
           {/if}
-          {#if block.p.source && !block.p.source.hidden}
+          {#if block.p.source && !block.p.source.hidden && d}
             <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
               <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>
-              <div class="flex"><span class="font-semibold pr-3 whitespace-nowrap">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
+              <div class="flex"><span class="font-semibold pr-3">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
+              <div class="flex"><span class="font-semibold pr-3">XYZ tiles </span><span class="font-mono text-gray-700 whitespace-nowrap">{d.tiles[0]}</span></div>
             </div>
           {/if}
         </div>
@@ -87,4 +99,5 @@
     padding: 20px;
     min-height: 200px;
   }
+
 </style>
