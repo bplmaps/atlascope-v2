@@ -19,28 +19,12 @@
   ];
 
   let d;
-  let showPopup = false;
 
   onMount(async () => {
     const r = await fetch(blocks[1].p.source.url);
     d = await r.json()
-    console.log(d.tiles[0])
   })
 
-  function copyToClipboard() {
-    const textToCopy = d.tiles[0];
-
-    navigator.clipboard.writeText(textToCopy)
-      .then(() => {
-        showPopup = true;
-        setTimeout(() => {
-          showPopup = false;
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error('Error copying text to clipboard:', error);
-      });
-  }
 
 </script>
 
@@ -78,23 +62,10 @@
             </p>
           {/if}
           {#if block.p.source && !block.p.source.hidden && d}
-          <p class="my-3">
-            <button on:click={copyToClipboard}
-              class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded"
-              ><Fa icon={faCopy} class="inline mr-2" />Copy XYZ tiles to clipboard</button
-            >
-          </p>
-          {/if}
-          {#if showPopup}
-            <div class="popup">
-              <p>XYZ tile endpoint copied to clipboard!</p>
-            </div>
-          {/if}
-          {#if block.p.source && !block.p.source.hidden && d}
             <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
               <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>
               <div class="flex"><span class="font-semibold pr-3">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
-              <!-- <div class="flex"><span class="font-semibold pr-3">XYZ </span><span class="font-mono text-gray-700 whitespace-nowrap">{d.tiles[0]}</span></div> -->
+              <div class="flex"><span class="font-semibold pr-3">XYZ tiles </span><span class="font-mono text-gray-700 whitespace-nowrap">{d.tiles[0]}</span></div>
             </div>
           {/if}
         </div>
@@ -127,32 +98,6 @@
     border-radius: 5px;
     padding: 20px;
     min-height: 200px;
-  }
-
-  .popup {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ffffff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    opacity: 1;
-    transition: opacity 0.5s ease;
-    animation: fadeOut 2s forwards;
-  }
-
-  @keyframes fadeOut {
-    0% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
   }
 
 </style>
