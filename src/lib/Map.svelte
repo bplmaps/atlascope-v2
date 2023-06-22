@@ -552,7 +552,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
+  {#if mapState.mounted && !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
     <MapControls
       {mapState}
       on:changeLayer={(d) => {

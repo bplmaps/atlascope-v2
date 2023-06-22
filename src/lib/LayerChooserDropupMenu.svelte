@@ -31,7 +31,7 @@
       <span class="flex items-center">
         <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
         <span class="ml-1 block truncate text-gray-900 text-lg">{ chosen.title }</span>
-        <span class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1">{ Math.round(chosen.pct * 100) }% coverage</span>
+        <span class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1">{ Math.round(chosen.pct * 100) }% <span class="hidden md:inline">coverage</span></span>
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
