@@ -10,6 +10,7 @@
   let dispatch = createEventDispatcher();
 
   import ModalCloserButton from "./ModalCloserButton.svelte";
+  import { Log } from "faunadb";
 
   export let base, overlay;
 
@@ -24,7 +25,6 @@
     const r = await fetch(blocks[1].p.source.url);
     d = await r.json()
   })
-
 
 </script>
 
@@ -41,6 +41,19 @@
           <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
 
           <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
+
+          {#if block.p.sponsors}
+          <p>{block.p.sponsors}</p>
+          <p class="my-3">
+            <span class="font-semibold">Sponsors</span>
+
+          {#each block.p.sponsors as sponsor}
+
+              <a class="bg-indigo-50 px-2 py-1 rounded text-xs" href={sponsor.url}>{sponsor.name}</a>
+            {/each}
+
+          </p>{/if}
+
           {#if block.p.heldBy}
           <p class="my-3">
             <span class="font-semibold">Held by</span>
@@ -61,6 +74,7 @@
               >
             </p>
           {/if}
+
           {#if block.p.source && !block.p.source.hidden && d}
             <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
               <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>

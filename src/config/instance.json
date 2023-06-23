@@ -6,10 +6,7 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.29278,
-        42.227911,
-        -70.917872,
-        42.449701
+        -71.3049167705931524,42.2281870003616717, -70.8244609573852699,42.5146499771215645
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -21,7 +18,7 @@
         "overlayLayerId": "ark:/76611/al7rtfm98",
         "baseLayerId": "maptiler-streets"
     },
-    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.geojson",
+    "historicLayersFootprintsFile": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/main/atlascope/atlascope-boston/boston-volume-extents.geojson",
     "referenceLayers": [
         {
             "properties": {
