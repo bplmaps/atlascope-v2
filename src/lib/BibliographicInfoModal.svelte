@@ -42,8 +42,7 @@
 
           <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
 
-          {#if block.p.sponsors}
-          <p>{block.p.sponsors}</p>
+          {#if block.p.sponsors && block.p.sponsors.length > 0}
           <p class="my-3">
             <span class="font-semibold">Sponsors</span>
 
