@@ -48,7 +48,7 @@
 
           {#each block.p.sponsors as sponsor}
 
-              <a class="bg-indigo-50 px-2 py-1 rounded text-xs" href={sponsor.url}>{sponsor.name}</a>
+              <a class="bg-indigo-50 px-2 py-1 rounded text-xs" href={sponsor.url} target='blank'>{sponsor.name}</a>
             {/each}
 
           </p>{/if}
