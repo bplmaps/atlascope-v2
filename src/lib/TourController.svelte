@@ -4,6 +4,7 @@
   import { createEventDispatcher, onMount } from "svelte";
 
   import SvelteMarkdown from "svelte-markdown";
+  import ExternalLinkRenderer from "./helpers/ExternalLinkRenderer.svelte";
 
   let dispatch = createEventDispatcher();
 
@@ -85,16 +86,16 @@
   {:else}
     <div class="w-full border-b-2 px-1 pb-2 flex flex-col md:flex-row">
       {#if currentStop === -1}
-      <div class="flex items-center grow">
-        <div
-          class="text-gray-500 text-sm p-3 font-bold uppercase tracking-wider mr-1"
-        >
-          <Fa icon={faHiking} class="inline mr-1" />Tour
+        <div class="flex items-center grow">
+          <div
+            class="text-gray-500 text-sm p-3 font-bold uppercase tracking-wider mr-1"
+          >
+            <Fa icon={faHiking} class="inline mr-1" />Tour
+          </div>
+          <div class="p-3 grow">
+            <h2 class="inline text-xl font-bold">{tourData.metadata.title}</h2>
+          </div>
         </div>
-        <div class="p-3 grow">
-          <h2 class="inline text-xl font-bold">{tourData.metadata.title}</h2>
-        </div>
-      </div>
       {/if}
       <div class="flex justify-center items-center">
         <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
@@ -150,7 +151,10 @@
           })}
         </h3>
       {:else}
-        <SvelteMarkdown source={tourData.stops[currentStop].caption} />
+        <SvelteMarkdown
+          source={tourData.stops[currentStop].caption}
+          renderers={{ link: ExternalLinkRenderer }}
+        />
         {#if currentStop === tourData.stops.length - 1}<LightIconButton
             label="Back to the beginning"
             size="xs"
