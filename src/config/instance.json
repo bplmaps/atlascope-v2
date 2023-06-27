@@ -18,7 +18,7 @@
         "overlayLayerId": "ark:/76611/al7rtfm98",
         "baseLayerId": "maptiler-streets"
     },
-    "historicLayersFootprintsFile": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/main/atlascope/atlascope-boston/boston-volume-extents.geojson",
+    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.geojson",
     "referenceLayers": [
         {
             "properties": {

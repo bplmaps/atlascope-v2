@@ -10,8 +10,6 @@
   let dispatch = createEventDispatcher();
 
   import ModalCloserButton from "./ModalCloserButton.svelte";
-  import { Log } from "faunadb";
-
   export let base, overlay;
 
   let blocks = [
