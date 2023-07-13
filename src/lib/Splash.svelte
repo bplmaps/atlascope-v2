@@ -23,7 +23,7 @@
 
   function splashButton(b) {
     $appState.gateway = false;
-    dispatch("splashButton", { action: b });
+    dispatch("splashButton", b);
   }
 
   let buttons = [
@@ -36,6 +36,8 @@
       icon: faLandmark,
     },
   ];
+
+  let coverageDescriptiveListMenuPopFlag = false;
 </script>
 
 <section id="splash" class="ui-top-level-layer">
@@ -55,7 +57,7 @@
       <AtlascopeLogo pulse={true} />
     </div>
 
-    <p class="text-sm mb-2">
+    <p class="text-xs md:text-sm mb-2">
       <strong>Atlascope {instanceVariables.name}</strong>
       {instanceVariables.tagline}.
     </p>
@@ -87,17 +89,17 @@
 
     <div class="my-5">
       <div class="flex justify-center max-w-full flex-wrap">
-      {#each buttons as button}
-        <LightIconButton
-          label={button.text}
-          icon={button.icon}
-          on:click={() => {
-            splashButton(button.id);
-          }}
-          disabled={!$appState.layersLoaded}
-        />
-      {/each}
-    </div>
+        {#each buttons as button}
+          <LightIconButton
+            label={button.text}
+            icon={button.icon}
+            on:click={() => {
+              splashButton({action: button.id});
+            }}
+            disabled={!$appState.layersLoaded}
+          />
+        {/each}
+      </div>
     </div>
 
     <div>
@@ -110,27 +112,88 @@
       </p>
     </div>
 
+    {#if $appState.layersLoaded && instanceVariables.coverageDescriptiveList}
+      <div class="py-3">
+
+        <div class="relative inline-block text-left">
+          <div>
+            <button
+              type="button"
+              class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              id="menu-button"
+              aria-expanded="true"
+              aria-haspopup="true"
+              on:click={()=>{coverageDescriptiveListMenuPopFlag = !coverageDescriptiveListMenuPopFlag}}
+            >
+              Coverage area includes ...
+              <svg
+                class="mr-1 h-5 w-5 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {#if coverageDescriptiveListMenuPopFlag}
+            <div
+              class="absolute max-h-32 overflow-y-scroll left-0 max-sm:bottom-8 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabindex="-1"
+            >
+              <div class="py-1" role="none">
+                {#each instanceVariables.coverageDescriptiveList as coverageLocation}
+                  <a
+                    on:click="{()=>{ coverageDescriptiveListMenuPopFlag = false; splashButton({'action': 'jumpToCoverageLocation', 'center': coverageLocation.center }) }}"
+                    class="text-gray-700 block px-4 py-2 text-sm hover:text-gray-900 hover:bg-gray-50 cursor-pointer"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="menu-item-0">{coverageLocation.name}</a
+                  >
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+
     <div>
-      <p class="font-light text-sm mt-5">
+      <p class="font-light text-xs md:text-sm mt-5">
         <SvelteMarkdown source={instanceVariables.institutionalCredit} />
       </p>
     </div>
 
     <div class="my-3">
-      <LightIconButton icon="{faQuestionCircle}" label="About & Credits" size="sm" on:click={() => {
-        window.open(instanceVariables.aboutPage);
-      }} />
-
+      <LightIconButton
+        icon={faQuestionCircle}
+        label="About & Credits"
+        size="sm"
+        on:click={() => {
+          window.open(instanceVariables.aboutPage);
+        }}
+      />
     </div>
     {#if instanceVariables.splashPageNoteMessage}
-    <div class="mt-2">
-      <p>
-        <a href="{instanceVariables.splashPageNoteMessage.url}" target="_blank" class="text-sm font-semibold ">
-          {instanceVariables.splashPageNoteMessage.text}
-    </a>
-      </p>
-
-    </div>
+      <div class="mt-2">
+        <p>
+          <a
+            href={instanceVariables.splashPageNoteMessage.url}
+            target="_blank"
+            class="text-sm font-semibold"
+          >
+            {instanceVariables.splashPageNoteMessage.text}
+          </a>
+        </p>
+      </div>
     {/if}
   </div>
 </section>

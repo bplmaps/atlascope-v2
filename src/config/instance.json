@@ -2,11 +2,14 @@
     "baseURL": "https://atlascope.org",
     "name": "Boston",
     "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
-    "geographicCoverage": "Boston and its inner suburbs",
+    "geographicCoverage": "the Boston metropolitan area",
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.3049167705931524,42.2281870003616717, -70.8244609573852699,42.5146499771215645
+        -71.3049167705931524,
+        42.2281870003616717,
+        -70.8244609573852699,
+        42.5146499771215645
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -46,6 +49,55 @@
                     "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
                 }
             }
+        }
+    ],
+    "coverageDescriptiveList": [
+        {
+            "name": "Boston",
+            "center": [
+                -71.07733477136398,
+                42.34962571323688
+            ]
+        },
+        {
+            "name": "Cambridge",
+            "center": [
+                -71.102553,
+                42.364517
+            ]
+        },
+        {
+            "name": "Somerville",
+            "center": [
+                -71.096563,
+                42.388663
+            ]
+        },
+        {
+            "name": "Chelsea",
+            "center": [
+                -71.029272,
+                42.395763
+            ]
+        },
+        {
+            "name": "Revere",
+            "center": [
+                -70.992365,
+                42.408756
+            ]
+        },
+        {
+            "name": "Winthrop",
+            "center": [
+                -70.983868, 42.376998
+            ]
+        },
+        {
+            "name": "Lynn",
+            "center": [
+                -70.951509, 42.464246
+            ]
         }
     ],
     "faunaConfiguration": {
