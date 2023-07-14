@@ -53,17 +53,16 @@
     ],
     "coverageDescriptiveList": [
         {
+            "name": "Brookline",
+            "center": [
+                -71.1629888, 42.3232338
+            ]
+        },
+        {
             "name": "Cambridge",
             "center": [
                 -71.102553,
                 42.364517
-            ]
-        },
-        {
-            "name": "Somerville",
-            "center": [
-                -71.096563,
-                42.388663
             ]
         },
         {
@@ -74,16 +73,10 @@
             ]
         },
         {
-            "name": "Revere",
+            "name": "Hull",
             "center": [
-                -70.992365,
-                42.408756
-            ]
-        },
-        {
-            "name": "Winthrop",
-            "center": [
-                -70.983868, 42.376998
+                -70.8790163,
+                42.2912529
             ]
         },
         {
@@ -93,17 +86,31 @@
             ]
         },
         {
-            "name": "Brookline",
-            "center": [
-                -71.1629888, 42.3232338
-            ]
-        }, 
-        {
             "name": "Newton",
             "center": [
                 -71.254963, 42.325429
             ]
         },
+        {
+            "name": "Revere",
+            "center": [
+                -70.992365,
+                42.408756
+            ]
+        },
+        {
+            "name": "Somerville",
+            "center": [
+                -71.096563,
+                42.388663
+            ]
+        },
+        {
+            "name": "Winthrop",
+            "center": [
+                -70.983868, 42.376998
+            ]
+        }, 
         {
             "name": "Boston",
             "center": [
@@ -111,118 +118,146 @@
                 42.34962571323688
             ]
         },
-            {
-                "name": "—> North End",
-                "center": [
-                    -71.0563142,
-                    42.3683729
-                ]
-            },
-            {
-                "name": "—> West End",
-                "center": [
-                    -71.0680548, 
-                    42.3650919
-                ]
-            },
-            {
-                "name": "—> Downtown",
-                "center": [
-                    -71.053804, 
-                    42.358257
-                ]
-            },
-            {
-                "name": "—> Beacon Hill",
-                "center": [
-                    -71.068097,
-                    42.359097
-                ]
-            },
-            {
-                "name": "—> Chinatown",
-                "center": [
-                    -71.060188,
-                    42.349870
-                ]
-            },
-            {
-                "name": "—> Back Bay",
-                "center": [
-                    -71.0859443,
-                    42.349269
-                ]
-            },
-            {
-                "name": "—> South End",
-                "center": [
-                    -71.0785172,
-                    42.3397116
-                ]
-            },
-            {
-                "name": "—> South Boston",
-                "center": [
-                    -71.051062,
-                    42.3338296
-                ]
-            },
-            {
-                "name": "—> Fenway-Kenmore",
-                "center": [
-                    -71.102303,
-                    42.3439793
-                ]
-            },
-            {
-                "name": "—> Brighton",
-                "center": [
-                    -71.1653334, 
-                    42.3485218
-                ]
-            },
-            {
-                "name": "—> Roxbury",
-                "center": [
-                    -71.1072678,
-                    42.316851
-                ]
-            },
-            {
-                "name": "—> Dorchester",
-                "center": [
-                    -71.0848544,
-                    42.2992132
-                ]
-            },
-            {
-                "name": "—> Jamaica Plain",
-                "center": [
-                    -71.1382822,
-                    42.3082487
-                ]
-            },
-            {
-                "name": "—> Mattapan",
-                "center": [
-                    -71.0978795,
-                    42.2780937
-                ]
-            },
-            {
-                "name": "—> Roslindale",
-                "center": [
-                    -71.1340216,
-                    42.2830182
-                ]
-            },
-            {
-                "name": "—> Hyde Park",
-                "center": [
-                    -71.1426532, 
-                    42.2528521
-                ]
-            }
+        {
+            "name": "—> East Boston",
+            "center": [
+                -71.039048,
+                42.3698065
+            ]
+        },
+        {
+            "name": "—> Charlestown",
+            "center": [
+                -71.0681342,
+                42.3796554
+            ]
+        },
+        {
+            "name": "—> North End",
+            "center": [
+                -71.0563142,
+                42.3683729
+            ]
+        },
+        {
+            "name": "—> West End",
+            "center": [
+                -71.0680548, 
+                42.3650919
+            ]
+        },
+        {
+            "name": "—> Downtown",
+            "center": [
+                -71.053804, 
+                42.358257
+            ]
+        },
+        {
+            "name": "—> Beacon Hill",
+            "center": [
+                -71.068097,
+                42.359097
+            ]
+        },
+        {
+            "name": "—> Chinatown",
+            "center": [
+                -71.060188,
+                42.349870
+            ]
+        },
+        {
+            "name": "—> Back Bay",
+            "center": [
+                -71.0859443,
+                42.349269
+            ]
+        },
+        {
+            "name": "—> South End",
+            "center": [
+                -71.0785172,
+                42.3397116
+            ]
+        },
+        {
+            "name": "—> South Boston",
+            "center": [
+                -71.051062,
+                42.3338296
+            ]
+        },
+        {
+            "name": "—> Fenway-Kenmore",
+            "center": [
+                -71.102303,
+                42.3439793
+            ]
+        },
+        {
+            "name": "—> Allston",
+            "center": [
+                -71.1392538,
+                42.3598216
+            ]
+        },
+        {
+            "name": "—> Brighton",
+            "center": [
+                -71.1653334, 
+                42.3485218
+            ]
+        },
+        {
+            "name": "—> Roxbury",
+            "center": [
+                -71.1072678,
+                42.316851
+            ]
+        },
+        {
+            "name": "—> Dorchester",
+            "center": [
+                -71.0848544,
+                42.2992132
+            ]
+        },
+        {
+            "name": "—> Jamaica Plain",
+            "center": [
+                -71.1382822,
+                42.3082487
+            ]
+        },
+        {
+            "name": "—> Mattapan",
+            "center": [
+                -71.0978795,
+                42.2780937
+            ]
+        },
+        {
+            "name": "—> Roslindale",
+            "center": [
+                -71.1340216,
+                42.2830182
+            ]
+        },
+        {
+            "name": "—> Hyde Park",
+            "center": [
+                -71.1426532, 
+                42.2528521
+            ]
+        },
+        {
+            "name": "—> West Roxbury",
+            "center": [
+                -71.1678257,
+                42.2843684
+            ]
+        }
     ],
     "faunaConfiguration": {
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",

@@ -35,7 +35,7 @@
     } else if (m.detail.action === "jumpToCoverageLocation") {
       changeMapView({
         center: m.detail.center,
-        zoom: 18,
+        zoom: 17.5,
       });
     } else if (m.detail.action === "search") {
       $appState.modals.search = true;
