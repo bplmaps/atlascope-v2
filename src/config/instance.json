@@ -2,11 +2,14 @@
     "baseURL": "https://atlascope.org",
     "name": "Boston",
     "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
-    "geographicCoverage": "Boston and its inner suburbs",
+    "geographicCoverage": "the Boston metropolitan area",
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.3049167705931524,42.2281870003616717, -70.8244609573852699,42.5146499771215645
+        -71.3049167705931524,
+        42.2281870003616717,
+        -70.8244609573852699,
+        42.5146499771215645
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -46,6 +49,180 @@
                     "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
                 }
             }
+        }
+    ],
+    "coverageDescriptiveList": [
+        {
+            "name": "Boston",
+            "center": [
+                -71.07733477136398,
+                42.34962571323688
+            ]
+        },
+        {
+            "name": "—> East Boston",
+            "center": [
+                -71.039048,
+                42.3698065
+            ]
+        },
+        {
+            "name": "—> Charlestown",
+            "center": [
+                -71.0681342,
+                42.3796554
+            ]
+        },
+        {
+            "name": "—> Downtown Boston",
+            "center": [
+                -71.0619548,
+                42.3622303
+            ]
+        },
+        {
+            "name": "—> South End",
+            "center": [
+                -71.0785172,
+                42.3397116
+            ]
+        },
+        {
+            "name": "—> South Boston",
+            "center": [
+                -71.051062,
+                42.3338296
+            ]
+        },
+        {
+            "name": "—> Fenway-Kenmore",
+            "center": [
+                -71.102303,
+                42.3439793
+            ]
+        },
+        {
+            "name": "—> Allston",
+            "center": [
+                -71.1392538,
+                42.3598216
+            ]
+        },
+        {
+            "name": "—> Brighton",
+            "center": [
+                -71.1653334, 
+                42.3485218
+            ]
+        },
+        {
+            "name": "—> Roxbury",
+            "center": [
+                -71.1072678,
+                42.316851
+            ]
+        },
+        {
+            "name": "—> Dorchester",
+            "center": [
+                -71.0848544,
+                42.2992132
+            ]
+        },
+        {
+            "name": "—> Jamaica Plain",
+            "center": [
+                -71.1382822,
+                42.3082487
+            ]
+        },
+        {
+            "name": "—> Mattapan",
+            "center": [
+                -71.0978795,
+                42.2780937
+            ]
+        },
+        {
+            "name": "—> Roslindale",
+            "center": [
+                -71.1340216,
+                42.2830182
+            ]
+        },
+        {
+            "name": "—> Hyde Park",
+            "center": [
+                -71.1426532, 
+                42.2528521
+            ]
+        },
+        {
+            "name": "—> West Roxbury",
+            "center": [
+                -71.1678257,
+                42.2843684
+            ]
+        },
+        {
+            "name": "Brookline",
+            "center": [
+                -71.1629888, 42.3232338
+            ]
+        },
+        {
+            "name": "Cambridge",
+            "center": [
+                -71.102553,
+                42.364517
+            ]
+        },
+        {
+            "name": "Chelsea",
+            "center": [
+                -71.029272,
+                42.395763
+            ]
+        },
+        {
+            "name": "Hull",
+            "center": [
+                -70.8790163,
+                42.2912529
+            ]
+        },
+        {
+            "name": "Lynn",
+            "center": [
+                -70.951509, 42.464246
+            ]
+        },
+        {
+            "name": "Newton",
+            "center": [
+                -71.1957894,
+                42.328579
+            ]
+        },
+        {
+            "name": "Revere",
+            "center": [
+                -70.992365,
+                42.408756
+            ]
+        },
+        {
+            "name": "Somerville",
+            "center": [
+                -71.096563,
+                42.388663
+            ]
+        },
+        {
+            "name": "Winthrop",
+            "center": [
+                -70.983868, 42.376998
+            ]
         }
     ],
     "faunaConfiguration": {

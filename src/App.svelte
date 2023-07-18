@@ -32,6 +32,11 @@
         center: instanceVariables.defaultStartLocation.center,
         zoom: instanceVariables.defaultStartLocation.zoom,
       });
+    } else if (m.detail.action === "jumpToCoverageLocation") {
+      changeMapView({
+        center: m.detail.center,
+        zoom: 17.5,
+      });
     } else if (m.detail.action === "search") {
       $appState.modals.search = true;
     } else if (m.detail.action === "find") {
