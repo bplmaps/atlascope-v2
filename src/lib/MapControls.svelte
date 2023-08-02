@@ -30,15 +30,15 @@
   };
 
   let controlGroups = [
-    { id: "view", name: "View Controls", icon: faMap },
+    { id: "view", name: "View", icon: faMap },
     {
       id: "search",
-      name: "Search Places",
+      name: "Search",
       icon: faMagnifyingGlassLocation,
     },
     {
       id: "research",
-      name: "Research Tools",
+      name: "Research",
       icon: faMagnifyingGlassArrowRight,
     },
     {
@@ -92,9 +92,13 @@
 
 <section>
   <div class="drop-shadow-xl mx-auto w-fit h-fit">
-    <div class="w-full border-b-2 bg-stone-50 rounded-t-lg p-2">
+
+    <div class="w-full relative bg-stone-50 rounded-t-lg p-2">
+      <div class="absolute bottom-5 left-5">Ch</div>
+
+
       {#if controlState === "default"}
-        <div class="flex">
+        <div class="flex flex-wrap place-content-center">
           <div class="mr-2">
             <LayerChooserDropupMenu
               choices={layerChoices}
@@ -122,7 +126,7 @@
         </div>
       {:else}
         <div class="flex">
-          {#each ["overlay", "base"] as lyr}
+          {#each ["base", "overlay"] as lyr}
             <div
               class="text-sm text-stone-500 bg-stone-200 px-2 py-0.5 rounded mr-2"
             >
@@ -137,7 +141,7 @@
         </div>
       {/if}
     </div>
-    <div class="w-full bg-stone-400 rounded-b-lg p-2">
+    <div class="w-full bg-stone-400 shadow-inner rounded-b-lg p-2">
       <div class="w-full mx-auto">
         <div class="flex justify-center">
           {#each controlGroups as cg}
@@ -158,13 +162,15 @@
         </div>
       </div>
     </div>
+
+    
   </div>
 </section>
 
 <style>
   section {
     position: absolute;
-    bottom: 20px;
+    bottom: 10px;
     left: 20px;
     right: 20px;
   }
