@@ -19,9 +19,15 @@
   function copyURL() {
     urlField.select();
     urlField.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(urlField.value);
     let messageSuffix = showView ? "This link will take someone to exact view you're looking at now." : "This link will take someone to the Atlascope app landing page.";
-    window.alert(`Link copied to clipboard! ${messageSuffix}`)
+    navigator.clipboard
+      .writeText(urlField.value)
+      .then(() => {
+        window.alert(`Link copied to clipboard! ${messageSuffix}`)
+      })
+      .catch(() => {
+        alert("We're sorry — something went wrong in copying this URL.");
+      });
   }
   
 </script>
