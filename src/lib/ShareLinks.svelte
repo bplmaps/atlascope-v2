@@ -19,7 +19,7 @@
   function copyURL() {
     urlField.select();
     urlField.setSelectionRange(0, 99999);
-    let messageSuffix = showView ? "This link will take someone to exact view you're looking at now." : "This link will take someone to the Atlascope app landing page.";
+    let messageSuffix = showView ? "This link will take someone to the exact view you're looking at now." : "This link will take someone to the Atlascope app landing page.";
     navigator.clipboard
       .writeText(urlField.value)
       .then(() => {
