@@ -9,6 +9,8 @@
     faLandmark,
     faChevronUp,
     faQuestionCircle,
+    faClipboardQuestion,
+    faPersonCircleQuestion,
   } from "@fortawesome/free-solid-svg-icons";
 
   import SvelteMarkdown from "svelte-markdown";
@@ -19,7 +21,9 @@
   import { appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
-  import LightIconButton from "./LightIconButton.svelte";
+  import LightIconButton from "./LightIconButton.svelte"; 
+  import introJs from "intro.js";
+  import "intro.js/introjs.css";
 
   function splashButton(b) {
     $appState.gateway = false;
@@ -30,14 +34,82 @@
     { id: "find", text: "Find my location", icon: faLocationArrow },
     { id: "search", text: "Search places", icon: faSearchLocation },
     { id: "tour", text: "Take a tour", icon: faHiking },
-    {
-      id: "start",
-      text: `Start at ${instanceVariables.defaultStartLocation.name}`,
-      icon: faLandmark,
-    },
+    { id: "start", text: `Start at ${instanceVariables.defaultStartLocation.name}`, icon: faLandmark },
   ];
 
   let coverageDescriptiveListMenuPopFlag = false;
+
+  function startHelpIntro(){
+    var intro = introJs();
+      intro.setOptions({
+        steps: [
+          {
+            title: 'Welcome! 👋',
+            intro: `Atlascope ${instanceVariables.tagline}. This guide will walk you through some of the ways you can use the tool.`
+          },
+          {
+            element: document.querySelector('#find'),
+            title: "Place Yourself in History",
+            intro: "If you want, you can allow Atlascope to find your location, so that you can peek into the past of the place you're standing. (This is especially fun if you're on your cell phone!)"
+          },
+          {
+            element: document.querySelector('#search'),
+            title: "Search a Modern Address",
+            intro: 'You can also start using Atlascope by searching for a modern address or place name.'
+          },
+          {
+            element: document.querySelector('#tour'),
+            title: "Take an Atlascope Tour",
+            intro: 'You can also start using the tool by seeing some of the narrative tours that use Atlascope.'
+          },
+          {
+            title: "Jump Into the Map",
+            element: document.querySelector('#start'),
+            intro: "You can also jump straight to our starting location to begin exploring the map. We'll do that in the next step!"
+          },
+          {
+            element: document.querySelector('#map'),
+            intro: "This is the map — we'll show you how to control the map next."
+          },
+          {
+            element: document.querySelector('#drag-handle'),
+            intro: "You can change how much of the overlay map is shown by dragging this handle in or out."
+          },
+          {
+            title: 'Controlling the map',
+            element: document.querySelector('#map-controls'),
+            intro: 'Clicking this panel will allow you to change the view type and gives you access to the "Search places" and "Find my location" button. In addition to the zoom in/out buttons, you can also zoom using the scroll wheel on a mouse or by zooming on your phone.'
+          },
+          {
+            title: 'Exploring Layers!',
+            element: document.querySelector('#layer-controls'),
+            intro: `By clicking on this panel, you can change what layers are available for the location you're seeing on the screen. In addition to changing the overlay layer, you can also change the base layer to help show how a place changed between two years.`
+          },
+          {
+            title: 'Research this location',
+            element: document.querySelector('#research-controls'),
+            intro: `If you open this panel, you'll be able to annotate maps with observations, stories, or facts and you can also search for other maps and images that are somehow related to the area shown on your screen.`
+          },
+          {
+            title: 'Share Atlascope',
+            element: document.querySelector('#share-controls'),
+            intro: `If you find a view that you'd like to share, you can do it by clicking this control panel and clicking "Copy".`
+          },
+          {
+            title: 'Happy Atlascope-ing!',
+            intro: `That's it — we hope you find Atlascope useful. To learn more about Atlascope, <a "target=_blank" href="https://www.leventhalmap.org/projects/digital-projects/atlascope/">visit our website</a>.`
+          },
+          
+        ]
+      });
+      intro.onbeforechange(function () {
+        if (this._currentStep === 5) {
+          splashButton({action: "start"});
+        }
+      });
+      intro.start();
+  }
+
 </script>
 
 <section id="splash" class="ui-top-level-layer">
@@ -90,6 +162,7 @@
             <LightIconButton
               label={button.text}
               icon={button.icon}
+              id = {button.id}
               on:click={() => {
                 splashButton({action: button.id});
               }}
@@ -170,6 +243,16 @@
           size="sm"
           on:click={() => {
             window.open(instanceVariables.aboutPage);
+          }}
+        />
+      </div>
+      <div class="my-3">
+        <LightIconButton
+          icon={faPersonCircleQuestion}
+          label="Help"
+          size="sm"
+          on:click={() => {
+            startHelpIntro()
           }}
         />
       </div>
