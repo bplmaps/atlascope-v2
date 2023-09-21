@@ -39,16 +39,8 @@
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faMap },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
-    {
-      id: "research-controls",
-      name: "Research",
-      icon: faMagnifyingGlassArrowRight,
-    },
-    {
-      id: "share-controls",
-      name: "Share",
-      icon: faShare,
-    },
+    { id: "research-controls", name: "Research", icon: faMagnifyingGlassArrowRight },
+    { id: "share-controls", name: "Share", icon: faShare },
   ];
 
   // we compose the possible layer choices out of both the $allLayers store of historic layers, and the reference layers
@@ -92,7 +84,7 @@
     return c;
   }
 
-  let panelShown = null;
+  export let panelShown = null;
 
   $: shareURLs = {
     "app": instanceVariables.baseURL,
@@ -111,6 +103,7 @@
   function handleChangeMode(d) {
     dispatch("changeMode", { id: d.detail.id });
   }
+
 </script>
 
 <section>
@@ -149,6 +142,7 @@
 
   {#each controlGroups as cg}
     <div
+      id="{cg.id}"
       class="control-tab mr-2 select-none"
       class:control-tab-active={cg.id === panelShown}
       on:click={() => {
