@@ -6,10 +6,10 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.3049167705931524,
-        42.2281870003616717,
-        -70.8244609573852699,
-        42.5490474617120498
+        -71.3703853574505303,
+        42.1355272989835896,
+        -70.8245000000000005,
+        42.5489999999999995
     ],
     "defaultStartLocation": {
         "name": "BPL",
