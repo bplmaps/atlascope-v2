@@ -141,7 +141,7 @@
       if (options.zoom) {
         m.zoom = options.zoom;
       }
-      if(options.rotate) {
+      if (options.rotate) {
         m.rotation = view.getRotation() + (2 * Math.PI) / 6;
       }
 
@@ -150,8 +150,6 @@
       } else {
         m.duration = options.duration;
       }
-
-      
 
       view.animate(m);
 
@@ -469,7 +467,6 @@
     draggingFlag = false;
   }}
 >
-  
   <div id="map-div" />
 
   <div
@@ -503,16 +500,15 @@
       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
     />
     <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
-
   </div>
 
   {#if availableValidLayers === 0 || mapState.layerChangePopup}
-  <div class="absolute top-2 w-full">
-    <MapErrorModal
-    outOfBoundsMessage={availableValidLayers === 0}
-    movedOffEdgeMessage={mapState.layerChangePopup}
-  />
-  </div>
+    <div class="absolute top-2 w-full">
+      <MapErrorModal
+        outOfBoundsMessage={availableValidLayers === 0}
+        movedOffEdgeMessage={mapState.layerChangePopup}
+      />
+    </div>
   {/if}
 
   <div
@@ -586,7 +582,6 @@
   {#if mapState.mounted && !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
     <MainControls {mapState} {changeMapView} />
   {/if}
-
 </section>
 
 <style>
