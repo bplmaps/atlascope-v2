@@ -9,7 +9,8 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
-  import MapControls from "./MapControls.svelte";
+  import MainControls from "./MainControls/MainControls.svelte";
+  import MapErrorModal from "./MapErrorModal.svelte";
   import GeolocationModal from "./GeolocationModal.svelte";
   import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
   import AnnotationsListModal from "./AnnotationsListModal.svelte";
@@ -68,6 +69,9 @@
   };
 
   let opacitySliderValue = 50;
+  $: availableValidLayers = $allLayers.filter(
+    (layer) => layer.extentVisible > 0.2,
+  ).length;
 
   let view = new View({
     center:
@@ -129,7 +133,7 @@
       changeLayer("base", options.base);
     }
 
-    if (options.center || options.zoom) {
+    if (options.center || options.zoom || options.rotate) {
       let m = {};
       if (options.center) {
         m.center = fromLonLat(options.center);
@@ -137,12 +141,17 @@
       if (options.zoom) {
         m.zoom = options.zoom;
       }
+      if(options.rotate) {
+        m.rotation = view.getRotation() + (2 * Math.PI) / 6;
+      }
 
       if (!options.duration && options.duration != 0) {
         m.duration = 900;
       } else {
         m.duration = options.duration;
       }
+
+      
 
       view.animate(m);
 
@@ -154,7 +163,7 @@
     if (options.dropMarkerAtPoint) {
       const targetPoint = fromLonLat(options.center);
       markerGeometrySource.addFeature(
-        new Feature({ geometry: new Point(targetPoint) })
+        new Feature({ geometry: new Point(targetPoint) }),
       );
     }
   };
@@ -163,7 +172,7 @@
     let p = $allLayers.find((d) => d.properties.identifier === layerId);
     if (!p) {
       p = instanceVariables.referenceLayers.find(
-        (d) => d.properties.identifier === layerId
+        (d) => d.properties.identifier === layerId,
       );
     }
     return p;
@@ -175,32 +184,38 @@
     map.render();
   };
 
-  // function for changing the layer, we export it so that the outer app can also access this function
+  // function for changing the layer
   const changeLayer = (layer, id) => {
     if (id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
 
-      if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier === "maptiler-streets") {
+      if (
+        newLayer.properties.source.type === "tilejson" &&
+        newLayer.properties.identifier === "maptiler-streets"
+      ) {
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({
             url: newLayer.properties.source.url,
             crossOrigin: "anonymous",
             tileSize: 512,
-          })
+          }),
         );
-      } else if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier !== "maptiler-streets") {
+      } else if (
+        newLayer.properties.source.type === "tilejson" &&
+        newLayer.properties.identifier !== "maptiler-streets"
+      ) {
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({
             url: newLayer.properties.source.url,
             crossOrigin: "anonymous",
-          })
+          }),
         );
       } else if (newLayer.properties.source.type === "xyz") {
         mapState.layers[layer].olLayer.setSource(
           new XYZ({
             url: newLayer.properties.source.url,
             crossOrigin: "anonymous",
-          })
+          }),
         );
       }
 
@@ -218,7 +233,7 @@
     mapState.extent = transformExtent(
       view.calculateExtent(),
       "EPSG:3857",
-      "EPSG:4326"
+      "EPSG:4326",
     );
 
     const extent = map.getView().calculateExtent(map.getSize());
@@ -238,7 +253,12 @@
 
     // Implement a double check process
     // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
-    if (currentLayerInfo.extentVisible < 0.4 && $allLayers.filter(d=>d.extentVisible > (currentLayerInfo.extentVisible+0.2)).length > 0 ) {
+    if (
+      currentLayerInfo.extentVisible < 0.4 &&
+      $allLayers.filter(
+        (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
+      ).length > 0
+    ) {
       let bestNewLayer = $allLayers.sort((a, b) => {
         return b.extentVisible - a.extentVisible;
       })[0].properties.identifier;
@@ -301,7 +321,7 @@
       loadedAnnotationsList[d.detail.annotationIndex].data;
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsGeometrySource.addFeature(
-      new Feature(fromExtent(selectedAnnotation.extent))
+      new Feature(fromExtent(selectedAnnotation.extent)),
     );
     console.log(selectedAnnotation.layer);
     changeMapView({ overlay: selectedAnnotation.layer });
@@ -319,13 +339,13 @@
       "base",
       urlParams.view && urlParams.base
         ? urlParams.base
-        : instanceVariables.defaultStartLocation.baseLayerId
+        : instanceVariables.defaultStartLocation.baseLayerId,
     );
     changeLayer(
       "overlay",
       urlParams.view && urlParams.overlay
         ? urlParams.overlay
-        : instanceVariables.defaultStartLocation.overlayLayerId
+        : instanceVariables.defaultStartLocation.overlayLayerId,
     );
 
     map = new Map({
@@ -360,14 +380,14 @@
             0,
             0,
             ctx.canvas.width,
-            (dragXY[1] + dragAdjuster) * pixelRatio
+            (dragXY[1] + dragAdjuster) * pixelRatio,
           );
         } else if (mapState.viewMode === "swipe-x") {
           ctx.rect(
             0,
             0,
             (dragXY[0] + dragAdjuster) * pixelRatio,
-            ctx.canvas.height
+            ctx.canvas.height,
           );
         } else if (mapState.viewMode === "glass") {
           ctx.arc(
@@ -379,18 +399,18 @@
                   Math.pow(
                     (dragXY[0] + dragAdjuster - window.innerWidth / 2) *
                       pixelRatio,
-                    2
+                    2,
                   ) +
                     Math.pow(
                       (dragXY[1] + dragAdjuster - window.innerHeight / 2) *
                         pixelRatio,
-                      2
-                    )
-                )
-              )
+                      2,
+                    ),
+                ),
+              ),
             ),
             0,
-            2 * Math.PI
+            2 * Math.PI,
           );
         } else ctx.fillStyle = "rgba(10,10,10,0.85)";
         ctx.fill();
@@ -449,6 +469,7 @@
     draggingFlag = false;
   }}
 >
+  
   <div id="map-div" />
 
   <div
@@ -482,7 +503,17 @@
       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
     />
     <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
+
   </div>
+
+  {#if availableValidLayers === 0 || mapState.layerChangePopup}
+  <div class="absolute top-2 w-full">
+    <MapErrorModal
+    outOfBoundsMessage={availableValidLayers === 0}
+    movedOffEdgeMessage={mapState.layerChangePopup}
+  />
+  </div>
+  {/if}
 
   <div
     on:click={() => {
@@ -553,30 +584,9 @@
   {/if}
 
   {#if mapState.mounted && !mapState.annotationMode && loadedAnnotationsList.length === 0 && !$appState.tour.active}
-    <MapControls
-      {mapState}
-      on:changeLayer={(d) => {
-        changeLayer(d.detail.layer, d.detail.id);
-      }}
-      on:changeMode={(d) => {
-        changeMode(d.detail.id);
-      }}
-      on:zoomIn={() => {
-        view.animate({ zoom: view.getZoom() + 1, duration: 500 });
-      }}
-      on:zoomOut={() => {
-        view.animate({ zoom: view.getZoom() - 1, duration: 500 });
-      }}
-      on:rotate={() => {
-        view.animate({
-          rotation: view.getRotation() + (2 * Math.PI) / 6,
-          duration: 500,
-        });
-      }}
-      on:enableAnnotationMode={enableAnnotationMode}
-      on:loadAnnotations={loadAnnotations}
-    />
+    <MainControls {mapState} {changeMapView} />
   {/if}
+
 </section>
 
 <style>

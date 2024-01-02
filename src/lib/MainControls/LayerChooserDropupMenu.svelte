@@ -9,7 +9,6 @@
 
   let dispatch = createEventDispatcher();
 
-
   function handleSelection(id) {
     poppedFlag = false;
     dispatch("selectionMade", { id: id });
@@ -30,8 +29,20 @@
     >
       <span class="flex items-center">
         <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
-        <span class="ml-1 block truncate text-gray-900 text-lg">{ chosen.title }</span>
-        <span class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1">{ Math.round(chosen.pct * 100) }% <span class="hidden md:inline">coverage</span></span>
+        {#if chosen && chosen.title}
+          
+          <span class="ml-1 block truncate text-gray-900 text-lg"
+            >{chosen.title}</span
+          >
+          <span
+            class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
+            >{Math.round(chosen.pct * 100)}% coverage</span
+          >
+          {:else}
+          <span class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
+            >No layer</span
+          >
+        {/if}
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
@@ -70,11 +81,16 @@
           }}
         >
           <div class="flex items-center">
-            <span class="font-bold text-lg ml-1 mr-2 block">{choice.title}</span
-            ><span class="text-sm">{choice.subtitle}</span><span
-              class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-              >{Math.round(choice.pct * 100)}%</span
-            >
+            {#if choice && choice.title}
+              <span class="font-bold text-lg ml-1 mr-2 block"
+                >{choice.title}</span
+              ><span class="text-sm">{choice.subtitle}</span><span
+                class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
+                >{Math.round(choice.pct * 100)}%</span
+              >
+
+
+            {/if}
           </div>
         </li>
       {/each}
