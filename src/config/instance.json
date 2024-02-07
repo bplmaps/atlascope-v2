@@ -6,7 +6,10 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.37040,42.13550,-70.82450,42.541
+        -71.37040,
+        42.13550,
+        -70.82450,
+        42.541
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -282,6 +285,20 @@
             ]
         },
         {
+            "name": "Wellesley",
+            "center": [
+                -71.2932808,
+                42.2984315
+            ]
+        },
+        {
+            "name": "Westwood",
+            "center": [
+                -71.1738475,
+                42.3682331
+            ]
+        },
+        {
             "name": "Winthrop",
             "center": [
                 -70.983868, 42.376998
@@ -302,6 +319,7 @@
         "text": "Help us extend the coverage in Atlascope by sponsoring an atlas"
     },
     "gaMeasurementId": "G-5K9LGW88CS",
+    "gaTMContainerId": "GTM-PZZJVTW",
     "metaTags": {
         "title": "Atlascope Boston",
         "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",

@@ -107,7 +107,7 @@
 </script>
 
 <section>
-  {#if $allLayers.filter((layer) => layer.extentVisible > 0.1).length === 0}
+  {#if $allLayers.filter((layer) => layer.extentVisible > 0.2).length === 0}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
