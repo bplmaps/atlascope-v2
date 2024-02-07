@@ -6,10 +6,7 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.3703853574505303,
-        42.1355272989835896,
-        -70.8245000000000005,
-        42.5489999999999995
+        -71.37040,42.13550,-70.82450,42.541
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -222,10 +219,31 @@
             ]
         },
         {
+            "name": "Medfield",
+            "center": [
+                -71.3102597,
+                42.1861507
+            ]
+        },
+        {
+            "name": "Needham",
+            "center": [
+                -71.2372311,
+                42.2800329
+            ]
+        },
+        {
             "name": "Newton",
             "center": [
                 -71.1957894,
                 42.328579
+            ]
+        },
+        {
+            "name": "Millis",
+            "center": [
+                -71.3606784,
+                42.1668564
             ]
         },
         {
@@ -247,6 +265,13 @@
             "center": [
                 -71.096563,
                 42.388663
+            ]
+        },
+        {
+            "name": "Waltham",
+            "center": [
+                -71.2359597,
+                42.3768737
             ]
         },
         {
