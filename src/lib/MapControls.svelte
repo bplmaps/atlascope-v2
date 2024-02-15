@@ -142,7 +142,6 @@
 
   {#each controlGroups as cg}
     <div
-      id="{cg.id}"
       class="control-tab mr-2 select-none"
       class:control-tab-active={cg.id === panelShown}
       on:click={() => {
