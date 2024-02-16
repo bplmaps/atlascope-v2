@@ -19,7 +19,7 @@
   import { appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
-  import LightIconButton from "./LightIconButton.svelte";
+  import LightIconButton from "./LightIconButton.svelte"; 
 
   function splashButton(b) {
     $appState.gateway = false;
@@ -30,14 +30,11 @@
     { id: "find", text: "Find my location", icon: faLocationArrow },
     { id: "search", text: "Search places", icon: faSearchLocation },
     { id: "tour", text: "Take a tour", icon: faHiking },
-    {
-      id: "start",
-      text: `Start at ${instanceVariables.defaultStartLocation.name}`,
-      icon: faLandmark,
-    },
+    { id: "start", text: `Start at ${instanceVariables.defaultStartLocation.name}`, icon: faLandmark },
   ];
 
   let coverageDescriptiveListMenuPopFlag = false;
+
 </script>
 
 <section id="splash" class="ui-top-level-layer">

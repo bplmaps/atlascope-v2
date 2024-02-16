@@ -4,7 +4,7 @@
     export let label;
     export let icon;
     export let disabled = false;
-    export let size="lg"
+    export let size = "lg";
 
     let iconMargin = label === "" ? "mr-0" : "mr-2"
 </script>
