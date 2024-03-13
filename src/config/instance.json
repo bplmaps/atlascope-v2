@@ -6,10 +6,10 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.37040,
-        42.13550,
-        -70.82450,
-        42.541
+        -71.3704,
+        42.04202,
+        -70.8245,
+        42.6132
     ],
     "defaultStartLocation": {
         "name": "BPL",
@@ -172,6 +172,20 @@
             ]
         },
         {
+            "name": "Brookfield",
+            "center": [
+                -72.102259,
+                42.216228
+            ]
+        },
+        {
+            "name": "Brockton",
+            "center": [
+                -71.0287826,
+                42.0827623
+            ]
+        },
+        {
             "name": "Cambridge",
             "center": [
                 -71.102553,
@@ -190,6 +204,13 @@
             "center": [
                 -71.2855398,
                 42.2457534
+            ]
+        },
+        {
+            "name": "East Brookfield",
+            "center": [
+                -72.0508704,
+                42.227004
             ]
         },
         {
@@ -243,6 +264,13 @@
             ]
         },
         {
+            "name": "North Brookfield",
+            "center": [
+                -72.084857,
+                42.268675
+            ]
+        },
+        {
             "name": "Millis",
             "center": [
                 -71.3606784,
@@ -289,6 +317,13 @@
             "center": [
                 -71.2932808,
                 42.2984315
+            ]
+        },
+        {
+            "name": "West Brookfield",
+            "center": [
+                -72.142085,
+                42.235399
             ]
         },
         {
