@@ -18,6 +18,7 @@
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
+  import coverageVariables from "../config/coverage-list.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import LightIconButton from "./LightIconButton.svelte"; 
 
@@ -104,7 +105,7 @@
           atlas layers of {instanceVariables.geographicCoverage}
         </p>
       </div>
-      {#if $appState.layersLoaded && instanceVariables.coverageDescriptiveList}
+      {#if $appState.layersLoaded && coverageVariables}
         <div class="py-3">
           <div class="relative inline-block text-left">
             <div>
@@ -140,7 +141,7 @@
                 tabindex="-1"
               >
                 <div class="py-1" role="none">
-                  {#each instanceVariables.coverageDescriptiveList as coverageLocation}
+                  {#each coverageVariables as coverageLocation}
                     <a
                       on:click="{()=>{ coverageDescriptiveListMenuPopFlag = false; splashButton({'action': 'jumpToCoverageLocation', 'center': coverageLocation.center }) }}"
                       class="text-gray-700 block px-4 py-2 text-sm hover:text-gray-900 hover:bg-gray-50 cursor-pointer"
