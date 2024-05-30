@@ -40,6 +40,19 @@
         {
             "properties": {
                 "globalExtent": true,
+                "identifier": "massgis-2021-orthos",
+                "fallbackSubtitle": "Aerial Imagery",
+                "year": 2021,
+                "bibliographicEntry": "Aerial imagery of Massachusetts from 2021, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery)",
+                "source": {
+                    "type": "xyz",
+                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
+                }
+            }
+        },
+        {
+            "properties": {
+                "globalExtent": true,
                 "identifier": "massgis-2023-orthos",
                 "fallbackSubtitle": "Aerial Imagery",
                 "year": 2023,
