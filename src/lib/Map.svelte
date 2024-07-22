@@ -503,6 +503,7 @@
           changeMapView({
             center: [e.detail.lon, e.detail.lat],
             duration: 300,
+            dropMarkerAtPoint: true,
           });
         }}
       />
