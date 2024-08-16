@@ -132,6 +132,10 @@
     max-height: 100%;
   }
 
+  :global(html) {
+    touch-action:none;
+  }
+
   @supports (font-variation-settings: normal) {
     :global(body) {
       font-family: "Inter var", sans-serif;
