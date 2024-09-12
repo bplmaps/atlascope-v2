@@ -153,6 +153,7 @@
 
     if (options.dropMarkerAtPoint) {
       const targetPoint = fromLonLat(options.center);
+      markerGeometrySource.clear();
       markerGeometrySource.addFeature(
         new Feature({ geometry: new Point(targetPoint) })
       );
