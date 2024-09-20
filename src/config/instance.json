@@ -6,9 +6,9 @@
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
     "maxExtent": [
-        -71.3704,
-        42.04202,
-        -70.8245,
+        -72.1536,
+        41.5895,
+        -70.7953,
         42.6132
     ],
     "defaultStartLocation": {
@@ -178,6 +178,13 @@
             ]
         },
         {
+            "name": "Attleboro",
+            "center": [
+                -71.2893597,
+                41.9456738
+            ]
+        },
+        {
             "name": "Beverly",
             "center": [
                 -70.8810547,
@@ -284,6 +291,13 @@
             ]
         },
         {
+            "name": "New Bedford",
+            "center": [
+                -70.9279265,
+                41.6355555
+            ]
+        },
+        {
             "name": "Newton",
             "center": [
                 -71.1957894,
@@ -295,6 +309,13 @@
             "center": [
                 -72.084857,
                 42.268675
+            ]
+        },
+        {
+            "name": "Melrose",
+            "center": [
+                -71.060839,
+                42.4635735
             ]
         },
         {
@@ -330,6 +351,13 @@
             "center": [
                 -71.096563,
                 42.388663
+            ]
+        },
+        {
+            "name": "Taunton",
+            "center": [
+                -71.0973594,
+                41.9036977
             ]
         },
         {
