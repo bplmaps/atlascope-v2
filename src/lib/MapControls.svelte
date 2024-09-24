@@ -164,19 +164,11 @@
             dispatch("zoomOut");
           }}
           type="button"
-          class="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+          class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-l-0 border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
         >
           <Fa icon={faMinus} />
         </button>
-        <button
-          on:click={() => {
-            dispatch("rotate");
-          }}
-          type="button"
-          class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-r-md border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
-        >
-          <Fa icon={faRotateRight} />
-        </button>
+ 
       </div>
       
       <div class="mr-4">
