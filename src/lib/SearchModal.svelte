@@ -49,7 +49,7 @@
       )
         .then((d) => d.json())
         .then((d) => {
-          if (d.suggestions.length > 0) {
+          if (d.suggestions && d.suggestions.length > 0) {
             filterWithinAtlasCoverage(d.suggestions);
           }
         });
