@@ -84,22 +84,21 @@
       {#each filteredItems.sort((a, b) => a.new ? -1 : b.new ? 1 : 0) as item, i}
         {#if item.new }
           <li
-            class="px-4 py-2 text-left hover:bg-gray-100 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
-            style="border-bottom:dotted 1px gray"
+            class="px-4 py-2 text-left bg-blue-100 hover:bg-blue-200 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
             onclick={() => selectItem(item)}
           >
-            <span class="border bg-blue-300 rounded-lg p-1" style="font-size:0.8em;font-style:oblique;">New!</span> {item.name}
+            <span class="bg-blue-300 rounded-lg p-1 mr-1" style="font-size:0.7em;font-style:oblique;">New!</span> {item.name}
           </li>
         {:else if item.neighborhood}
           <li
-              class="px-4 py-2 text-left hover:bg-gray-100 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
+              class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
               onclick={() => selectItem(item)}
             >
             <span style="font-size:0.8em;font-style:oblique;">—> {item.name}</span>
           </li>
         {:else}
           <li
-            class="px-4 py-2 text-left hover:bg-gray-100 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
+            class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer {i === highlightedIndex ? 'bg-blue-100' : ''}"
             onclick={() => selectItem(item)}
           >
             {item.name}
