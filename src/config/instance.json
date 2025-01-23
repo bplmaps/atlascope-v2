@@ -73,109 +73,124 @@
             ]
         },
         {
-            "name": "—> East Boston",
+            "name": "East Boston",
             "center": [
                 -71.039048,
                 42.3698065
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Charlestown",
+            "name": "Charlestown",
             "center": [
                 -71.0681342,
                 42.3796554
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Downtown Boston",
+            "name": "Downtown",
             "center": [
                 -71.0619548,
                 42.3622303
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> South End",
+            "name": "South End",
             "center": [
                 -71.0785172,
                 42.3397116
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> South Boston",
+            "name": "South Boston",
             "center": [
                 -71.051062,
                 42.3338296
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Fenway-Kenmore",
+            "name": "Fenway",
             "center": [
                 -71.102303,
                 42.3439793
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Allston",
+            "name": "Allston",
             "center": [
                 -71.1392538,
                 42.3598216
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Brighton",
+            "name": "Brighton",
             "center": [
                 -71.1653334, 
                 42.3485218
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Roxbury",
+            "name": "Roxbury",
             "center": [
                 -71.1072678,
                 42.316851
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Dorchester",
+            "name": "Dorchester",
             "center": [
                 -71.0848544,
                 42.2992132
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Jamaica Plain",
+            "name": "Jamaica Plain",
             "center": [
                 -71.1382822,
                 42.3082487
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Mattapan",
+            "name": "Mattapan",
             "center": [
                 -71.0978795,
                 42.2780937
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Roslindale",
+            "name": "Roslindale",
             "center": [
                 -71.1340216,
                 42.2830182
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> Hyde Park",
+            "name": "Hyde Park",
             "center": [
                 -71.1426532, 
                 42.2528521
-            ]
+            ],
+            "neighborhood": true
         },
         {
-            "name": "—> West Roxbury",
+            "name": "West Roxbury",
             "center": [
                 -71.1678257,
                 42.2843684
-            ]
+            ],
+            "neighborhood": true
         },
         {
             "name": "Attleboro",
@@ -190,6 +205,14 @@
                 -70.8810547,
                 42.5508589
             ]
+        },
+        {
+            "name": "Braintree",
+            "center": [
+                -71.0072842,
+                42.2056713
+            ],
+            "new": true
         },
         {
             "name": "Brookline",
@@ -288,7 +311,8 @@
             "center": [
                 -71.060839,
                 42.4635735
-            ]
+            ],
+            "new": true
         },
         {
             "name": "Millis",
@@ -296,6 +320,22 @@
                 -71.3606784,
                 42.1668564
             ]
+        },
+        {
+            "name": "Milton",
+            "center": [
+                -71.0799559,
+                42.2539022
+            ],
+            "new": true
+        },
+        {
+            "name": "Nahant",
+            "center": [
+                -70.9155682,
+                42.4241975
+            ],
+            "new": true
         },
         {
             "name": "Needham",
@@ -347,10 +387,24 @@
             ]
         },
         {
+            "name": "Saugus",
+            "center": [
+                -71.0126055,
+                42.4653527
+            ]
+        },
+        {
             "name": "Somerville",
             "center": [
                 -71.096563,
                 42.388663
+            ]
+        },
+        {
+            "name": "Swampscott",
+            "center": [
+                -70.9216145,
+                42.4695056
             ]
         },
         {
@@ -387,6 +441,14 @@
                 -72.142085,
                 42.235399
             ]
+        },
+        {
+            "name": "Weymouth",
+            "center": [
+                -70.9402059,
+                42.2174225
+            ],
+            "new": true
         },
         {
             "name": "Westwood",
