@@ -1,15 +1,26 @@
 <script>
+  import instanceVariables from "../config/instance.json";
+
   let searchTerm = $state("");
   let selectedItem = $state(null);
   let isOpen = $state(false);
-  let { items = [], onSelect } = $props();
+  let { onSelect } = $props();
   let highlightedIndex = $state(-1);
 
+  let items = [];
   let filteredItems = $derived(
     items.filter((item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase()),
     ),
   );
+
+  async function fetchCoverage() {
+    let r = await fetch(instanceVariables.coverageDescriptiveList);
+    let d = await r.json();
+    if (r.ok) {
+      return d;
+    }
+  }
 
   function handleKeyDown(event) {
     switch (event.key) {
@@ -62,9 +73,12 @@
       highlightedIndex = -1;
     }, 200);
   }
+
 </script>
 
 <div class="relative w-full">
+  {#await fetchCoverage()}
+  {:then filteredItems }
   <input
     type="text"
     value={searchTerm}
@@ -107,4 +121,5 @@
       {/each}
     </ul>
   {/if}
+  {/await}
 </div>

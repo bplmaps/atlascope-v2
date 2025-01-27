@@ -21,6 +21,7 @@
         "overlayLayerId": "ark:/76611/al7rtfm98",
         "baseLayerId": "maptiler-streets"
     },
+    "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
     "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.geojson",
     "referenceLayers": [
         {
@@ -64,7 +65,6 @@
             }
         }
     ],
-    "coverageDescriptiveList": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/refs/heads/main/atlascope/atlascope-boston/coverage-list.json",
     "faunaConfiguration": {
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
         "domain": "db.us.fauna.com"

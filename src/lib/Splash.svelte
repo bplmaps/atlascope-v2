@@ -17,11 +17,9 @@
 
   import { allLayers } from "./stores.js";
   import { appState } from "./stores.js";
-  import { onMount } from "svelte";
   import instanceVariables from "../config/instance.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import LightIconButton from "./LightIconButton.svelte";
-
   import CoverageComboBox from "./CoverageComboBox.svelte";
 
   function splashButton(b) {
@@ -40,12 +38,7 @@
     },
   ];
 
-  let cov;
-  let covJson = 'https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/refs/heads/main/atlascope/atlascope-boston/coverage-list.json';
-  onMount(async () => {
-    cov = await fetch(covJson).then((x) => x.json());
-    console.log(cov)
-  })
+  let coverageData = instanceVariables.coverageDescriptiveList;
 
 </script>
 
@@ -115,13 +108,11 @@
         atlas layers of {instanceVariables.geographicCoverage}
       </p>
     </div>
-    {#if $appState.layersLoaded && cov}
+    {#if $appState.layersLoaded && coverageData}
       <div class="py-3">
         <div class="relative inline-block text-left">
           <CoverageComboBox
-            items={cov}
             onSelect={(item) => {
-              console.log(item);
               splashButton({
                 action: "jumpToCoverageLocation",
                 center: item.center,
