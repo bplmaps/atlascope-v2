@@ -20,7 +20,6 @@
   import instanceVariables from "../config/instance.json";
   import AtlascopeLogo from "./AtlascopeLogo.svelte";
   import LightIconButton from "./LightIconButton.svelte";
-
   import CoverageComboBox from "./CoverageComboBox.svelte";
 
   function splashButton(b) {
@@ -38,6 +37,8 @@
       icon: faLandmark,
     },
   ];
+
+  let coverageData = instanceVariables.coverageDescriptiveList;
 
 </script>
 
@@ -107,13 +108,11 @@
         atlas layers of {instanceVariables.geographicCoverage}
       </p>
     </div>
-    {#if $appState.layersLoaded && instanceVariables.coverageDescriptiveList}
+    {#if $appState.layersLoaded && coverageData}
       <div class="py-3">
         <div class="relative inline-block text-left">
           <CoverageComboBox
-            items={instanceVariables.coverageDescriptiveList}
             onSelect={(item) => {
-              console.log(item);
               splashButton({
                 action: "jumpToCoverageLocation",
                 center: item.center,
