@@ -109,7 +109,7 @@
     </div>
     {#if $appState.layersLoaded && instanceVariables.coverageDescriptiveList}
       <div class="py-3">
-        <div class="relative inline-block text-left">
+        <div class="relative inline-block text-left w-48">
           <CoverageComboBox
             items={instanceVariables.coverageDescriptiveList}
             onSelect={(item) => {
