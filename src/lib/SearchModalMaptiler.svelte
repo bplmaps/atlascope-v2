@@ -2,7 +2,6 @@
   import Fa from "svelte-fa";
   import {
     faCircleArrowRight,
-    faCropSimple,
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,39 +10,59 @@
   import ModalCloserButton from "./ModalCloserButton.svelte";
 
   import instanceVariables from "../config/instance.json";
-
   import { insideChecker } from "./helpers/intersector";
 
-  import { Log } from "faunadb";
-
   let dispatch = createEventDispatcher();
+  let searchText = "";
+  let results = [];
+  let selected = -1;
+  let showDropdown = false;
+  let atlasExtentsGeometry; // = $state(false);
+
+  let key = instanceVariables.geocodeKey;
 
   let debounceTimer;
-  let searchResults = $state([]);
-
-  let atlasExtentsGeometry = $state(false);
-  let searchText = "";
-
   function debounceSearch(e) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       executeSearch(e.target.value);
-    }, 1000);
+    }, 600);
   }
 
-  function executeSearch(searchString) {
-    // only run this if the geometry to test against has loaded
+  async function executeSearch(value) {
     if (atlasExtentsGeometry) {
-      searchResults = [];
-      fetch(
-        `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text=${searchString}&f=json&searchExtent=${instanceVariables.maxExtent.join(",")}`,
-      )
-        .then((d) => d.json())
-        .then((d) => {
-          if (d.suggestions && d.suggestions.length > 0) {
-            filterWithinAtlasCoverage(d.suggestions);
-          }
-        });
+      if (value.length < 3) {
+        results = [];
+        showDropdown = false;
+        return;
+      }
+    }
+    const bbox = '-73.508,41.237,-69.928,42.886'
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&limit=10&bbox=${bbox}&country=us`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const candidates = data.features || [];
+      console.log(candidates.length);
+
+      candidates.forEach((c) => {
+        filterFunction(c, atlasExtentsGeometry);
+      });
+
+      showDropdown = results.length > 0;
+    } catch (err) {
+      console.error("Geocoding error:", err);
+      results = [];
+      showDropdown = false;
+    }
+  }
+
+  function filterFunction(c, ag) {
+    let point = c.geometry.coordinates;
+    if (insideChecker(point, ag)) {
+      results.push(c);
     }
   }
 
@@ -54,40 +73,25 @@
       atlasExtentsGeometry = d.features[0].geometry;
     });
 
-  function filterWithinAtlasCoverage(candidates) {
-    candidates.forEach((c) => {
-      filterFunction(c, atlasExtentsGeometry);
+  function handleSelection(result, atlasExtentsGeometry) {
+    const [lon, lat] = result.geometry.coordinates;
+    dispatch("goToCoords", {
+      lon: lon,
+      lat: lat,
     });
+    searchText = result.place_name || result.properties.name;
+    showDropdown = false;
+    results = [];
   }
 
-  function filterFunction(candidate, atlasGeometry) {
-    fetch(
-      `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?&magicKey="${candidate.magicKey}"&f=json`,
-    )
-      .then((d) => d.json())
-      .then((candidateGeometry) => {
-        const point = candidateGeometry.candidates[0].location;
-        if (insideChecker(point, atlasGeometry)) {
-          searchResults.push(candidate);
-        }
-      });
-  }
-
-  function handleSelection(d) {
-    searchResults = null;
-    // searchText = d.text;
-    fetch(
-      `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?&magicKey="${d.magicKey}"&f=json`,
-    )
-      .then((d) => d.json())
-      .then((d) => {
-        if (d.candidates.length > 0) {
-          dispatch("goToCoords", {
-            lon: d.candidates[0].location.x,
-            lat: d.candidates[0].location.y,
-          });
-        }
-      });
+  function handleKeydown(e) {
+    if (e.key === "ArrowDown") {
+      selected = (selected + 1) % results.length;
+    } else if (e.key === "ArrowUp") {
+      selected = (selected - 1 + results.length) % results.length;
+    } else if (e.key === "Enter" && selected >= 0) {
+      handleSelection(results[selected]);
+    }
   }
 </script>
 
@@ -107,20 +111,18 @@
           id="search-input"
           type="text"
           placeholder="Enter address or location ..."
-          disabled={!atlasExtentsGeometry}
-          oninput={debounceSearch}
+          on:input={debounceSearch}
           bind:value={searchText}
+          on:keydown={handleKeydown}
         />
       </div>
-
-      {#if searchResults && searchResults.length > 0}
+      {#if showDropdown}
         <div>
-          <h1>Results</h1>
           <ul>
-            {#each searchResults as result}
+            {#each results as result}
               <li
                 class="text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
-                onclick={() => {
+                on:click={() => {
                   handleSelection(result);
                 }}
               >
@@ -128,7 +130,7 @@
                   icon={faCircleArrowRight}
                   class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
                 />
-                {result.text}
+                {result.place_name || result.properties.name}
               </li>
             {/each}
           </ul>

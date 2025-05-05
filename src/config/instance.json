@@ -66,6 +66,7 @@
             }
         }
     ],
+    "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "faunaConfiguration": {
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
         "domain": "db.us.fauna.com"
