@@ -22,7 +22,7 @@
         "baseLayerId": "maptiler-streets"
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
-    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/lmec-public-files/temp/boston-volume-extents.topojson",
+    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
     "referenceLayers": [
         {
             "properties": {
