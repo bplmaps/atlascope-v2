@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import instanceVariables from "./config/instance.json";
   import "./style/global.css";
+  import * as topojson from "topojson-client";
 
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
@@ -78,7 +79,7 @@
     fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
       .then((r) => r.json())
       .then((d) => {
-        let al = d.features;
+        let al = topojson.feature(d, "boston-volume-extents").features;
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
