@@ -19,7 +19,12 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@libsql/client": "^0.15.6",
+    "@libsql/hrana-client": "^0.8.0",
     "@turf/turf": "^7.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "faunadb": "^4.8.1",
     "ol": "^10.5.0",
     "svelte-fa": "^4.0.3",
