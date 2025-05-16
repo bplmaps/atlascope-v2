@@ -1,10 +1,16 @@
 import faunadb, { query as q } from "faunadb";
 import instanceVariables from "../../config/instance.json";
+import { createClient } from '@supabase/supabase-js'
 
 const client = new faunadb.Client({
     secret: instanceVariables.faunaConfiguration.secret,
     domain: instanceVariables.faunaConfiguration.domain
 })
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+const sb = createClient(supabaseUrl, supabaseAnonKey)
 
 export const writeAnnotation = async (extent, body, email, layerID) => {
 
@@ -28,6 +34,13 @@ export const writeAnnotation = async (extent, body, email, layerID) => {
             })
     });
 
+}
+
+export const getSbData = async () => {
+    const { data, error } = await sb
+    .from('tours')
+    .select()
+    console.log(data)
 }
 
 export const loadAllTours = async () => {

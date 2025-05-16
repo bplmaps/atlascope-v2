@@ -35,6 +35,8 @@
     getSingleAnnotation,
   } from "./helpers/faunaFunctions";
 
+  import { getSbData } from "./helpers/faunaFunctions";
+
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
 
@@ -316,6 +318,7 @@
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
+    getSbData();
     changeLayer(
       "base",
       urlParams.view && urlParams.base
