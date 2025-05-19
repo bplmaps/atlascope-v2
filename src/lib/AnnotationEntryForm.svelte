@@ -13,6 +13,7 @@
 
     let annotationBodyEntry;
     let annotationEmailEntry;
+    let newId;
 
     let processing = false;
     let completed = false;

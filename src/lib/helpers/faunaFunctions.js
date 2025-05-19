@@ -40,7 +40,7 @@ export const loadSingleTour = async (ref) => {
   });
 };
 
-// annotation functions
+// annotation read functions
 
 export const getAnnotationsWithinExtent = async (extent) => {
   const { data, error } = await sb.from("annotations").select();
@@ -48,8 +48,9 @@ export const getAnnotationsWithinExtent = async (extent) => {
     console.log(error)
   }
   const filtered = data.filter((x) => {
-    return intersects(x.extent, extent);
+    return intersects(JSON.parse(x.extent), extent);
   });
+  console.log(filtered)
   return filtered;
 };
 
@@ -61,32 +62,38 @@ export const getSingleAnnotation = async (ref) => {
     return data[0];
 };
 
+// annotation write functions
+
+export const newAnnotationId = async () => {
+    const {data, error } = await sb.from("annotations").select("id").order("id", { ascending: false }).limit(1)
+    const oldId = data[0].id
+    let newId = parseInt(oldId)+100
+    if (error) {
+        console.log(error)
+    }
+    return newId;
+};
+
 export const writeAnnotation = async (extent, body, email, layerID) => {
-  return new Promise((resolve, reject) => {
-    client
-      .query(
-        q.Create(q.Collection("user-annotations"), {
-          data: {
-            body: body,
-            extent: extent,
-            email: email,
-            layer: layerID,
-            cX: extent[0] + (extent[2] - extent[0]) / 2,
-            cY: extent[1] + (extent[3] - extent[1]) / 2,
-          },
-        })
-      )
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        console.error(
-          "Error: [%s] %s: %s",
-          err.name,
-          err.message,
-          err.errors()[0].description
-        );
-        reject();
-      });
-  });
+    const id = await newAnnotationId()
+    console.log(id)
+    let now = new Date().toISOString()
+    const { data, error } = await sb
+        .from("annotations")
+        .insert(
+            {
+                id: id,
+                timestamp: now,
+                body: body,
+                extent: extent,
+                layer: layerID,
+                cX: extent[0] + (extent[2] - extent[0]) / 2,
+                cY: extent[1] + (extent[3] - extent[1]) / 2,
+            }
+        )
+        .select();
+    if (error) {
+        console.log(error)
+    }
+    return data;
 };

@@ -289,6 +289,7 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
+      console.log(d)
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];
@@ -299,13 +300,14 @@
 
   function moveMapToAnnotation(d) {
     const selectedAnnotation = loadedAnnotationsList[d.detail.annotationIndex];
+    const extentJson = JSON.parse(selectedAnnotation.extent)
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsGeometrySource.addFeature(
-      new Feature(fromExtent(selectedAnnotation.extent))
+      new Feature(fromExtent(extentJson))
     );
     changeMapView({ overlay: selectedAnnotation.layer });
 
-    view.fit(selectedAnnotation.extent, {
+    view.fit(extentJson, {
       padding: [100, 100, 300, 100],
       duration: 1000,
       maxZoom: 19,
