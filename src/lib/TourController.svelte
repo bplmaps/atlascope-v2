@@ -21,6 +21,11 @@
   export let changeMapView;
 
   export let tourId;
+
+  let desc;
+  let date;
+  let layersInfo = [];
+
   let loadingFlag = true;
   let tourData;
   let currentStop = -1;
@@ -36,7 +41,7 @@
   }
 
   function goToCurrentStop() {
-    let cs = tourData.stops[currentStop === -1 ? 0 : currentStop];
+    let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
     changeMapView({
       center: cs.center,
       zoom: cs.zoom,
@@ -51,9 +56,51 @@
     goToCurrentStop();
   }
 
+  async function getAtlasMetadata() {
+    let cs = tourData.stopsJson[currentStop];
+    let base = cs.base;
+    let overlay = cs.overlay;
+    try {
+      const layers = [base, overlay];
+      const info = [];
+      for (const l of layers) {
+        let i = await checkLayer(l);
+        info.push(i);
+      }
+      layersInfo = info;
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  async function checkLayer(l) {
+    console.log(l);
+    if (l.startsWith("massgis")) {
+      if (l.endsWith("2021")) {
+        return "MassGIS Orthos 2021";
+      } else {
+        return "MassGIS Orthos 2023";
+      }
+    } else if (l.startsWith("ark")) {
+      const ark = l.slice(-9);
+      let url = `https://s3.us-east-2.wasabisys.com/urbanatlases/${ark}/tileset.json`;
+      const res = await fetch(url);
+      const json = await res.json();
+      desc = json.description;
+      date = json.name.slice(-4);
+      return json.description;
+    } else {
+      return "Maptiler Streets";
+    }
+  }
+
+  $: if (currentStop !== -1) {
+    getAtlasMetadata();
+  }
+
   onMount(() => {
     loadSingleTour(tourId).then((d) => {
-      tourData = d.data;
+      tourData = d.data[0];
       loadingFlag = false;
       goToCurrentStop();
     });
@@ -93,7 +140,9 @@
             <Fa icon={faHiking} class="inline mr-1" />Tour
           </div>
           <div class="p-3 grow">
-            <h2 class="inline text-xl font-bold">{tourData.metadata.title}</h2>
+            <h2 class="inline text-xl font-bold">
+              {tourData.metadataJson.title}
+            </h2>
           </div>
         </div>
       {/if}
@@ -114,13 +163,13 @@
           </button>
           <button
             on:click={tourStepForward}
-            disabled={currentStop === tourData.stops.length - 1}
+            disabled={currentStop === tourData.stopsJson.length - 1}
             type="button"
             class="py-2 px-4 text-md font-medium {currentStop ===
-            tourData.stops.length - 1
+            tourData.stopsJson.length - 1
               ? 'text-gray-100'
               : 'text-gray-900'} bg-white rounded-r-lg border-t border-b border-r border-gray-300 {currentStop ===
-            tourData.stops.length - 1
+            tourData.stopsJson.length - 1
               ? null
               : ' hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700'}"
           >
@@ -140,10 +189,10 @@
 
     <div class="px-4 py-3" id="captions">
       {#if currentStop === -1}
-        <h2 class="text-lg">{tourData.metadata.subtitle}</h2>
+        <h2 class="text-lg">{tourData.metadataJson.subtitle}</h2>
         <h3 class="text-sm text-gray-500">
-          Written by {tourData.metadata.author} · {new Date(
-            tourData.metadata.creationDate
+          Written by {tourData.metadataJson.author} · {new Date(
+            tourData.metadataJson.creationDate
           ).toLocaleDateString("en-US", {
             year: "numeric",
             day: "numeric",
@@ -152,10 +201,16 @@
         </h3>
       {:else}
         <SvelteMarkdown
-          source={tourData.stops[currentStop].caption}
+          source={tourData.stopsJson[currentStop].caption}
           renderers={{ link: ExternalLinkRenderer }}
         />
-        {#if currentStop === tourData.stops.length - 1}<LightIconButton
+        {#if currentStop !== -1}
+          <div class="text-xs justify-center items-center my-2 text-gray-500">
+            <div><i>Base: {layersInfo[0]}</i></div>
+            <div><i>Overlay: {layersInfo[1]}</i></div>
+          </div>
+        {/if}
+        {#if currentStop === tourData.stopsJson.length - 1}<LightIconButton
             label="Back to the beginning"
             size="xs"
             icon={faArrowsTurnToDots}

@@ -40,37 +40,29 @@ export const getSbData = async () => {
     const { data, error } = await sb
     .from('tours')
     .select()
-    console.log(data)
 }
 
 export const loadAllTours = async () => {
 
     return new Promise((resolve, reject) => {
-
-        client.query(
-            q.Paginate(q.Match(q.Index('tours-by-published-status'), true)),
-        )
-            .then((d) => { resolve(d); })
-            .catch((err) => {
-                console.error(err);
-                reject();
-            })
-    });
-
+        sb
+        .from('tours')
+        .select()
+        .eq('published',true)
+        .order('id', {ascending: true})
+        .then((d) => { resolve(d); })
+    })
 }
 
 export const loadSingleTour = async (ref) => {
+    console.log(ref)
 
     return new Promise((resolve, reject) => {
-
-        client.query(
-            q.Get(q.Ref(q.Collection('tours'), ref)),
-        )
-            .then((d) => { resolve(d); })
-            .catch((err) => {
-                console.error(err);
-                reject();
-            })
+        sb
+        .from('tours')
+        .select()
+        .eq('id', ref)
+        .then((d) => {resolve(d); })
     });
 
 }

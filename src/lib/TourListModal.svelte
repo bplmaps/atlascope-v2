@@ -55,14 +55,15 @@
         <div> 
           <ul>
       {#each tours as tour}
-
-      <li on:click="{()=>{dispatch('startTour',{"tourId": tour[0].value.id})}}" class="text-gray-700 py-2 border-b-2 cursor-pointer text-md hover:text-red-900 group">
-        <Fa
-                  icon={faCircleArrowRight}
-                  class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
-                />
-                {tour[1]} </li>
-
+        {#if tour?.metadataJson?.title}
+        <li on:click="{()=>{dispatch('startTour',{"id": tour.id})}}" class="text-gray-700 py-2 border-b-2 cursor-pointer text-md hover:text-red-900 group">
+          <Fa
+                    icon={faCircleArrowRight}
+                    class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
+                  />
+                  {tour.metadataJson.title}
+              </li>
+        {/if}
       {/each}
 
     </ul>

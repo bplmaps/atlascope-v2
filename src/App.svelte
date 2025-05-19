@@ -58,7 +58,7 @@
 
   function startTour(m) {
     closeAllModals();
-    $appState.tour.id = m.detail.tourId;
+    $appState.tour.id = m.detail.id;
     $appState.tour.active = true;
   }
 

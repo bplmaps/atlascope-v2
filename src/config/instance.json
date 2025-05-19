@@ -69,10 +69,6 @@
         "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
         "domain": "db.us.fauna.com"
     },
-    "supabaseConfig": {
-        "secret": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubGtqcGtpY2VpbWRveWVtcGNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0MTY5NDYsImV4cCI6MjA2Mjk5Mjk0Nn0.oeOCF8OVyETjLXEWBlplonkmdxgVjTY-vrJ2djpRBxE",
-        "domain": "https://wnlkjpkiceimdoyempcs.supabase.co"
-    },
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
     "outOfBoundsMessage": {
         "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",
