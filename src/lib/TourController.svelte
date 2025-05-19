@@ -77,9 +77,9 @@
     console.log(l);
     if (l.startsWith("massgis")) {
       if (l.endsWith("2021")) {
-        return "MassGIS Orthos 2021";
+        return "MassGIS Orthos (2021)";
       } else {
-        return "MassGIS Orthos 2023";
+        return "MassGIS Orthos (2023)";
       }
     } else if (l.startsWith("ark")) {
       const ark = l.slice(-9);
@@ -88,9 +88,10 @@
       const json = await res.json();
       desc = json.description;
       date = json.name.slice(-4);
-      return json.description;
+      let descDate = `${desc} (${date})`
+      return descDate;
     } else {
-      return "Maptiler Streets";
+      return "Modern Streets (2024)";
     }
   }
 
