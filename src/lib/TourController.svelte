@@ -8,7 +8,7 @@
 
   let dispatch = createEventDispatcher();
 
-  import { loadSingleTour } from "./helpers/faunaFunctions.js";
+  import { loadSingleTour } from "./helpers/supabaseFunctions.js";
   import {
     faArrowLeft,
     faHiking,
@@ -41,6 +41,7 @@
   }
 
   function goToCurrentStop() {
+    console.log(tourData)
     let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
     changeMapView({
       center: cs.center,
@@ -142,6 +143,7 @@
           </div>
           <div class="p-3 grow">
             <h2 class="inline text-xl font-bold">
+              {console.log(tourData)}
               {tourData.metadataJson.title}
             </h2>
           </div>
@@ -206,10 +208,9 @@
           renderers={{ link: ExternalLinkRenderer }}
         />
         {#if currentStop !== -1}
-          <div class="text-xs justify-center items-center my-2 text-gray-500">
-            <div><i>Base: {layersInfo[0]}</i></div>
-            <div><i>Overlay: {layersInfo[1]}</i></div>
-          </div>
+        <div class="text-xs justify-center items-center my-2 text-gray-500">
+          <div><i>Base: <span class="bg-gray-100 text-pink-700 p-1">{layersInfo[0]}</span> • Overlay: <span class="bg-gray-100 text-pink-700 p-1">{layersInfo[1]}</span></i></div>
+        </div>
         {/if}
         {#if currentStop === tourData.stopsJson.length - 1}<LightIconButton
             label="Back to the beginning"

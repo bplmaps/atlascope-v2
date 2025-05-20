@@ -33,7 +33,7 @@
   import {
     getAnnotationsWithinExtent,
     getSingleAnnotation,
-  } from "./helpers/faunaFunctions";
+  } from "./helpers/supabaseFunctions";
 
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";

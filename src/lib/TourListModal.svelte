@@ -6,7 +6,7 @@
   import ModalCloserButton from "./ModalCloserButton.svelte";
   import { faArrowCircleRight, faCircleArrowRight, faHiking } from "@fortawesome/free-solid-svg-icons";
 
-  import { loadAllTours } from "./helpers/faunaFunctions.js";
+  import { loadAllTours } from "./helpers/supabaseFunctions.js";
 
   let dispatch = createEventDispatcher();
 

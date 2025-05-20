@@ -1,12 +1,5 @@
-import faunadb, { query as q } from "faunadb";
-import instanceVariables from "../../config/instance.json";
 import { createClient } from "@supabase/supabase-js";
 import { intersects } from "ol/extent"; // replaced fauna queries with OL intersects
-
-const client = new faunadb.Client({
-  secret: instanceVariables.faunaConfiguration.secret,
-  domain: instanceVariables.faunaConfiguration.domain,
-});
 
 // import supabase credentials
 
@@ -43,15 +36,17 @@ export const loadSingleTour = async (ref) => {
 // annotation read functions
 
 export const getAnnotationsWithinExtent = async (extent) => {
-  const { data, error } = await sb.from("annotations").select();
+  const { data, error } = await sb
+    .from("annotations")
+    .select()
+    .gte('max_x', extent[0])
+    .gte('max_y', extent[1])
+    .lte('min_x', extent[2])
+    .lte('min_y', extent[3])
   if (error) {
     console.log(error)
   }
-  const filtered = data.filter((x) => {
-    return intersects(JSON.parse(x.extent), extent);
-  });
-  console.log(filtered)
-  return filtered;
+  return data;
 };
 
 export const getSingleAnnotation = async (ref) => {
@@ -76,7 +71,7 @@ export const newAnnotationId = async () => {
 
 export const writeAnnotation = async (extent, body, email, layerID) => {
     const id = await newAnnotationId()
-    console.log(id)
+    console.log(extent)
     let now = new Date().toISOString()
     const { data, error } = await sb
         .from("annotations")
@@ -89,6 +84,11 @@ export const writeAnnotation = async (extent, body, email, layerID) => {
                 layer: layerID,
                 cX: extent[0] + (extent[2] - extent[0]) / 2,
                 cY: extent[1] + (extent[3] - extent[1]) / 2,
+                max_x: extent[0],
+                max_y: extent[1],
+                min_x: extent[2],
+                min_y: extent[3],
+                email: email
             }
         )
         .select();
