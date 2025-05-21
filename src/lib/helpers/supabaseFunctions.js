@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { intersects } from "ol/extent"; // replaced fauna queries with OL intersects
 
 // import supabase credentials
 
