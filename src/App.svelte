@@ -58,7 +58,7 @@
 
   function startTour(m) {
     closeAllModals();
-    $appState.tour.id = m.detail.tourId;
+    $appState.tour.id = m.detail.id;
     $appState.tour.active = true;
   }
 
@@ -90,7 +90,7 @@
         if (urlParams.view && urlParams.view === "share") {
           closeAllModals();
         } else if (urlParams.view && urlParams.view === "tour") {
-          startTour({ detail: { tourId: urlParams.tour } });
+          startTour({ detail: { "id": urlParams.tour } });
         }
       })
       .catch(() => {
