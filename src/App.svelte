@@ -73,8 +73,12 @@
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
         const v = kv.slice(i + 1);
-        urlParams[k] = v;
-      });
+        const q = kv.split("?")
+        if (q[1]) {
+          return q[1]
+        }
+        urlParams[k] = v
+      })
 
     fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
       .then((r) => r.json())
