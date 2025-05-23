@@ -6,6 +6,8 @@
   import SvelteMarkdown from "svelte-markdown";
   import ExternalLinkRenderer from "./helpers/ExternalLinkRenderer.svelte";
 
+  import { slide } from "svelte/transition"
+
   let dispatch = createEventDispatcher();
 
   import { loadSingleTour } from "./helpers/supabaseFunctions.js";
@@ -13,6 +15,8 @@
     faArrowLeft,
     faHiking,
     faArrowRight,
+    faCaretUp,
+    faCaretDown,
     faDoorOpen,
     faArrowsTurnToDots,
   } from "@fortawesome/free-solid-svg-icons";
@@ -30,6 +34,8 @@
   let tourData;
   let currentStop = -1;
 
+  $: widthClass = currentStop === -1 ? 'md:w-[80%] lg:w-[80%]' : 'md:w-[80%] lg:w-[60%]';
+
   function tourStepBack() {
     currentStop = currentStop - 1;
     goToCurrentStop();
@@ -40,8 +46,13 @@
     goToCurrentStop();
   }
 
+  let expanded = true;
+  
+  function collapse() {
+    expanded = !expanded;
+  }
+
   function goToCurrentStop() {
-    console.log(tourData)
     let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
     changeMapView({
       center: cs.center,
@@ -75,7 +86,6 @@
   }
 
   async function checkLayer(l) {
-    console.log(l);
     if (l.startsWith("massgis")) {
       if (l.endsWith("2021")) {
         return "MassGIS Orthos (2021)";
@@ -109,9 +119,11 @@
   });
 </script>
 
-<div id="container" class="rounded">
+<div id="container"
+    class={`transition-all duration-300 rounded fixed mx-2 w-full bottom-2 left-1/2 transform -translate-x-1/2 ${widthClass}`}
+  >
   {#if loadingFlag}
-    <div class="text-center text-gray-600 w-full p-5">
+    <div class="text-center text-gray-600 p-5">
       <div>
         <svg
           aria-hidden="true"
@@ -143,14 +155,13 @@
           </div>
           <div class="p-3 grow">
             <h2 class="inline text-xl font-bold">
-              {console.log(tourData)}
               {tourData.metadataJson.title}
             </h2>
           </div>
         </div>
       {/if}
       <div class="flex justify-center items-center">
-        <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
+        <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm relative" role="group">
           <button
             on:click={tourStepBack}
             disabled={currentStop === -1}
@@ -187,10 +198,27 @@
             dispatch("leaveTour");
           }}
         />
+        {#if currentStop !== -1}
+        <div>
+          <button
+            on:click={collapse}
+            disabled={currentStop === -1}
+            type="button"
+            class="absolute top-0 right-0 m-2 py-1 px-2 text-md bg-gray-300 hover:bg-gray-100 hover:text-blue-700"
+          >
+            {#if expanded}
+              <Fa icon={faCaretDown} />
+            {:else}
+              <Fa icon={faCaretUp} />
+            {/if}
+          </button>
+        </div>
+        {/if}
       </div>
     </div>
 
-    <div class="px-4 py-3" id="captions">
+    {#if expanded}
+    <div class="transition-all duration-300 px-4 py-3 overflow-auto max-h-40 mx-6" id="captions" out:slide={{ y: -10 }} in:slide={{ y: -10 }}>
       {#if currentStop === -1}
         <h2 class="text-lg">{tourData.metadataJson.subtitle}</h2>
         <h3 class="text-sm text-gray-500">
@@ -208,8 +236,11 @@
           renderers={{ link: ExternalLinkRenderer }}
         />
         {#if currentStop !== -1}
-        <div class="text-xs justify-center items-center my-2 text-gray-500">
-          <div><i>Base: <span class="bg-gray-100 text-pink-700 p-1">{layersInfo[0]}</span> • Overlay: <span class="bg-gray-100 text-pink-700 p-1">{layersInfo[1]}</span></i></div>
+        <div class="text-xs justify-center items-center my-4 text-gray-500">
+          <div>
+            <p><i>Base: <span class="bg-gray-200 text-pink-700 px-1">{layersInfo[0]}</span></i></p>
+            <p><i>Overlay: <span class="bg-gray-200 text-pink-700 px-1">{layersInfo[1]}</span></i></p>
+          </div>
         </div>
         {/if}
         {#if currentStop === tourData.stopsJson.length - 1}<LightIconButton
@@ -220,15 +251,12 @@
           />{/if}
       {/if}
     </div>
+    {/if}
   {/if}
 </div>
 
 <style>
   #container {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
     background-color: rgba(255, 255, 255, 0.95);
   }
 </style>
