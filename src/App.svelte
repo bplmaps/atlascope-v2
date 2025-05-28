@@ -62,21 +62,19 @@
     $appState.tour.active = true;
   }
 
+  let atlascopeParams = $url.hash.substring(2).split("?")[0]
+
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
+  
   onMount(() => {
-    $url.hash
-      .substring(2)
+    atlascopeParams
       .split("$")
       .map((kv) => {
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
         const v = kv.slice(i + 1);
-        const q = kv.split("?")
-        if (q[1]) {
-          return q[1]
-        }
         urlParams[k] = v
       })
 
