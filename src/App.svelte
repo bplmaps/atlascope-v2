@@ -5,7 +5,6 @@
 
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
-  import SearchModal from "./lib/SearchModal.svelte";
   import SearchModalMaptiler from "./lib/SearchModalMaptiler.svelte";
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
   import TourListModal from "./lib/TourListModal.svelte";
@@ -125,32 +124,19 @@
 
   {#if $appState.modals.search}
     <SearchModalMaptiler
-      on:goToCoords={(d) => {
+      goToCoords={(d) => {
+        console.log(d)
         closeAllModals();
         changeMapView({
-          center: [d.detail.lon, d.detail.lat],
+          center: [d.lon, d.lat],
           zoom: 19,
           dropMarkerAtPoint: true,
         });
-        console.log(d.detail)
       }}
-      on:closeSelf={() => {
+      closeSelf={() => {
         $appState.modals.search = false;
       }}
     />
-    <!-- <SearchModal
-      on:goToCoords={(d) => {
-        closeAllModals();
-        changeMapView({
-          center: [d.detail.lon, d.detail.lat],
-          zoom: 19,
-          dropMarkerAtPoint: true,
-        });
-      }}
-      on:closeSelf={() => {
-        $appState.modals.search = false;
-      }}
-    /> -->
   {:else if $appState.modals.tourList}
     <TourListModal
       on:closeSelf={() => {

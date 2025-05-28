@@ -1,86 +1,78 @@
 <script>
+
   import Fa from "svelte-fa";
   import {
     faCircleArrowRight,
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import { createEventDispatcher } from "svelte";
-
   import ModalCloserButton from "./ModalCloserButton.svelte";
 
   import instanceVariables from "../config/instance.json";
   import { insideChecker } from "./helpers/intersector";
 
-  let dispatch = createEventDispatcher();
-  let searchText = "";
-  let results = [];
+  // this fixes the deprecated createEventDispatcher
+  // see the related changes in App.svelte
+  let { goToCoords, closeSelf } = $props();
+
+  let searchText = $state("");
+  let results = $state([]);
   let selected = -1;
-  let showDropdown = false;
-  let atlasExtentsGeometry; // = $state(false);
-
+  let atlasExtentsGeometry = $state(false);
   let key = instanceVariables.geocodeKey;
-
   let debounceTimer;
-  function debounceSearch(e) {
+
+  async function debounceSearch(e) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
+      results=[] // prevent results list from growing indefinitely - but this feels inelegant?
       executeSearch(e.target.value);
-    }, 600);
+    }, 100);
   }
 
   async function executeSearch(value) {
+
     if (atlasExtentsGeometry) {
       if (value.length < 3) {
         results = [];
-        showDropdown = false;
         return;
       }
     }
-    const bbox = '-73.508,41.237,-69.928,42.886'
+
+    const bbox = '-73.508,41.237,-69.928,42.886' // this sets a max extent of Massachusetts for the initial query
     const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&limit=10&bbox=${bbox}&country=us`;
 
     try {
       const res = await fetch(url);
       const data = await res.json();
-
       const candidates = data.features || [];
-      console.log(candidates.length);
-
-      candidates.forEach((c) => {
-        filterFunction(c, atlasExtentsGeometry);
+      candidates.forEach((candidate) => {
+        let point = candidate.geometry.coordinates;
+        if (insideChecker(point, atlasExtentsGeometry)) {
+          results.push(candidate);
+        }
       });
-
-      showDropdown = results.length > 0;
     } catch (err) {
       console.error("Geocoding error:", err);
       results = [];
-      showDropdown = false;
-    }
-  }
-
-  function filterFunction(c, ag) {
-    let point = c.geometry.coordinates;
-    if (insideChecker(point, ag)) {
-      results.push(c);
     }
   }
 
   // load this once, and we'll prevent search from occuring before it's loaded
+  
   fetch(instanceVariables.footprintsDissolved)
     .then((d) => d.json())
     .then((d) => {
       atlasExtentsGeometry = d.features[0].geometry;
     });
 
-  function handleSelection(result, atlasExtentsGeometry) {
+  function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    dispatch("goToCoords", {
+    goToCoords({
       lon: lon,
       lat: lat,
     });
     searchText = result.place_name || result.properties.name;
-    showDropdown = false;
     results = [];
   }
 
@@ -116,7 +108,7 @@
           on:keydown={handleKeydown}
         />
       </div>
-      {#if showDropdown}
+      {#if results && results.length > 0}
         <div>
           <ul>
             {#each results as result}
@@ -135,11 +127,21 @@
             {/each}
           </ul>
         </div>
+
+        <!-- suggesting a listener for 'no results' -->
+        {:else if searchText.length > 4 && results.length === 0} 
+        <div>
+          <ul>
+            <li>
+              <i class="text-gray-700 text-sm ml-2">No results found</i>
+            </li>
+          </ul>
+        </div>
       {/if}
 
       <ModalCloserButton
         on:click={() => {
-          dispatch("closeSelf");
+          closeSelf();
         }}
       />
     </div>
