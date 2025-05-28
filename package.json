@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@supabase/supabase-js": "^2.49.4",
     "@turf/turf": "^7.1.0",
     "faunadb": "^4.8.1",
     "ol": "^10.5.0",

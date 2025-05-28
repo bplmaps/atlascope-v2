@@ -58,23 +58,24 @@
 
   function startTour(m) {
     closeAllModals();
-    $appState.tour.id = m.detail.tourId;
+    $appState.tour.id = m.detail.id;
     $appState.tour.active = true;
   }
 
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
+  
   onMount(() => {
-    $url.hash
-      .substring(2)
+    let atlascopeParams = $url.hash.substring(2).split("?")[0]
+    atlascopeParams
       .split("$")
       .map((kv) => {
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
         const v = kv.slice(i + 1);
-        urlParams[k] = v;
-      });
+        urlParams[k] = v
+      })
 
     fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
       .then((r) => r.json())
@@ -90,7 +91,7 @@
         if (urlParams.view && urlParams.view === "share") {
           closeAllModals();
         } else if (urlParams.view && urlParams.view === "tour") {
-          startTour({ detail: { tourId: urlParams.tour } });
+          startTour({ detail: { "id": urlParams.tour } });
         }
       })
       .catch(() => {

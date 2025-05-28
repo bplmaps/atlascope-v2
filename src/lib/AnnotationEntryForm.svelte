@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
-    import { writeAnnotation } from "./helpers/faunaFunctions";
+    import { writeAnnotation } from "./helpers/supabaseFunctions";
 
     export let pos = [0, 0];
     export let featureExtent = [0, 0, 0, 0];
@@ -13,6 +13,7 @@
 
     let annotationBodyEntry;
     let annotationEmailEntry;
+    let newId;
 
     let processing = false;
     let completed = false;

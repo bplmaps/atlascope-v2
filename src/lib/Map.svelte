@@ -33,7 +33,7 @@
   import {
     getAnnotationsWithinExtent,
     getSingleAnnotation,
-  } from "./helpers/faunaFunctions";
+  } from "./helpers/supabaseFunctions";
 
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
@@ -289,8 +289,9 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      d.data.forEach((x) => {
-        getSingleAnnotation(x.value.id).then((annotation) => {
+      console.log(d)
+      d.forEach((x) => {
+        getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];
         });
       });
@@ -298,20 +299,22 @@
   }
 
   function moveMapToAnnotation(d) {
-    const selectedAnnotation =
-      loadedAnnotationsList[d.detail.annotationIndex].data;
+    const selectedAnnotation = loadedAnnotationsList[d.detail.annotationIndex];
+    const extentJson = JSON.parse(selectedAnnotation.extent)
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsGeometrySource.addFeature(
-      new Feature(fromExtent(selectedAnnotation.extent))
+      new Feature(fromExtent(extentJson))
     );
-    console.log(selectedAnnotation.layer);
     changeMapView({ overlay: selectedAnnotation.layer });
 
-    view.fit(selectedAnnotation.extent, {
+    view.fit(extentJson, {
       padding: [100, 100, 300, 100],
       duration: 1000,
       maxZoom: 19,
     });
+  }
+
+  function refreshAnnotationListLength() {
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
