@@ -1,5 +1,4 @@
 <script>
-
   import Fa from "svelte-fa";
   import {
     faCircleArrowRight,
@@ -25,22 +24,21 @@
   async function debounceSearch(e) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      results=[] // prevent results list from growing indefinitely - but this feels inelegant?
+      results = []; // prevent results list from growing indefinitely - but this feels inelegant?
       executeSearch(e.target.value);
     }, 100);
   }
 
   async function executeSearch(value) {
-
     if (atlasExtentsGeometry) {
       if (value.length < 3) {
         results = [];
         return;
       }
     }
-
-    const bbox = '-73.508,41.237,-69.928,42.886' // this sets a max extent of Massachusetts for the initial query
-    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&limit=10&bbox=${bbox}&country=us`;
+    const mapTilerPlaceTypes = 'joint_municipality,joint_submunicipality,municipality,municipal_district,locality,neighbourhood,place,postal_code,address,road,poi';
+    const bbox = "-73.508,41.237,-69.928,42.886"; // this sets a max extent of Massachusetts for the initial query
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${bbox}&country=us`;
 
     try {
       const res = await fetch(url);
@@ -59,7 +57,7 @@
   }
 
   // load this once, and we'll prevent search from occuring before it's loaded
-  
+
   fetch(instanceVariables.footprintsDissolved)
     .then((d) => d.json())
     .then((d) => {
@@ -129,7 +127,7 @@
         </div>
 
         <!-- suggesting a listener for 'no results' -->
-        {:else if searchText.length > 4 && results.length === 0} 
+      {:else if searchText.length > 4 && results.length === 0}
         <div>
           <ul>
             <li>
