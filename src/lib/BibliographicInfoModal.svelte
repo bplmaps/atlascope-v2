@@ -17,8 +17,6 @@
     { title: "Overlay Layer", p: overlay },
   ];
 
-  let maptilerKey = import.meta.env.VITE_MAPTILER_KEY
-
   let d;
 
   onMount(async () => {
@@ -77,7 +75,7 @@
           {#if block.p.source && !block.p.source.hidden && d}
             <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
               <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>
-              <div class="flex"><span class="font-semibold pr-3">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url+maptilerKey}</span></div>
+              <div class="flex"><span class="font-semibold pr-3">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
               <div class="flex"><span class="font-semibold pr-3">XYZ tiles </span><span class="font-mono text-gray-700 whitespace-nowrap">{d.tiles[0]}</span></div>
             </div>
           {/if}

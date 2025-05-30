@@ -35,7 +35,7 @@
                 "source": {
                     "hidden": true,
                     "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key="
+                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
                 }
             }
         },
@@ -66,6 +66,7 @@
             }
         }
     ],
+    "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
     "outOfBoundsMessage": {
         "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",
