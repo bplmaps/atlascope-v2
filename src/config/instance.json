@@ -23,6 +23,7 @@
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
     "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
+    "footprintsDissolved": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/refs/heads/main/atlascope/atlascope-boston/boston-volume-extents-dissolved.geojson",
     "referenceLayers": [
         {
             "properties": {
@@ -34,7 +35,7 @@
                 "source": {
                     "hidden": true,
                     "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
+                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key="
                 }
             }
         },
@@ -65,11 +66,6 @@
             }
         }
     ],
-    "geocodeKey": "DY88zutnCSJjg1OmMrUF",
-    "faunaConfiguration": {
-        "secret": "fnAEvvv_WvAASxph4E1ZE1CG1wCM-xJUoCJNZ-g7",
-        "domain": "db.us.fauna.com"
-    },
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
     "outOfBoundsMessage": {
         "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",

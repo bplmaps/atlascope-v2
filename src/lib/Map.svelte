@@ -37,10 +37,13 @@
 
   import { allLayers, appState } from "./stores.js";
   import instanceVariables from "../config/instance.json";
+  import MapRenderer from "ol/renderer/Map";
 
   const pixelRatio = window.devicePixelRatio;
 
   let map;
+  const maptilerKey = import.meta.env.VITE_MAPTILER_KEY
+  console.log(maptilerKey)
 
   export let urlParams = {};
 
@@ -182,9 +185,10 @@
       let newLayer = getLayerDataById(id);
 
       if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier === "maptiler-streets") {
+        console.log(newLayer.properties.source.url+maptilerKey)
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({
-            url: newLayer.properties.source.url,
+            url: newLayer.properties.source.url+maptilerKey,
             crossOrigin: "anonymous",
             tileSize: 512,
           })
