@@ -19,12 +19,14 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@supabase/supabase-js": "^2.49.4",
     "@turf/turf": "^7.1.0",
     "faunadb": "^4.8.1",
     "ol": "^10.5.0",
     "svelte-fa": "^4.0.3",
     "svelte-markdown": "^0.4.1",
-    "svelte-meta-tags": "^4.0.4"
+    "svelte-meta-tags": "^4.0.4",
+    "topojson-client": "^3.1.0"
   },
   "overrides": {
     "svelte-markdown": {
