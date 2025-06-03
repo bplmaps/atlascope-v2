@@ -6,7 +6,7 @@
 
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
-  import SearchModal from "./lib/SearchModal.svelte";
+  import SearchModalMaptiler from "./lib/SearchModalMaptiler.svelte";
   import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
   import TourListModal from "./lib/TourListModal.svelte";
   import TourController from "./lib/TourController.svelte";
@@ -65,18 +65,15 @@
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
+  
   onMount(() => {
-    $url.hash
-      .substring(2)
+    let atlascopeParams = $url.hash.substring(2).split("?")[0]
+    atlascopeParams
       .split("$")
       .map((kv) => {
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
         const v = kv.slice(i + 1);
-        const q = kv.split("?")
-        if (q[1]) {
-          return q[1]
-        }
         urlParams[k] = v
       })
 
@@ -128,16 +125,17 @@
   {/if}
 
   {#if $appState.modals.search}
-    <SearchModal
-      on:goToCoords={(d) => {
+    <SearchModalMaptiler
+      goToCoords={(d) => {
+        console.log(d)
         closeAllModals();
         changeMapView({
-          center: [d.detail.lon, d.detail.lat],
+          center: [d.lon, d.lat],
           zoom: 19,
           dropMarkerAtPoint: true,
         });
       }}
-      on:closeSelf={() => {
+      closeSelf={() => {
         $appState.modals.search = false;
       }}
     />
