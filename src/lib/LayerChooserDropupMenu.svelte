@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import {faCheckCircle} from "@fortawesome/free-solid-svg-icons";
 
   export let choices;
   export let chosen;
@@ -35,7 +36,7 @@
             >{chosen.title}</span
           >
           <span
-            class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
+            class="hidden md:block ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
             >{Math.round(chosen.pct * 100)}% coverage</span
           >
           {:else}
@@ -73,19 +74,19 @@
     >
       {#each choices as choice}
         <li
-          class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
+          class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900 {choice.id === chosen.id ? 'shadow-inner bg-gray-100 border-300 p-8' : ''}"
           id="{label}-layer-option-{choice.id}"
           role="option"
           on:click={() => {
             handleSelection(choice.id);
           }}
         >
-          <div class:bg-blue-100={choice.id === chosen.id} class="flex items-center">
+          <div class="flex items-center">
             {#if choice && choice.title}
               <span class="font-bold text-lg ml-1 mr-2 block"
                 >{choice.title}</span
               ><span class="text-sm">{choice.subtitle}</span><span
-                class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
+                class=" hidden md:block ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
                 >{Math.round(choice.pct * 100)}%</span
               >
             {/if}
