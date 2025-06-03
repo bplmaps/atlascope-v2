@@ -73,8 +73,9 @@
       aria-activedescendant="listbox-option-3"
     >
       {#each choices as choice}
+      {#if choice.id != chosen.id}
         <li
-          class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900 {choice.id === chosen.id ? 'shadow-inner bg-gray-100 border-300 p-8' : ''}"
+          class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900 {choice.id === chosen.id ? 'shadow-inner bg-gray-100 border-300 p-8 italic' : ''}"
           id="{label}-layer-option-{choice.id}"
           role="option"
           on:click={() => {
@@ -92,6 +93,7 @@
             {/if}
           </div>
         </li>
+        {/if}
       {/each}
     </ul>
   </div>
