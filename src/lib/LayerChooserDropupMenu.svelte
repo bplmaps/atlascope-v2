@@ -80,7 +80,7 @@
             handleSelection(choice.id);
           }}
         >
-          <div class="flex items-center">
+          <div class:bg-blue-100={choice.id === chosen.id} class="flex items-center">
             {#if choice && choice.title}
               <span class="font-bold text-lg ml-1 mr-2 block"
                 >{choice.title}</span
@@ -88,8 +88,6 @@
                 class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
                 >{Math.round(choice.pct * 100)}%</span
               >
-
-
             {/if}
           </div>
         </li>
