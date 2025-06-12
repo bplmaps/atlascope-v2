@@ -176,19 +176,42 @@
     map.render();
   };
 
+  const validate = async (url) => {
+    try {
+      const response = await fetch(url);
+      console.log(url)
+      console.log(response.ok)
+      return response.ok;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
+    }
+  };
+
+
   // function for changing the layer, we export it so that the outer app can also access this function
   const changeLayer = (layer, id) => {
     if (id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
-
+      validate(newLayer.properties.source.url)
       if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier === "maptiler-streets") {
-        mapState.layers[layer].olLayer.setSource(
-          new TileJSON({
-            url: newLayer.properties.source.url,
-            crossOrigin: "anonymous",
-            tileSize: 512,
-          })
-        );
+        // if (validate(newLayer.properties.source.url)) {
+          mapState.layers[layer].olLayer.setSource(
+            new TileJSON({
+              url: newLayer.properties.source.url,
+              crossOrigin: "anonymous",
+              tileSize: 512,
+            })
+          );
+        // } else {
+        //     mapState.layers[layer].olLayer.setSource(
+        //       new XYZ({
+        //         url: newLayer.properties.source.backupUrl,
+        //         crossOrigin: "anonymous",
+        //         tileSize: 256,
+        //       })
+        //     );
+        // }
       } else if (newLayer.properties.source.type === "tilejson" && newLayer.properties.identifier !== "maptiler-streets") {
         mapState.layers[layer].olLayer.setSource(
           new TileJSON({

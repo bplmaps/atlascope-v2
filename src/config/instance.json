@@ -35,7 +35,9 @@
                 "source": {
                     "hidden": true,
                     "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
+                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF",
+                    "backupType": "xyz",
+                    "backupUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 }
             }
         },
