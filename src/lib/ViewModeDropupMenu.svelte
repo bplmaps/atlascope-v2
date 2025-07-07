@@ -59,7 +59,7 @@
 
     <ul
       class:hidden={!poppedFlag}
-      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black/25 overflow-auto focus:outline-none sm:text-sm"
       tabindex="-1"
       role="listbox"
       aria-labelledby="listbox-label"
