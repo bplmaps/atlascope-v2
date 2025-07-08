@@ -23,7 +23,7 @@
 
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
-  import LightIconButton from "./LightIconButton.svelte";
+  import LightIconButton from "./ui/LightIconButton.svelte";
   import ShareLinks from "./ShareLinks.svelte";
 
   import instanceVariables from "../config/instance.json";

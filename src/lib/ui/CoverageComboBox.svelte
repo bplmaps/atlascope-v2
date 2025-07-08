@@ -1,5 +1,5 @@
 <script>
-  import instanceVariables from "../config/instance.json";
+  import instanceVariables from "../../config/instance.json";
 
   let searchTerm = $state("");
   let selectedItem = $state(null);

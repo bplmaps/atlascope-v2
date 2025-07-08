@@ -16,7 +16,7 @@
     faDoorOpen,
     faArrowsTurnToDots,
   } from "@fortawesome/free-solid-svg-icons";
-  import LightIconButton from "./LightIconButton.svelte";
+  import LightIconButton from "./ui/LightIconButton.svelte";
 
   export let changeMapView;
 
