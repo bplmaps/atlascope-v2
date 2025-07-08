@@ -12,50 +12,11 @@
   import Map from "./lib/Map.svelte";
   import ModalWrapper from "./lib/modals/ModalWrapper.svelte";
 
-  import SearchModalMaptiler from "./lib/SearchModalMaptiler.svelte";
-  import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
-  import TourListModal from "./lib/TourListModal.svelte";
-  import TourController from "./lib/TourController.svelte";
-  import AboutModal from "./lib/AboutModal.svelte";
   import GoogleAnalytics from "./lib/helpers/GoogleAnalytics.svelte";
 
   import { mapState, appState, allLayers } from "./lib/state.svelte.js";
 
-  let changeMapView;
-
-  function handleSplashButton(m) {
-    closeAllModals();
-
-    if (m.detail.action === "start") {
-      changeMapView({
-        center: instanceVariables.defaultStartLocation.center,
-        zoom: instanceVariables.defaultStartLocation.zoom,
-      });
-    } else if (m.detail.action === "jumpToCoverageLocation") {
-      changeMapView({
-        center: m.detail.center,
-        zoom: 17.5,
-      });
-    } else if (m.detail.action === "search") {
-      appState.modals.search = true;
-    } else if (m.detail.action === "find") {
-      appState.modals.geolocation = true;
-    } else if (m.detail.action === "tour") {
-      appState.modals.tourList = true;
-    } else if (m.detail.action === "about") {
-      appState.modals.about = true;
-    }
-  }
-
-  function closeAllModals() {
-    Object.keys(appState.modals).forEach((key) => {
-      appState.modals[key] = false;
-    });
-    appState.tour.active = false;
-  }
-
   function startTour(m) {
-    closeAllModals();
     appState.tour.id = m.detail.id;
     appState.tour.active = true;
   }
@@ -87,7 +48,7 @@
 
     // If the url params are set to a view, close all modals and start a tour
     if (urlParams.view && urlParams.view === "share") {
-      closeAllModals();
+      appState.modals.splash = false;
     } else if (urlParams.view && urlParams.view === "tour") {
       startTour({ detail: { id: urlParams.tour } });
     }
@@ -107,60 +68,9 @@
     <Map />
   {/if}
 
+  {#if appState.modals.splash || appState.modals.search || appState.modals.bibliographicInfo || appState.modals.tourList }
   <ModalWrapper />
-<!-- 
-  {#if appState.modals.search}
-    <SearchModalMaptiler
-      goToCoords={(d) => {
-        console.log(d);
-        closeAllModals();
-        changeMapView({
-          center: [d.lon, d.lat],
-          zoom: 19,
-          dropMarkerAtPoint: true,
-        });
-      }}
-      closeSelf={() => {
-        appState.modals.search = false;
-      }}
-    />
-  {:else if appState.modals.tourList}
-    <TourListModal
-      on:closeSelf={() => {
-        appState.modals.tourList = false;
-      }}
-      on:startTour={startTour}
-    />
-  {:else if appState.modals.biblio}
-    <BibliographicInfoModal
-      on:closeSelf={() => {
-        appState.modals.biblio = false;
-      }}
-      base={mapState.layers.base.properties}
-      overlay={mapState.layers.overlay.properties}
-    />
-  {:else if appState.modals.about}
-    <AboutModal
-      on:closeSelf={() => {
-        appState.modals.about = false;
-      }}
-    />
-  {:else if appState.modals.splash}
-    <Splash
-      on:splashButton={handleSplashButton}
-      on:closeSelf={() => {
-        appState.modals.splash = false;
-      }}
-    />
   {/if}
-
-  {#if appState.tour.active}
-    <TourController
-      tourId={appState.tour.id}
-      {changeMapView}
-      on:leaveTour={closeAllModals}
-    />
-  {/if} -->
 
 </div>
 

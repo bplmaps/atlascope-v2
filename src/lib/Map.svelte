@@ -9,7 +9,7 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./ui/AtlascopeLogo.svelte";
-  import MapControls from "./MapControls.svelte";
+  import MapControls from "./mapControls/MapControls.svelte";
   import GeolocationModal from "./GeolocationModal.svelte";
   import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
   import AnnotationsListModal from "./AnnotationsListModal.svelte";
@@ -48,11 +48,10 @@
 
   let layerPercentVisibleMatrix = $state({});
   let opacitySliderValue = $state(50);
-  let dragXY = $state([0,0]);
+  let dragXY = $state([0, 0]);
   let draggingFlag = $state(false);
   const dragAdjuster = 14;
 
-  
   let view = new View({
     center: fromLonLat(mapState.center),
     zoom: mapState.zoom,
@@ -160,14 +159,13 @@
     if (force || id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
 
-      if (
-        newLayer.properties.source.type === "tilejson"
-      ) {
+      if (newLayer.properties.source.type === "tilejson") {
         olLayers[layer].setSource(
           new TileJSON({
             url: newLayer.properties.source.url,
             crossOrigin: "anonymous",
-            tileSize: newLayer.properties.identifier === "maptiler-streets" ? 512 : 256, // klugey hack for maptiler-streets, which is 512px tiles
+            tileSize:
+              newLayer.properties.identifier === "maptiler-streets" ? 512 : 256, // klugey hack for maptiler-streets, which is 512px tiles
           }),
         );
       } else if (newLayer.properties.source.type === "xyz") {
@@ -186,6 +184,7 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
+
     mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
     mapState.zoom = view.getZoom().toFixed(2);
     mapState.extent = transformExtent(
@@ -199,7 +198,7 @@
     layerPercentVisibleMatrix = {};
 
     allLayers.layers.forEach((lyr) => {
-      layerPercentVisibleMatrix[lyr.properties.identifier] = lyr.properties
+      lyr.extentVisible = lyr.properties
         .globalExtent
         ? 1.0
         : intersector(lyr.geometry, extent);
@@ -289,7 +288,27 @@
     });
   }
 
-  function refreshAnnotationListLength() {}
+  function manipulateDrag(e) {
+    if (draggingFlag) {
+      e.preventDefault();
+
+      let posX, posY;
+
+      if (e.touches) {
+        posX = e.targetTouches.item(0).clientX;
+        posY = e.targetTouches.item(0).clientY;
+      } else {
+        posX = e.clientX || e.pageX;
+        posY = e.clientY || e.pageY;
+      }
+
+      dragXY = [
+        Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
+        Math.min(window.innerHeight - 150, Math.max(10, posY - dragAdjuster)),
+      ];
+    }
+    map.render();
+  }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
@@ -375,34 +394,37 @@
     });
 
     map.on("moveend", mapMoved);
+    draggingFlag = false;
+    dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     mapMoved();
     mapState.mounted = true;
+
   });
 
-  draggingFlag = false;
-  dragXY = [window.innerWidth / 4, window.innerHeight / 4];
-
-  function manipulateDrag(e) {
-    if (draggingFlag) {
-      e.preventDefault();
-
-      let posX, posY;
-
-      if (e.touches) {
-        posX = e.targetTouches.item(0).clientX;
-        posY = e.targetTouches.item(0).clientY;
-      } else {
-        posX = e.clientX || e.pageX;
-        posY = e.clientY || e.pageY;
-      }
-
-      dragXY = [
-        Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
-        Math.min(window.innerHeight - 150, Math.max(10, posY - dragAdjuster)),
-      ];
+  // Watch for changes to the mapState and update the map accordingly
+  $effect(() => {
+    if (mapState.center) {
+      view.setCenter(fromLonLat(mapState.center));
     }
-    map.render();
-  }
+    if (mapState.zoom) {
+      view.setZoom(mapState.zoom);
+    }
+    if (mapState.layers.overlay.id) {
+      changeLayer("overlay", mapState.layers.overlay.id);
+    }
+    if (mapState.layers.base.id) {
+      changeLayer("base", mapState.layers.base.id);
+    }
+  });
+
+  $effect(() => {
+    if(mapState.viewMode) {
+      map.render();
+    }
+  });
+
+
+
 </script>
 
 <section

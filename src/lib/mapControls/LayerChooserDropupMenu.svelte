@@ -1,17 +1,54 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { mapState, allLayers } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
 
-  export let choices;
-  export let chosen;
-  export let label;
+  const { layerName } = $props();
 
-  let poppedFlag = false;
+  let poppedFlag = $state(false);
 
-  let dispatch = createEventDispatcher();
+  let choices = $derived(() => {
+    let c = [];
+    // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
+    allLayers.layers
+      .sort((a, b) => a.properties.year - b.properties.year)
+      .forEach((d) => {
+        if (d.extentVisible > 0.2) {
+          c.push({
+            id: d.properties.identifier,
+            title: d.properties.fallbackTitle
+              ? d.properties.fallbackTitle
+              : d.properties.year,
+            subtitle: d.properties.fallbackSubtitle
+              ? d.properties.fallbackSubtitle
+              : d.properties.publisherShort,
+            pct: d.extentVisible,
+          });
+        }
+      });
+    // add the reference layers
+    instanceVariables.referenceLayers.forEach((d) =>
+      c.push({
+        id: d.properties.identifier,
+        title: d.properties.fallbackTitle
+          ? d.properties.fallbackTitle
+          : d.properties.year,
+        subtitle: d.properties.fallbackSubtitle
+          ? d.properties.fallbackSubtitle
+          : d.properties.publisherShort,
+        pct: 1.0,
+      })
+    );
+    return c;
+  });
+
+  let currentLayer = $derived(() => {
+    return choices.find((d) => d.id === mapState.layers[layerName].id);
+  });
+
 
   function handleSelection(id) {
     poppedFlag = false;
-    dispatch("selectionMade", { id: id });
+    // dispatch("selectionMade", { id: id });
   }
 </script>
 
@@ -28,8 +65,8 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
-        {#if chosen && chosen.title}
+        <span class="text-gray-500 mr-2 font-light text-lg">{layerName}</span>
+        {#if currentLayer && currentLayer.title}
           
           <span class="ml-1 block truncate text-gray-900 text-lg"
             >{chosen.title}</span

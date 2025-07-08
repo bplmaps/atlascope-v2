@@ -1,5 +1,4 @@
 export const appState = $state({
-    gateway: true,
     layersLoaded: false,
     modals: {
         splash: true,

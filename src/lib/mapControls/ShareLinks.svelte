@@ -2,7 +2,7 @@
   import Fa from "svelte-fa";
   import {faCopy, faMobileAlt, faStreetView} from "@fortawesome/free-solid-svg-icons";
 
-  import LightIconButton from "./ui/LightIconButton.svelte";
+  import LightIconButton from "../ui/LightIconButton.svelte";
 
   let showView = true;
 

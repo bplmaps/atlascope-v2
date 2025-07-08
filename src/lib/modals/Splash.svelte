@@ -11,12 +11,12 @@
 
   import SvelteMarkdown from "svelte-markdown";
 
-  import { appState, allLayers } from "../state.svelte.js";
+  import { appState, mapState, allLayers } from "../state.svelte.js";
   import instanceVariables from "../../config/instance.json";
 
   import AtlascopeLogo from "../ui/AtlascopeLogo.svelte";
   import LightIconButton from "../ui/LightIconButton.svelte";
-  // import CoverageComboBox from "../ui/CoverageComboBox.svelte";
+  import CoverageComboBox from "../ui/CoverageComboBox.svelte";
 
   let buttons = [
     {
@@ -40,7 +40,7 @@
       text: "Take a tour",
       icon: faHiking,
       action: function () {
-        appState.modals.tour = true;
+        appState.modals.tourList = true;
       },
     },
     {
@@ -48,26 +48,18 @@
       text: `Start at ${instanceVariables.defaultStartLocation.name}`,
       icon: faLandmark,
       action: function () {
-        return;
+        mapState.center = instanceVariables.defaultStartLocation.center;
+        mapState.zoom = instanceVariables.defaultStartLocation.zoom;
       },
     },
   ];
 
-  let coverageData = instanceVariables.coverageDescriptiveList;
+  const coverageData = instanceVariables.coverageDescriptiveList;
 </script>
 
 <section id="splash" class="ui-top-level-layer">
   <div id="splash-inner">
-    {#if !appState.gateway}
-      <div class="my-3">
-        <button
-          class="text-xl"
-          on:click={() => {
-            appState.modals.splash = false;
-          }}><Fa icon={faChevronUp} /></button
-        >
-      </div>
-    {/if}
+
     <div class="p-0 mx-auto w-48 mb-3">
       <AtlascopeLogo pulse={true} />
     </div>
@@ -107,7 +99,6 @@
             icon={button.icon}
             on:click={() => {
               appState.modals.splash = false;
-              appState.gateway = false;
               button.action();
             }}
             disabled={!appState.layersLoaded}
@@ -124,18 +115,15 @@
         atlas layers of {instanceVariables.geographicCoverage}
       </p>
     </div>
-    {#if true && coverageData}
+    {#if coverageData}
       <div class="py-3">
-        <div class="relative inline-block text-left w-48">
-          <!-- <CoverageComboBox
+        <div class="relative inline-block text-left w-auto">
+          <CoverageComboBox
             onSelect={(item) => {
-              return;
-              splashButton({
-                action: "jumpToCoverageLocation",
-                center: item.center,
-              });
+              mapState.center = item.center;
+              appState.modals.splash = false;
             }}
-          /> -->
+          />
         </div>
       </div>
     {/if}

@@ -5,10 +5,9 @@
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import ModalCloserButton from "./ModalCloserButton.svelte";
 
-  import instanceVariables from "../config/instance.json";
-  import { insideChecker } from "./helpers/intersector";
+  import instanceVariables from "../../config/instance.json";
+  import { insideChecker } from "../helpers/intersector";
 
   // this fixes the deprecated createEventDispatcher
   // see the related changes in App.svelte
@@ -137,11 +136,7 @@
         </div>
       {/if}
 
-      <ModalCloserButton
-        on:click={() => {
-          closeSelf();
-        }}
-      />
+
     </div>
   </div>
 </section>

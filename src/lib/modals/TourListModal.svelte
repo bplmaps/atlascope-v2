@@ -3,10 +3,9 @@
 
   import { createEventDispatcher, onMount } from "svelte";
 
-  import ModalCloserButton from "./ModalCloserButton.svelte";
   import { faArrowCircleRight, faCircleArrowRight, faHiking } from "@fortawesome/free-solid-svg-icons";
 
-  import { loadAllTours } from "./helpers/supabaseFunctions.js";
+  import { loadAllTours } from "../helpers/supabaseFunctions.js";
 
   let dispatch = createEventDispatcher();
 
@@ -70,10 +69,7 @@
     </div>
       {/if}
 
-      <ModalCloserButton
-        on:click={() => {
-          dispatch("closeSelf");
-        }}
+
       />
     </div>
   </div>

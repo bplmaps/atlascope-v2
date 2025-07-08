@@ -5,9 +5,10 @@
 
   import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
-  import { appState } from "./stores.js";
 
   let dispatch = createEventDispatcher();
+
+  import { appState } from "./state.svelte.js";
 
 
   let nav;
@@ -21,13 +22,13 @@
       lat: pos.coords.latitude,
       lon: pos.coords.longitude,
     });
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
   }
 
   function handleGeolocationError() {
     status = "failed";
     statusText = "Location unavailable";
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
 
   }
 

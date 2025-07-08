@@ -4,11 +4,11 @@
   import { createEventDispatcher, onMount } from "svelte";
 
   import SvelteMarkdown from "svelte-markdown";
-  import ExternalLinkRenderer from "./helpers/ExternalLinkRenderer.svelte";
+  import ExternalLinkRenderer from "../helpers/ExternalLinkRenderer.svelte";
 
   let dispatch = createEventDispatcher();
 
-  import { loadSingleTour } from "./helpers/supabaseFunctions.js";
+  import { loadSingleTour } from "../helpers/supabaseFunctions.js";
   import {
     faArrowLeft,
     faHiking,
@@ -16,7 +16,7 @@
     faDoorOpen,
     faArrowsTurnToDots,
   } from "@fortawesome/free-solid-svg-icons";
-  import LightIconButton from "./ui/LightIconButton.svelte";
+  import LightIconButton from "../ui/LightIconButton.svelte";
 
   export let changeMapView;
 

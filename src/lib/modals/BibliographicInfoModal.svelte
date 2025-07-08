@@ -9,7 +9,6 @@
 
   let dispatch = createEventDispatcher();
 
-  import ModalCloserButton from "./ModalCloserButton.svelte";
   export let base, overlay;
 
   let blocks = [
@@ -82,11 +81,7 @@
         </div>
       {/each}
 
-      <ModalCloserButton
-        on:click={() => {
-          dispatch("closeSelf");
-        }}
-      />
+
     </div>
   </div>
 </section>

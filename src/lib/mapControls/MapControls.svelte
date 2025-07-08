@@ -19,22 +19,20 @@
     faStreetView,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import { createEventDispatcher } from "svelte";
+  import { mapState, allLayers } from "../state.svelte.js";
 
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
-  import LightIconButton from "./ui/LightIconButton.svelte";
+  import LightIconButton from "../ui/LightIconButton.svelte";
   import ShareLinks from "./ShareLinks.svelte";
 
-  import instanceVariables from "../config/instance.json";
-  import { allLayers } from "./stores.js";
-  import { appState } from "./stores.js";
+  import instanceVariables from "../../config/instance.json";
 
-  import { bboxFunctions } from "../config/research-connections";
 
-  export let mapState;
+  import { bboxFunctions } from "../../config/research-connections";
 
-  let dispatch = createEventDispatcher();
+  
+
 
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faMap },
@@ -43,46 +41,9 @@
     { id: "share-controls", name: "Share", icon: faShare },
   ];
 
-  // we compose the possible layer choices out of both the $allLayers store of historic layers, and the reference layers
-  $: layerChoices = parseLayerChoices(
-    $allLayers,
-    instanceVariables.referenceLayers
-  );
 
-  function parseLayerChoices(historicLayers, referenceLayers) {
-    let c = [];
-    // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
-    historicLayers
-      .sort((a, b) => a.properties.year - b.properties.year)
-      .forEach((d) => {
-        if (d.extentVisible > 0.2) {
-          c.push({
-            id: d.properties.identifier,
-            title: d.properties.fallbackTitle
-              ? d.properties.fallbackTitle
-              : d.properties.year,
-            subtitle: d.properties.fallbackSubtitle
-              ? d.properties.fallbackSubtitle
-              : d.properties.publisherShort,
-            pct: d.extentVisible,
-          });
-        }
-      });
-    // add the reference layers
-    referenceLayers.forEach((d) =>
-      c.push({
-        id: d.properties.identifier,
-        title: d.properties.fallbackTitle
-          ? d.properties.fallbackTitle
-          : d.properties.year,
-        subtitle: d.properties.fallbackSubtitle
-          ? d.properties.fallbackSubtitle
-          : d.properties.publisherShort,
-        pct: 1.0,
-      })
-    );
-    return c;
-  }
+
+  
 
   export let panelShown = null;
 
@@ -107,7 +68,7 @@
 </script>
 
 <section>
-  {#if $allLayers.filter((layer) => layer.extentVisible > 0.2).length === 0}
+  {#if allLayers.filter((layer) => layer.extentVisible > 0.2).length === 0}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
@@ -152,7 +113,7 @@
       {#if cg.id === "layer-controls"}
         <span
           class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
-          >{$allLayers.filter((layer) => layer.extentVisible > 0.2)
+          >{allLayers.filter((layer) => layer.extentVisible > 0.2)
             .length}</span
         >
       {/if}
@@ -205,14 +166,14 @@
           label="Search places"
           icon={faSearchLocation}
           on:click={() => {
-            $appState.modals.search = true;
+            appState.modals.search = true;
           }}
         />
         <LightIconButton
           label="Find my location"
           icon={faLocationArrow}
           on:click={() => {
-            $appState.modals.geolocation = true;
+            appState.modals.geolocation = true;
           }}
         />
       </div>
@@ -244,7 +205,7 @@
             label="Bibliographic information"
             icon={faBookBookmark}
             on:click={() => {
-              $appState.modals.biblio = true;
+              appState.modals.biblio = true;
             }}
           />
         </div>
