@@ -9,9 +9,8 @@
   import instanceVariables from "../../config/instance.json";
   import { insideChecker } from "../helpers/intersector";
 
-  // this fixes the deprecated createEventDispatcher
-  // see the related changes in App.svelte
-  let { goToCoords, closeSelf } = $props();
+  import { appState, mapState } from "../state.svelte";
+
 
   let searchText = $state("");
   let results = $state([]);
@@ -65,12 +64,11 @@
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    goToCoords({
-      lon: lon,
-      lat: lat,
-    });
+    mapState.center = [lon, lat];
+    mapState.zoom = 17;
     searchText = result.place_name || result.properties.name;
     results = [];
+    appState.modals.search = false;
   }
 
   function handleKeydown(e) {

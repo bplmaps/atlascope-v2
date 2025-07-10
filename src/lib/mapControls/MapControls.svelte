@@ -19,7 +19,7 @@
     faStreetView,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import { mapState, allLayers } from "../state.svelte.js";
+  import { appState,mapState, allLayers } from "../state.svelte.js";
 
   import LayerChooserDropupMenu from "./LayerChooserDropupMenu.svelte";
   import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
@@ -28,55 +28,45 @@
 
   import instanceVariables from "../../config/instance.json";
 
-
   import { bboxFunctions } from "../../config/research-connections";
-
-  
-
 
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faMap },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
-    { id: "research-controls", name: "Research", icon: faMagnifyingGlassArrowRight },
+    {
+      id: "research-controls",
+      name: "Research",
+      icon: faMagnifyingGlassArrowRight,
+    },
     { id: "share-controls", name: "Share", icon: faShare },
   ];
 
+  let panelShown = $state(null);
 
-
-  
-
-  export let panelShown = null;
-
-  $: shareURLs = {
-    "app": instanceVariables.baseURL,
-    "view": `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center}$zoom:${mapState.zoom}$base:${mapState
-                .layers.base.id}$overlay:${mapState.layers.overlay.id}`
-  }
+  let shareURLs = $derived({
+    app: instanceVariables.baseURL,
+    view: `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center}$zoom:${mapState.zoom}$base:${
+      mapState.layers.base.id
+    }$overlay:${mapState.layers.overlay.id}`,
+  });
 
   const showHideControls = (e) => {
     panelShown = panelShown === e ? null : e;
   };
-
-  function handleChangeLayer(d, layer) {
-    dispatch("changeLayer", { id: d.detail.id, layer: layer });
-  }
-
-  function handleChangeMode(d) {
-    dispatch("changeMode", { id: d.detail.id });
-  }
-
 </script>
 
 <section>
-  {#if allLayers.filter((layer) => layer.extentVisible > 0.2).length === 0}
+  {#if allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length === 0}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
       <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a
       location where no historic atlas layers are currently available.
       <p class="font-light text-sm">
-        <a href="{instanceVariables.outOfBoundsMessage.url}" target="_blank" rel="noreferrer"
-          >{instanceVariables.outOfBoundsMessage.text}</a
+        <a
+          href={instanceVariables.outOfBoundsMessage.url}
+          target="_blank"
+          rel="noreferrer">{instanceVariables.outOfBoundsMessage.text}</a
         >
       </p>
     </div>
@@ -113,8 +103,7 @@
       {#if cg.id === "layer-controls"}
         <span
           class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
-          >{allLayers.filter((layer) => layer.extentVisible > 0.2)
-            .length}</span
+          >{allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length}</span
         >
       {/if}
       <span class="hidden md:inline control-tab-label">{cg.name}</span>
@@ -126,16 +115,13 @@
       <h2 class="md:hidden text-xl font-bold mb-2">Controls</h2>
       <div class="flex max-w-full flex-wrap">
         <div class="mr-4">
-          <ViewModeDropupMenu
-            chosen={mapState.viewMode}
-            on:selectionMade={handleChangeMode}
-          />
+          <ViewModeDropupMenu />
         </div>
 
         <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
           <button
             on:click={() => {
-              dispatch("zoomIn");
+              mapState.zoom += 1;
             }}
             type="button"
             class="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
@@ -144,7 +130,7 @@
           </button>
           <button
             on:click={() => {
-              dispatch("zoomOut");
+              mapState.zoom -= 1;
             }}
             type="button"
             class="py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
@@ -183,7 +169,7 @@
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={ layerChoices.find(d=>d.id === mapState.layers.base.id) }
+            chosen={layerChoices.find((d) => d.id === mapState.layers.base.id)}
             label="Base"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "base");
@@ -193,7 +179,9 @@
         <div class="mr-4">
           <LayerChooserDropupMenu
             choices={layerChoices}
-            chosen={ layerChoices.find(d=>d.id === mapState.layers.overlay.id) }
+            chosen={layerChoices.find(
+              (d) => d.id === mapState.layers.overlay.id,
+            )}
             label="Overlay"
             on:selectionMade={(d) => {
               handleChangeLayer(d, "overlay");
@@ -228,23 +216,21 @@
           }}
         />
 
-        {#each bboxFunctions as f }
-
-        <LightIconButton
-          label={f.name}
-          icon={faMagnifyingGlassArrowRight}
-          on:click={()=>{ let url = f.searchFunction(mapState.extent); window.open(url); }}
-        />
-
-
+        {#each bboxFunctions as f}
+          <LightIconButton
+            label={f.name}
+            icon={faMagnifyingGlassArrowRight}
+            on:click={() => {
+              let url = f.searchFunction(mapState.extent);
+              window.open(url);
+            }}
+          />
         {/each}
-
-
       </div>
     {:else if panelShown === "share-controls"}
       <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
       <div class="control-panel">
-        <ShareLinks baseURL={instanceVariables.baseURL} mapState={mapState} />
+        <ShareLinks baseURL={instanceVariables.baseURL} {mapState} />
       </div>
     {/if}
   </div>
@@ -265,7 +251,9 @@
     font-weight: 650;
     cursor: pointer;
     border-radius: 5px 5px 0 0;
-    transition: color 0.5s, background-color 0.5s;
+    transition:
+      color 0.5s,
+      background-color 0.5s;
   }
 
   .control-tab:hover {

@@ -10,9 +10,9 @@
 
   import AtlascopeLogo from "./ui/AtlascopeLogo.svelte";
   import MapControls from "./mapControls/MapControls.svelte";
-  import GeolocationModal from "./GeolocationModal.svelte";
-  import AnnotationEntryForm from "./AnnotationEntryForm.svelte";
-  import AnnotationsListModal from "./AnnotationsListModal.svelte";
+  import GeolocationModal from "./modals/GeolocationModal.svelte";
+  import AnnotationEntryForm from "./annotations/AnnotationEntryForm.svelte";
+  import AnnotationsListModal from "./annotations/AnnotationsListModal.svelte";
   import LightIconButton from "./ui/LightIconButton.svelte";
 
   import "ol/ol.css";
@@ -540,33 +540,11 @@
       }}
       on:refreshAnnotations={loadAnnotations}
     />
-  {/if}
+  {/if}-->
 
   {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !appState.tour.active}
-    <MapControls
-      {mapState}
-      on:changeLayer={(d) => {
-        changeLayer(d.detail.layer, d.detail.id);
-      }}
-      on:changeMode={(d) => {
-        changeMode(d.detail.id);
-      }}
-      on:zoomIn={() => {
-        view.animate({ zoom: view.getZoom() + 1, duration: 500 });
-      }}
-      on:zoomOut={() => {
-        view.animate({ zoom: view.getZoom() - 1, duration: 500 });
-      }}
-      on:rotate={() => {
-        view.animate({
-          rotation: view.getRotation() + (2 * Math.PI) / 6,
-          duration: 500,
-        });
-      }}
-      on:enableAnnotationMode={enableAnnotationMode}
-      on:loadAnnotations={loadAnnotations}
-    />
-  {/if} -->
+    <MapControls />
+  {/if} 
 </section>
 
 <style>

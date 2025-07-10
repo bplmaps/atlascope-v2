@@ -2,9 +2,8 @@
   import Fa from "svelte-fa";
   import { faArrowsH, faArrowsV, faBorderStyle, faCircle } from "@fortawesome/free-solid-svg-icons";
 
-  import { createEventDispatcher } from "svelte";
+  import { mapState } from "../state.svelte";
 
-  export let chosen;
   let choices = [
     { id: "glass", label: "Glass", icon: faCircle },
     { id: "swipe-x", label: "Swipe X", icon: faArrowsH },
@@ -13,13 +12,12 @@
   ];
 
   let poppedFlag = false;
-  let dispatch = createEventDispatcher();
 
-  function handleSelection(d) {
-    dispatch('selectionMade',{"id": d});
+  const handleSelection = (id) => {
+    mapState.viewMode = id;
     poppedFlag = false;
-
   }
+
 
 </script>
 
@@ -36,7 +34,7 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === chosen).icon}" class="inline mr-2" />{choices.find(c=>c.id === chosen).label}</span>
+        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === mapState.viewMode).icon}" class="inline mr-2" />{choices.find(c=>c.id === mapState.viewMode).label}</span>
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
