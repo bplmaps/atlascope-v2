@@ -31,6 +31,7 @@ export const mapState = $state({
     center: null,
     zoom: null,
     extent: null,
+    rotation: null,
 })
 
 export const allLayers = $state({

@@ -68,7 +68,7 @@
     <Map />
   {/if}
 
-  {#if appState.modals.splash || appState.modals.search || appState.modals.bibliographicInfo || appState.modals.tourList }
+  {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList }
   <ModalWrapper />
   {/if}
 

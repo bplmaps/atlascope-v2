@@ -21,7 +21,7 @@
         <Splash />
     {:else if appState.modals.search}
         <SearchModalMaptiler />
-    {:else if appState.modals.bibliographicInfo}
+    {:else if appState.modals.biblio}
         <BibliographicInfoModal />
     {:else if appState.modals.tourList}
         <TourListModal />

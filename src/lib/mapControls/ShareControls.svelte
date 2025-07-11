@@ -4,17 +4,19 @@
 
   import LightIconButton from "../ui/LightIconButton.svelte";
 
-  let showView = true;
+  let showView = $state(true);
 
-  export let baseURL;
-  export let mapState;
+  import { mapState } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
 
   let urlField;
 
-  const appURL = baseURL;
-  $: viewURL = `${baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center}$zoom:${mapState.zoom}$base:${mapState
-                .layers.base.id}$overlay:${mapState.layers.overlay.id}`;
-
+  let shareURLs = $derived({
+    app: instanceVariables.baseURL,
+    view: `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center.map(c => c.toFixed(6)).join(',')}$zoom:${mapState.zoom.toFixed(2)}$base:${
+      mapState.layers.base.id
+    }$overlay:${mapState.layers.overlay.id}`,
+  });
 
   function copyURL() {
     urlField.select();
@@ -33,6 +35,8 @@
 </script>
 
 <div>
+
+  
   
   <div class="md:flex md:flex-row w-full">
     <div class="pt-2 pb-1 text-center">
@@ -52,7 +56,7 @@
               type="text"
               id="share-app-url"
               class="flex-grow shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value="{showView ? viewURL : appURL}"
+              value="{showView ? shareURLs.view : shareURLs.app}"
               bind:this="{urlField}"
               readonly
             />

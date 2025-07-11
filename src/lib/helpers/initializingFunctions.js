@@ -1,6 +1,5 @@
 import * as topojson from "topojson-client";
 import instanceVariables from "../../config/instance.json";
-import { allLayers } from "../state.svelte.js";
 
 export function parseUrlParams(initialUrl) {
     let urlParams = {};
@@ -17,7 +16,7 @@ export function parseUrlParams(initialUrl) {
 
 
 export async function fetchLayerData() {
-    let d = await fetch(instanceVariables.historicLayersFootprintsFile, { cache: "reload" })
+    let d = await fetch(instanceVariables.historicLayersFootprintsFile)
       .then((r) => r.json())
       .then((d) => {
         let al = topojson.feature(d, "boston-volume-extents").features;

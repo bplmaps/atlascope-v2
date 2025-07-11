@@ -9,7 +9,7 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./ui/AtlascopeLogo.svelte";
-  import MapControls from "./mapControls/MapControls.svelte";
+  import MapControls from "./mapControls/ControlPanel.svelte";
   import GeolocationModal from "./modals/GeolocationModal.svelte";
   import AnnotationEntryForm from "./annotations/AnnotationEntryForm.svelte";
   import AnnotationsListModal from "./annotations/AnnotationsListModal.svelte";
@@ -184,9 +184,9 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
-
-    mapState.center = toLonLat(view.getCenter()).map((d) => d.toFixed(5));
-    mapState.zoom = view.getZoom().toFixed(2);
+    mapState.center = toLonLat(view.getCenter());
+    mapState.zoom = view.getZoom();
+    mapState.rotation = view.getRotation();
     mapState.extent = transformExtent(
       view.calculateExtent(),
       "EPSG:3857",
@@ -198,8 +198,7 @@
     layerPercentVisibleMatrix = {};
 
     allLayers.layers.forEach((lyr) => {
-      lyr.extentVisible = lyr.properties
-        .globalExtent
+      lyr.extentVisible = lyr.properties.globalExtent
         ? 1.0
         : intersector(lyr.geometry, extent);
     });
@@ -398,7 +397,6 @@
     dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     mapMoved();
     mapState.mounted = true;
-
   });
 
   // Watch for changes to the mapState and update the map accordingly
@@ -406,23 +404,37 @@
     if (mapState.center) {
       view.setCenter(fromLonLat(mapState.center));
     }
+  }); 
+
+  $effect(() => {
     if (mapState.zoom) {
-      view.setZoom(mapState.zoom);
-    }
-    if (mapState.layers.overlay.id) {
-      changeLayer("overlay", mapState.layers.overlay.id);
-    }
-    if (mapState.layers.base.id) {
-      changeLayer("base", mapState.layers.base.id);
+      view.animate({ zoom: mapState.zoom, duration: 900 });
     }
   });
 
   $effect(() => {
-    if(mapState.viewMode) {
-      map.render();
+    if (mapState.layers.overlay.id) {
+      changeLayer("overlay", mapState.layers.overlay.id, true);
     }
   });
 
+  $effect(() => {
+    if (mapState.layers.base.id) {
+      changeLayer("base", mapState.layers.base.id, true);
+    }
+  });
+
+  $effect(() => {
+    if (mapState.rotation !== null) {
+      view.animate({ rotation: mapState.rotation, duration: 900 });
+    }
+  });
+
+  $effect(() => {
+    if (mapState.viewMode) {
+      map.render();
+    }
+  });
 
 
 </script>
@@ -478,7 +490,7 @@
       appState.tour.active = false;
       appState.modals.splash = true;
     }}
-    class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3"
+    class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3 hover:bg-gray-50 hover:ring-2 hover:ring-red-200"
   >
     <AtlascopeLogo />
   </div>
@@ -544,7 +556,7 @@
 
   {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !appState.tour.active}
     <MapControls />
-  {/if} 
+  {/if}
 </section>
 
 <style>

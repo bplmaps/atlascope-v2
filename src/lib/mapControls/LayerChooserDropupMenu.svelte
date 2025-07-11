@@ -5,12 +5,30 @@
   const { layerName } = $props();
 
   let poppedFlag = $state(false);
+  const customLayerNamesByViewMode = {
+    "glass": {
+      "base": "Base",
+      "overlay": "Overlay"
+    },
+    "swipe-x": {
+      "base": "Right",
+      "overlay": "Left"
+    },
+    "swipe-y": {
+      "base": "Bottom",
+      "overlay": "Top"
+    },
+    "opacity": {
+      "base": "Base",
+      "overlay": "Overlay"
+    }
+  }
 
-  let choices = $derived(() => {
+  let choices = $derived.by(() => {
     let c = [];
     // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
     allLayers.layers
-      .sort((a, b) => a.properties.year - b.properties.year)
+      .toSorted((a, b) => a.properties.year - b.properties.year)
       .forEach((d) => {
         if (d.extentVisible > 0.2) {
           c.push({
@@ -41,14 +59,14 @@
     return c;
   });
 
-  let currentLayer = $derived(() => {
+  let currentLayer = $derived.by(() => {
     return choices.find((d) => d.id === mapState.layers[layerName].id);
   });
 
 
   function handleSelection(id) {
     poppedFlag = false;
-    // dispatch("selectionMade", { id: id });
+    mapState.layers[layerName].id = id;
   }
 </script>
 
@@ -65,15 +83,15 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 mr-2 font-light text-lg">{layerName}</span>
+        <span class="text-gray-500 mr-2 font-light text-lg">{customLayerNamesByViewMode[mapState.viewMode][layerName]}</span>
         {#if currentLayer && currentLayer.title}
           
           <span class="ml-1 block truncate text-gray-900 text-lg"
-            >{chosen.title}</span
+            >{currentLayer.title}</span
           >
           <span
             class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-            >{Math.round(chosen.pct * 100)}% coverage</span
+            >{Math.round(currentLayer.pct * 100)}% coverage</span
           >
           {:else}
           <span class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
@@ -111,7 +129,6 @@
       {#each choices as choice}
         <li
           class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
-          id="{label}-layer-option-{choice.id}"
           role="option"
           on:click={() => {
             handleSelection(choice.id);
