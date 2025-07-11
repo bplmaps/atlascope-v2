@@ -11,18 +11,14 @@
 
   import Map from "./lib/Map.svelte";
   import ModalWrapper from "./lib/modals/ModalWrapper.svelte";
+  import TourController from "./lib/tours/TourController.svelte";
 
   import GoogleAnalytics from "./lib/helpers/GoogleAnalytics.svelte";
 
   import { mapState, appState, allLayers } from "./lib/state.svelte.js";
 
-  function startTour(m) {
-    appState.tour.id = m.detail.id;
-    appState.tour.active = true;
-  }
 
   // Initialization functions; parse out the initial url params and fetch the layer data
-
   onMount(() => {
     const urlParams = parseUrlParams(
       window.location.hash.substring(2).split("?")[0],
@@ -50,7 +46,7 @@
     if (urlParams.view && urlParams.view === "share") {
       appState.modals.splash = false;
     } else if (urlParams.view && urlParams.view === "tour") {
-      startTour({ detail: { id: urlParams.tour } });
+      return;
     }
   });
 </script>
@@ -66,6 +62,10 @@
 <div id="wraps-all">
   {#if appState.layersLoaded}
     <Map />
+  {/if}
+
+  {#if appState.tour.active}
+    <TourController />
   {/if}
 
   {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList }

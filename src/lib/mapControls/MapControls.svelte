@@ -4,7 +4,7 @@
     import Fa from "svelte-fa";
     import { faPlus, faMinus, faRotateRight, faSearchLocation, faLocationArrow, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-    import { mapState } from "../state.svelte.js";
+    import { mapState, appState } from "../state.svelte.js";
 </script>
 
 <div>
@@ -16,7 +16,7 @@
 
         <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
           <button
-            on:click={() => {
+            onclick={() => {
               mapState.zoom += 1;
             }}
             type="button"
@@ -25,7 +25,7 @@
             <Fa icon={faPlus} />
           </button>
           <button
-            on:click={() => {
+            onclick={() => {
               mapState.zoom -= 1;
             }}
             type="button"
@@ -34,7 +34,7 @@
             <Fa icon={faMinus} />
           </button>
           <button
-            on:click={() => {
+            onclick={() => {
               mapState.rotation = mapState.rotation + 0.5 * Math.PI;
             }}
             type="button"
@@ -43,7 +43,7 @@
             <Fa icon={faRotateRight} />
           </button>
           <button
-            on:click={() => {
+            onclick={() => {
               mapState.rotation = 0;
             }}
             type="button"

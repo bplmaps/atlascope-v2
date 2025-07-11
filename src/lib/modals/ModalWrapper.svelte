@@ -2,7 +2,7 @@
     import Splash from "./Splash.svelte";
     import SearchModalMaptiler from "./SearchModalMaptiler.svelte";
     import BibliographicInfoModal from "./BibliographicInfoModal.svelte";
-    import TourListModal from "./TourListModal.svelte";
+    import TourListModal from "../tours/TourListModal.svelte";
 
     import ModalCloserButton from "./ModalCloserButton.svelte";
 

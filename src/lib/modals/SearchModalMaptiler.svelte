@@ -98,9 +98,9 @@
           id="search-input"
           type="text"
           placeholder="Enter address or location ..."
-          on:input={debounceSearch}
+          oninput={debounceSearch}
           bind:value={searchText}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
         />
       </div>
       {#if results && results.length > 0}
@@ -109,7 +109,7 @@
             {#each results as result}
               <li
                 class="text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
-                on:click={() => {
+                onclick={() => {
                   handleSelection(result);
                 }}
               >

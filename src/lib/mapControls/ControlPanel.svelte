@@ -4,19 +4,8 @@
     faLayerGroup,
     faMagnifyingGlassArrowRight,
     faExclamationCircle,
-    faLocationArrow,
-    faSearchLocation,
     faShare,
-    faCopy,
-    faPlus,
-    faMinus,
-    faRotateRight,
-    faBookBookmark,
-    faMap,
-    faMapPin,
-    faPenToSquare,
-    faMobileAlt,
-    faStreetView,
+    faMap
   } from "@fortawesome/free-solid-svg-icons";
 
   import { appState,mapState, allLayers } from "../state.svelte.js";
@@ -26,6 +15,7 @@
   import ShareControls from "./ShareControls.svelte";
   import MapControls from "./MapControls.svelte";
   import LayerControls from "./LayerControls.svelte";
+  import ResearchControls from "./ResearchControls.svelte";
 
   import instanceVariables from "../../config/instance.json";
 
@@ -73,14 +63,7 @@
       <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You moved off the edge
       of the previous atlas.
       <p class="font-light text-sm">
-        We automatically pulled up a new layer, <strong
-          >{mapState.layers.overlay.properties.fallbackTitle
-            ? mapState.layers.overlay.properties.fallbackTitle
-            : mapState.layers.overlay.properties.year}
-          {mapState.layers.overlay.properties.fallbackSubtitle
-            ? mapState.layers.overlay.properties.fallbackSubtitle
-            : mapState.layers.overlay.properties.publisherShort}</strong
-        >
+        We automatically pulled up a new layer.
       </p>
     </div>
   {/if}
@@ -110,39 +93,9 @@
     {:else if panelShown === "layer-controls"}
       <LayerControls />
     {:else if panelShown === "research-controls"}
-      <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
-      <div class="flex flex-wrap">
-        <LightIconButton
-          label="Annotate map"
-          icon={faPenToSquare}
-          on:click={() => {
-            dispatch("enableAnnotationMode");
-          }}
-        />
-        <LightIconButton
-          label="Load annotations"
-          icon={faMapPin}
-          on:click={() => {
-            dispatch("loadAnnotations");
-          }}
-        />
-
-        {#each bboxFunctions as f}
-          <LightIconButton
-            label={f.name}
-            icon={faMagnifyingGlassArrowRight}
-            on:click={() => {
-              let url = f.searchFunction(mapState.extent);
-              window.open(url);
-            }}
-          />
-        {/each}
-      </div>
+      <ResearchControls />
     {:else if panelShown === "share-controls"}
-      <h2 class="md:hidden text-xl font-bold mb-2">Share</h2>
-      <div class="control-panel">
         <ShareControls />
-      </div>
     {/if}
   </div>
 </section>

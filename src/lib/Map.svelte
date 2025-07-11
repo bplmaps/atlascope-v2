@@ -92,50 +92,6 @@
   let annotationEntryCoords = $state([0, 0]);
   let annotationExtentCoords = $state(null);
 
-  // the magic exportable function that we use whenever we want to adjust the map's center, zoom, viewMode, or layers from another component
-  export const changeMapView = (options) => {
-    if (options.viewMode) {
-      changeMode(options.viewMode);
-    }
-
-    if (options.overlay) {
-      changeLayer("overlay", options.overlay);
-    }
-
-    if (options.base) {
-      changeLayer("base", options.base);
-    }
-
-    if (options.center || options.zoom) {
-      let m = {};
-      if (options.center) {
-        m.center = fromLonLat(options.center);
-      }
-      if (options.zoom) {
-        m.zoom = options.zoom;
-      }
-
-      if (!options.duration && options.duration != 0) {
-        m.duration = 900;
-      } else {
-        m.duration = options.duration;
-      }
-
-      view.animate(m);
-
-      if (options.viewMode) {
-        changeMode(options.viewMode);
-      }
-    }
-
-    if (options.dropMarkerAtPoint) {
-      const targetPoint = fromLonLat(options.center);
-      markerGeometrySource.clear();
-      markerGeometrySource.addFeature(
-        new Feature({ geometry: new Point(targetPoint) }),
-      );
-    }
-  };
 
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
@@ -228,7 +184,7 @@
   }
 
   function enableAnnotationMode() {
-    mapState.annotationMode = true;
+    mapState.annotationEntry = true;
     map.addLayer(annotationDrawerLayer);
     annotationDrawer = new Draw({
       source: annotationDrawerGeometrySource,
@@ -239,7 +195,7 @@
     annotationDrawer.on("drawend", (e) => {
       annotationExtentCoords = e.feature.getGeometry().getExtent();
       annotationEntryCoords = [e.target.downPx_[0], e.target.downPx_[1]];
-      mapState.annotationEntry = true;
+      mapState.annotationSave = true;
       map.removeInteraction(annotationDrawer);
     });
     map.addInteraction(annotationDrawer);
@@ -247,7 +203,6 @@
 
   function disableAnnotationMode() {
     map.removeInteraction(annotationDrawer);
-    mapState.annotationMode = false;
     mapState.annotationEntry = false;
     annotationDrawerGeometrySource.clear();
     map.removeLayer(annotationDrawerLayer);
@@ -271,14 +226,19 @@
     });
   }
 
+  const closeAnnotationListModal = () => {
+    loadedAnnotationsGeometrySource.clear();
+    loadedAnnotationsList = [];
+  }
+
   function moveMapToAnnotation(d) {
-    const selectedAnnotation = loadedAnnotationsList[d.detail.annotationIndex];
+    const selectedAnnotation = loadedAnnotationsList[d];
     const extentJson = JSON.parse(selectedAnnotation.extent);
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsGeometrySource.addFeature(
       new Feature(fromExtent(extentJson)),
     );
-    changeMapView({ overlay: selectedAnnotation.layer });
+    mapState.layers.overlay.id = selectedAnnotation.layer;
 
     view.fit(extentJson, {
       padding: [100, 100, 300, 100],
@@ -436,6 +396,21 @@
     }
   });
 
+  $effect(() => {
+    if (mapState.annotationEntry) {
+      enableAnnotationMode();
+    } else {
+      disableAnnotationMode();
+    }
+  });
+
+  $effect(() => {
+    if (mapState.annotationRead) {
+      loadAnnotations();
+      mapState.annotationRead = false;
+    }
+  });
+
 
 </script>
 
@@ -510,8 +485,8 @@
       />
     </div>
   {/if}
-  <!-- 
-  {#if mapState.annotationMode}
+ 
+  {#if mapState.annotationEntry }
     <div
       class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
     >
@@ -530,29 +505,23 @@
     </div>
   {/if}
 
-  {#if mapState.annotationMode && mapState.annotationEntry}
+  {#if mapState.annotationSave}
     <AnnotationEntryForm
       pos={annotationEntryCoords}
       featureExtent={annotationExtentCoords}
       layerID={mapState.layers.overlay.id}
-      layerName={mapState.layers.overlay.properties.fallbackTitle
-        ? mapState.layers.overlay.properties.fallbackTitle
-        : mapState.layers.overlay.properties.year}
       on:cancel={cancelAnnotation}
     />
   {/if}
 
+  
   {#if loadedAnnotationsList.length > 0}
     <AnnotationsListModal
       annotationsList={loadedAnnotationsList}
-      on:moveMapToAnnotation={moveMapToAnnotation}
-      on:closeAnnotationListModal={() => {
-        loadedAnnotationsGeometrySource.clear();
-        loadedAnnotationsList = [];
-      }}
-      on:refreshAnnotations={loadAnnotations}
+      closeAnnotationListModal={closeAnnotationListModal}
+      moveMapToAnnotation={moveMapToAnnotation}
     />
-  {/if}-->
+  {/if}
 
   {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !appState.tour.active}
     <MapControls />

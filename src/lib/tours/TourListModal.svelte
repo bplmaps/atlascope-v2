@@ -1,16 +1,19 @@
 <script>
   import Fa from "svelte-fa";
 
-  import { createEventDispatcher, onMount } from "svelte";
+  import {
+    faArrowCircleRight,
+    faCircleArrowRight,
+    faHiking,
+  } from "@fortawesome/free-solid-svg-icons";
 
-  import { faArrowCircleRight, faCircleArrowRight, faHiking } from "@fortawesome/free-solid-svg-icons";
-
+  import { onMount } from "svelte";
   import { loadAllTours } from "../helpers/supabaseFunctions.js";
 
-  let dispatch = createEventDispatcher();
+  import { appState } from "../state.svelte.js";
 
-  let loadingFlag = true;
-  let tours;
+  let loadingFlag = $state(true);
+  let tours = $state([]);
 
   onMount(() => {
     loadAllTours().then((d) => {
@@ -19,6 +22,11 @@
     });
   });
 
+  function startTour(id) {
+    appState.tour.id = id;
+    appState.tour.active = true;
+    appState.modals.tourList = false;
+  }
 </script>
 
 <section id="search-modal">
@@ -51,26 +59,27 @@
           Loading tours ...
         </div>
       {:else}
-        <div> 
+        <div>
           <ul>
-      {#each tours as tour}
-        {#if tour?.metadataJson?.title}
-        <li on:click="{()=>{dispatch('startTour',{"id": tour.id})}}" class="text-gray-700 py-2 border-b-2 cursor-pointer text-md hover:text-red-900 group">
-          <Fa
+            {#each tours as tour}
+              {#if tour?.metadataJson?.title}
+                <li
+                  onclick={() => {
+                    startTour(tour.id);
+                  }}
+                  class="text-gray-700 py-2 border-b-2 border-gray-200 cursor-pointer text-md hover:text-red-900 group"
+                >
+                  <Fa
                     icon={faCircleArrowRight}
                     class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
                   />
                   {tour.metadataJson.title}
-              </li>
-        {/if}
-      {/each}
-
-    </ul>
-    </div>
+                </li>
+              {/if}
+            {/each}
+          </ul>
+        </div>
       {/if}
-
-
-      />
     </div>
   </div>
 </section>

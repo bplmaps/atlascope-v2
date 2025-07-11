@@ -3,7 +3,7 @@
   import { faBookBookmark, faCopy } from "@fortawesome/free-solid-svg-icons";
 
   import SvelteMarkdown from "svelte-markdown";
-  import TileJsonUrlFetcher from "./TileJsonUrlFetcher.svelte";
+  import TileJsonUrlFetcher from "../helpers/TileJsonUrlFetcher.svelte";
 
   import { mapState, allLayers } from "../state.svelte.js";
   import instanceVariables from "../../config/instance.json";
