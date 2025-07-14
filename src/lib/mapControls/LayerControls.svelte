@@ -11,12 +11,12 @@
 <div class="flex max-w-full flex-wrap">
   <div class="mr-4">
     <LayerChooserDropupMenu
-      layerName={mapState.viewMode === "glass" ? "overlay" : "base"}
+      layerName={mapState.viewMode === "glass" ? "base" : "overlay"}
     />
   </div>
   <div class="mr-4">
     <LayerChooserDropupMenu
-      layerName={mapState.viewMode === "glass" ? "base" : "overlay"}
+      layerName={mapState.viewMode === "glass" ? "overlay" : "base"}
     />
   </div>
 
