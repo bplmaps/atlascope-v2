@@ -1,17 +1,72 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { mapState, allLayers } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
 
-  export let choices;
-  export let chosen;
-  export let label;
+  const { layerName } = $props();
 
-  let poppedFlag = false;
+  let poppedFlag = $state(false);
+  const customLayerNamesByViewMode = {
+    "glass": {
+      "base": "Base",
+      "overlay": "Overlay"
+    },
+    "swipe-x": {
+      "base": "Right",
+      "overlay": "Left"
+    },
+    "swipe-y": {
+      "base": "Bottom",
+      "overlay": "Top"
+    },
+    "opacity": {
+      "base": "Base",
+      "overlay": "Overlay"
+    }
+  }
 
-  let dispatch = createEventDispatcher();
+  let choices = $derived.by(() => {
+    let c = [];
+    // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
+    allLayers.layers
+      .toSorted((a, b) => a.properties.year - b.properties.year)
+      .forEach((d) => {
+        if (d.extentVisible > 0.2) {
+          c.push({
+            id: d.properties.identifier,
+            title: d.properties.fallbackTitle
+              ? d.properties.fallbackTitle
+              : d.properties.year,
+            subtitle: d.properties.fallbackSubtitle
+              ? d.properties.fallbackSubtitle
+              : d.properties.publisherShort,
+            pct: d.extentVisible,
+          });
+        }
+      });
+    // add the reference layers
+    instanceVariables.referenceLayers.forEach((d) =>
+      c.push({
+        id: d.properties.identifier,
+        title: d.properties.fallbackTitle
+          ? d.properties.fallbackTitle
+          : d.properties.year,
+        subtitle: d.properties.fallbackSubtitle
+          ? d.properties.fallbackSubtitle
+          : d.properties.publisherShort,
+        pct: 1.0,
+      })
+    );
+    return c;
+  });
+
+  let currentLayer = $derived.by(() => {
+    return choices.find((d) => d.id === mapState.layers[layerName].id);
+  });
+
 
   function handleSelection(id) {
     poppedFlag = false;
-    dispatch("selectionMade", { id: id });
+    mapState.layers[layerName].id = id;
   }
 </script>
 
@@ -19,7 +74,7 @@
   <div class="mt-1 relative">
     <button
       type="button"
-      on:click={() => {
+      onclick={() => {
         poppedFlag = !poppedFlag;
       }}
       class="relative bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -28,15 +83,15 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
-        {#if chosen && chosen.title}
+        <span class="text-gray-500 mr-2 font-light text-lg">{customLayerNamesByViewMode[mapState.viewMode][layerName]}</span>
+        {#if currentLayer && currentLayer.title}
           
           <span class="ml-1 block truncate text-gray-900 text-lg"
-            >{chosen.title}</span
+            >{currentLayer.title}</span
           >
           <span
             class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-            >{Math.round(chosen.pct * 100)}% coverage</span
+            >{Math.round(currentLayer.pct * 100)}% coverage</span
           >
           {:else}
           <span class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
@@ -65,7 +120,7 @@
 
     <ul
       class:hidden={!poppedFlag}
-      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black/25 overflow-auto focus:outline-none sm:text-sm"
       tabindex="-1"
       role="listbox"
       aria-labelledby="listbox-label"
@@ -74,9 +129,8 @@
       {#each choices as choice}
         <li
           class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
-          id="{label}-layer-option-{choice.id}"
           role="option"
-          on:click={() => {
+          onclick={() => {
             handleSelection(choice.id);
           }}
         >

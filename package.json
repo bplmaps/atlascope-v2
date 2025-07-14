@@ -10,21 +10,20 @@
   },
   "devDependencies": {
     "@beyonk/svelte-google-analytics": "^2.6.4",
-    "@sveltejs/vite-plugin-svelte": "^4.0.0",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "svelte": "^5.1.4",
-    "tailwindcss": "^3.4.14",
-    "vite": "^5.4.9"
+    "@sveltejs/vite-plugin-svelte": "^5.1.0",
+    "svelte": "^5.34.7",
+    "vite": "^6.3.5"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@supabase/supabase-js": "^2.49.4",
-    "@turf/turf": "^7.1.0",
-    "ol": "^10.5.0",
+    "@tailwindcss/vite": "^4.1.10",
+    "@turf/turf": "^7.2.0",
+    "ol": "^10.6.1",
     "svelte-fa": "^4.0.3",
     "svelte-markdown": "^0.4.1",
     "svelte-meta-tags": "^4.0.4",
+    "tailwindcss": "^4.1.11",
     "topojson-client": "^3.1.0"
   },
   "overrides": {

@@ -1,13 +1,9 @@
 <script>
   import Fa from "svelte-fa";
-
-  import { createEventDispatcher, onMount } from "svelte";
-
   import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
-  import { appState } from "./stores.js";
-
-  let dispatch = createEventDispatcher();
+  import { onMount } from "svelte";
+  import { appState, mapState } from "../state.svelte.js";
 
 
   let nav;
@@ -17,17 +13,15 @@
   function handleGeolocationSuccess(pos) {
     status = "found";
     statusText = "Location found";
-    dispatch("goToCoords", {
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
-    });
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    mapState.center = [pos.coords.longitude, pos.coords.latitude];
+    mapState.zoom = 17;
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
   }
 
   function handleGeolocationError() {
     status = "failed";
     statusText = "Location unavailable";
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
 
   }
 

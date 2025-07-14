@@ -2,9 +2,8 @@
   import Fa from "svelte-fa";
   import { faArrowsH, faArrowsV, faBorderStyle, faCircle } from "@fortawesome/free-solid-svg-icons";
 
-  import { createEventDispatcher } from "svelte";
+  import { mapState } from "../state.svelte";
 
-  export let chosen;
   let choices = [
     { id: "glass", label: "Glass", icon: faCircle },
     { id: "swipe-x", label: "Swipe X", icon: faArrowsH },
@@ -13,13 +12,12 @@
   ];
 
   let poppedFlag = false;
-  let dispatch = createEventDispatcher();
 
-  function handleSelection(d) {
-    dispatch('selectionMade',{"id": d});
+  const handleSelection = (id) => {
+    mapState.viewMode = id;
     poppedFlag = false;
-
   }
+
 
 </script>
 
@@ -27,7 +25,7 @@
   <div class="mt-1 relative">
     <button
       type="button"
-      on:click={() => {
+      onclick={() => {
         poppedFlag = !poppedFlag;
       }}
       class="relative bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -36,7 +34,7 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === chosen).icon}" class="inline mr-2" />{choices.find(c=>c.id === chosen).label}</span>
+        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === mapState.viewMode).icon}" class="inline mr-2" />{choices.find(c=>c.id === mapState.viewMode).label}</span>
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
@@ -59,7 +57,7 @@
 
     <ul
       class:hidden={!poppedFlag}
-      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black/25 overflow-auto focus:outline-none sm:text-sm"
       tabindex="-1"
       role="listbox"
       aria-labelledby="listbox-label"
@@ -69,7 +67,7 @@
         <li
           class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
           role="option"
-          on:click={() => {
+          onclick={() => {
             handleSelection(choice.id);
           }}
         >
