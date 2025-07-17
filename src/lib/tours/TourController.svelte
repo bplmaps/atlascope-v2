@@ -17,6 +17,7 @@
   import LightIconButton from "../ui/LightIconButton.svelte";
 
   import { mapState, appState } from "../state.svelte.js";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
   import { onMount } from "svelte";
 
@@ -36,11 +37,13 @@
 
   function goToCurrentStop() {
     let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
-    mapState.center = cs.center;
-    mapState.zoom = cs.zoom;
-    mapState.viewMode = cs.viewMode;
-    mapState.layers.overlay.id = cs.overlay;
-    mapState.layers.base.id = cs.base;
+    requestChangeToMapState(mapState, {
+      center: cs.center,
+      zoom: cs.zoom,
+      viewMode: cs.viewMode,
+      overlay: cs.overlay,
+      base: cs.base
+    });
   }
 
   function startOver() {
