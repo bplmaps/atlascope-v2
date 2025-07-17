@@ -6,10 +6,9 @@
   import { appState, mapState } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
-
   let nav;
-  let status = "loading";
-  let statusText = "Finding your location ...";
+  let status = $state("loading");
+  let statusText = $state("Finding your location ...");
 
   function handleGeolocationSuccess(pos) {
     status = "found";

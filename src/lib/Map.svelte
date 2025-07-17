@@ -38,8 +38,6 @@
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import instanceVariables from "../config/instance.json";
 
-  const pixelRatio = window.devicePixelRatio;
-
   let map;
   let olLayers = {
     base: new TileLayer(),
@@ -101,11 +99,6 @@
     return p;
   };
 
-  // function for changing the view mode
-  const changeMode = (vm) => {
-    mapState.viewMode = vm;
-    map.render();
-  };
 
   // function for changing the layer
   const changeLayer = (layer, id, force = false) => {
@@ -138,16 +131,13 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
+    console.log("mapMoved");
     mapState.center = toLonLat(view.getCenter());
     mapState.zoom = view.getZoom();
     mapState.rotation = view.getRotation();
-    mapState.extent = transformExtent(
-      view.calculateExtent(),
-      "EPSG:3857",
-      "EPSG:4326",
-    );
 
-    const extent = map.getView().calculateExtent(map.getSize());
+    const extent = view.calculateExtent();
+    mapState.extent = transformExtent(extent, "EPSG:3857", "EPSG:4326");
 
     allLayers.layers.forEach((lyr) => {
       lyr.extentVisible = lyr.properties.globalExtent
@@ -155,7 +145,7 @@
         : intersector(lyr.geometry, extent);
     });
 
-    let currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
+    const currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
 
     // Implement a double check process
     // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
@@ -165,7 +155,7 @@
         (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
       ).length > 0
     ) {
-      let bestNewLayer = allLayers.layers.sort((a, b) => {
+      const bestNewLayer = allLayers.layers.sort((a, b) => {
         return b.extentVisible - a.extentVisible;
       })[0].properties.identifier;
 
@@ -244,7 +234,9 @@
   }
 
   function manipulateDrag(e) {
-    if (draggingFlag) {
+    if (!draggingFlag) {
+      return;
+    } else {
       e.preventDefault();
 
       let posX, posY;
@@ -267,6 +259,7 @@
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
+    const pixelRatio = window.devicePixelRatio;
     map = new Map({
       target: "map-div",
       controls: [],
@@ -357,7 +350,6 @@
 
   $effect(() => {
     if (mapState.requestedMapState.requested) {
-      console.log("requested map state", mapState.requestedMapState);
       if (mapState.requestedMapState.overlay) {
         changeLayer("overlay", mapState.requestedMapState.overlay);
       }
@@ -372,16 +364,24 @@
       }
 
       view.animate({
-        center: mapState.requestedMapState.center ? fromLonLat(mapState.requestedMapState.center) : view.getCenter(),
-        zoom: mapState.requestedMapState.zoom ? mapState.requestedMapState.zoom : view.getZoom(),
-        rotation: (mapState.requestedMapState.rotation !== null) ? mapState.requestedMapState.rotation : view.getRotation(),
-        duration: mapState.requestedMapState.animate ? mapState.requestedMapState.animate : 0,
+        center: mapState.requestedMapState.center
+          ? fromLonLat(mapState.requestedMapState.center)
+          : view.getCenter(),
+        zoom: mapState.requestedMapState.zoom
+          ? mapState.requestedMapState.zoom
+          : view.getZoom(),
+        rotation:
+          mapState.requestedMapState.rotation !== null
+            ? mapState.requestedMapState.rotation
+            : view.getRotation(),
+        duration: mapState.requestedMapState.animate
+          ? mapState.requestedMapState.animate
+          : 0,
       });
 
       mapState.requestedMapState.requested = false;
     }
   });
-
 
   $effect(() => {
     if (mapState.annotationEntry) {
@@ -401,12 +401,12 @@
 
 <section
   id="map"
-  on:mousemove={manipulateDrag}
-  on:touchmove={manipulateDrag}
-  on:mouseup={() => {
+  onmousemove={manipulateDrag}
+  ontouchmove={manipulateDrag}
+  onmouseup={() => {
     draggingFlag = false;
   }}
-  on:touchend={() => {
+  ontouchend={() => {
     draggingFlag = false;
   }}
 >
@@ -419,10 +419,10 @@
       ? 'hidden'
       : ''}"
     style="left: {dragXY[0]}px; top: {dragXY[1]}px"
-    on:mousedown={() => {
+    onmousedown={() => {
       draggingFlag = true;
     }}
-    on:touchstart={() => {
+    ontouchstart={() => {
       draggingFlag = true;
     }}
   >
@@ -446,7 +446,7 @@
   </div>
 
   <div
-    on:click={() => {
+    onclick={() => {
       appState.tour.active = false;
       appState.modals.splash = true;
     }}
@@ -459,15 +459,7 @@
     <div
       class="absolute top-5 right-5 max-w-sm bg-slate-100 py-3 px-4 rounded shadow"
     >
-      <GeolocationModal
-        on:goToCoords={(e) => {
-          changeMapView({
-            center: [e.detail.lon, e.detail.lat],
-            duration: 300,
-            dropMarkerAtPoint: true,
-          });
-        }}
-      />
+      <GeolocationModal />
     </div>
   {/if}
 
