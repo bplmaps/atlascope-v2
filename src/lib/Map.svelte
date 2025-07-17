@@ -46,7 +46,6 @@
     overlay: new TileLayer(),
   };
 
-  let layerPercentVisibleMatrix = $state({});
   let opacitySliderValue = $state(50);
   let dragXY = $state([0, 0]);
   let draggingFlag = $state(false);
@@ -91,7 +90,6 @@
 
   let annotationEntryCoords = $state([0, 0]);
   let annotationExtentCoords = $state(null);
-
 
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
@@ -150,8 +148,6 @@
     );
 
     const extent = map.getView().calculateExtent(map.getSize());
-
-    layerPercentVisibleMatrix = {};
 
     allLayers.layers.forEach((lyr) => {
       lyr.extentVisible = lyr.properties.globalExtent
@@ -229,7 +225,7 @@
   const closeAnnotationListModal = () => {
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsList = [];
-  }
+  };
 
   function moveMapToAnnotation(d) {
     const selectedAnnotation = loadedAnnotationsList[d];
@@ -353,48 +349,39 @@
     });
 
     map.on("moveend", mapMoved);
-    draggingFlag = false;
+
     dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     mapMoved();
     mapState.mounted = true;
   });
 
-  // Watch for changes to the mapState and update the map accordingly
   $effect(() => {
-    if (mapState.center) {
-      view.setCenter(fromLonLat(mapState.center));
-    }
-  }); 
+    if (mapState.requestedMapState.requested) {
+      console.log("requested map state", mapState.requestedMapState);
+      if (mapState.requestedMapState.overlay) {
+        changeLayer("overlay", mapState.requestedMapState.overlay);
+      }
 
-  $effect(() => {
-    if (mapState.zoom) {
-      view.animate({ zoom: mapState.zoom, duration: 900 });
+      if (mapState.requestedMapState.base) {
+        changeLayer("base", mapState.requestedMapState.base);
+      }
+
+      if (mapState.requestedMapState.viewMode) {
+        mapState.viewMode = mapState.requestedMapState.viewMode;
+        map.render();
+      }
+
+      view.animate({
+        center: mapState.requestedMapState.center ? fromLonLat(mapState.requestedMapState.center) : view.getCenter(),
+        zoom: mapState.requestedMapState.zoom ? mapState.requestedMapState.zoom : view.getZoom(),
+        rotation: (mapState.requestedMapState.rotation !== null) ? mapState.requestedMapState.rotation : view.getRotation(),
+        duration: mapState.requestedMapState.animate ? mapState.requestedMapState.animate : 0,
+      });
+
+      mapState.requestedMapState.requested = false;
     }
   });
 
-  $effect(() => {
-    if (mapState.layers.overlay.id) {
-      changeLayer("overlay", mapState.layers.overlay.id, true);
-    }
-  });
-
-  $effect(() => {
-    if (mapState.layers.base.id) {
-      changeLayer("base", mapState.layers.base.id, true);
-    }
-  });
-
-  $effect(() => {
-    if (mapState.rotation !== null) {
-      view.animate({ rotation: mapState.rotation, duration: 900 });
-    }
-  });
-
-  $effect(() => {
-    if (mapState.viewMode) {
-      map.render();
-    }
-  });
 
   $effect(() => {
     if (mapState.annotationEntry) {
@@ -410,8 +397,6 @@
       mapState.annotationRead = false;
     }
   });
-
-
 </script>
 
 <section
@@ -485,8 +470,8 @@
       />
     </div>
   {/if}
- 
-  {#if mapState.annotationEntry }
+
+  {#if mapState.annotationEntry}
     <div
       class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
     >
@@ -514,12 +499,11 @@
     />
   {/if}
 
-  
   {#if loadedAnnotationsList.length > 0}
     <AnnotationsListModal
       annotationsList={loadedAnnotationsList}
-      closeAnnotationListModal={closeAnnotationListModal}
-      moveMapToAnnotation={moveMapToAnnotation}
+      {closeAnnotationListModal}
+      {moveMapToAnnotation}
     />
   {/if}
 

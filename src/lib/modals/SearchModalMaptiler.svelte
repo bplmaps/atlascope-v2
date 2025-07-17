@@ -10,6 +10,7 @@
   import { insideChecker } from "../helpers/intersector";
 
   import { appState, mapState } from "../state.svelte";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
 
   let searchText = $state("");
@@ -64,8 +65,10 @@
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    mapState.center = [lon, lat];
-    mapState.zoom = 17;
+    requestChangeToMapState(mapState, {
+      center: [lon, lat],
+      zoom: 17
+    });
     searchText = result.place_name || result.properties.name;
     results = [];
     appState.modals.search = false;

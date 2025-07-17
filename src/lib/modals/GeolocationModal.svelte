@@ -4,6 +4,7 @@
 
   import { onMount } from "svelte";
   import { appState, mapState } from "../state.svelte.js";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
 
   let nav;
@@ -13,8 +14,10 @@
   function handleGeolocationSuccess(pos) {
     status = "found";
     statusText = "Location found";
-    mapState.center = [pos.coords.longitude, pos.coords.latitude];
-    mapState.zoom = 17;
+    requestChangeToMapState(mapState, {
+      center: [pos.coords.longitude, pos.coords.latitude],
+      zoom: 17
+    });
     setTimeout(()=>{appState.modals.geolocation = false;},5000)
   }
 

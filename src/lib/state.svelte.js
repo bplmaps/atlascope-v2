@@ -33,6 +33,17 @@ export const mapState = $state({
     zoom: null,
     extent: null,
     rotation: null,
+    requestedMapState: {
+      requested: false,
+      animate: 0,
+      viewMode: null,
+      center: null,
+      zoom: null,
+      extent: null,
+      rotation: null,
+      base: null,
+      overlay: null
+    }
 })
 
 export const allLayers = $state({
