@@ -20,6 +20,7 @@
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
   import { onMount } from "svelte";
+    import { angle } from "@turf/turf";
 
   let loadingFlag = $state(true);
   let tourData = $state(null);
@@ -42,7 +43,8 @@
       zoom: cs.zoom,
       viewMode: cs.viewMode,
       overlay: cs.overlay,
-      base: cs.base
+      base: cs.base,
+      animate: 800
     });
   }
 
