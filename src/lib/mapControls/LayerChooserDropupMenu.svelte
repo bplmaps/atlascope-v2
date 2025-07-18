@@ -86,19 +86,19 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 mr-2 font-light text-lg">{customLayerNamesByViewMode[mapState.viewMode][layerName]}</span>
+        <span class="text-gray-500 mr-1 md:mr-2 font-light text-sm md:text-lg">{customLayerNamesByViewMode[mapState.viewMode][layerName]}</span>
         {#if currentLayer && currentLayer.title}
           
-          <span class="ml-1 block truncate text-gray-900 text-lg"
-            >{currentLayer.title}</span
+          <div class="ml-1 block truncate text-gray-900 text-lg"
+            >{currentLayer.title}</div
           >
-          <span
-            class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-            >{Math.round(currentLayer.pct * 100)}% coverage</span
+          <div
+            class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1 flex items-center"
+            >{Math.round(currentLayer.pct * 100)}% <span class="hidden md:block ml-1">coverage</span></div
           >
           {:else}
-          <span class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
-            >No layer</span
+          <div class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
+            >No layer</div
           >
         {/if}
       </span>
@@ -131,7 +131,7 @@
     >
       {#each choices as choice}
         <li
-          class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
+          class="text-gray-800 {choice.id === currentLayer.id ? 'bg-slate-100' : ''} cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
           role="option"
           onclick={() => {
             handleSelection(choice.id);
