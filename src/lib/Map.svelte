@@ -89,6 +89,9 @@
   let annotationEntryCoords = $state([0, 0]);
   let annotationExtentCoords = $state(null);
 
+  // Debounce timer for mapMoved function
+  let mapMovedTimeout;
+
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
     if (!p) {
@@ -131,42 +134,50 @@
   // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
   // and then sets the `extentVisible` property on that layer in the store
   function mapMoved() {
-    console.log("mapMoved");
-    mapState.center = toLonLat(view.getCenter());
-    mapState.zoom = view.getZoom();
-    mapState.rotation = view.getRotation();
-
-    const extent = view.calculateExtent();
-    mapState.extent = transformExtent(extent, "EPSG:3857", "EPSG:4326");
-
-    allLayers.layers.forEach((lyr) => {
-      lyr.extentVisible = lyr.properties.globalExtent
-        ? 1.0
-        : intersector(lyr.geometry, extent);
-    });
-
-    const currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
-
-    // Implement a double check process
-    // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
-    if (
-      currentLayerInfo.extentVisible < 0.4 &&
-      allLayers.layers.filter(
-        (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
-      ).length > 0
-    ) {
-      const bestNewLayer = allLayers.layers.sort((a, b) => {
-        return b.extentVisible - a.extentVisible;
-      })[0].properties.identifier;
-
-      if (bestNewLayer != mapState.layers.overlay.id) {
-        changeLayer("overlay", bestNewLayer);
-        mapState.layerChangePopup = true;
-        setTimeout(() => {
-          mapState.layerChangePopup = false;
-        }, 5000);
-      }
+    // Clear any existing timeout
+    if (mapMovedTimeout) {
+      clearTimeout(mapMovedTimeout);
     }
+
+    // Set a new timeout to execute the function after 500ms
+    mapMovedTimeout = setTimeout(() => {
+      mapState.center = toLonLat(view.getCenter());
+      mapState.zoom = view.getZoom();
+      mapState.rotation = view.getRotation();
+
+      // const extent = view.calculateExtent();
+      const extent = transformExtent(view.calculateExtent(), "EPSG:3857", "EPSG:4326");
+      mapState.extent = extent;
+
+      allLayers.layers.forEach((lyr) => {
+        lyr.extentVisible = lyr.properties.globalExtent
+          ? 1.0
+          : intersector(lyr.geometry, extent);
+      });
+
+      const currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
+
+      // Implement a double check process
+      // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
+      if (
+        currentLayerInfo.extentVisible < 0.4 &&
+        allLayers.layers.filter(
+          (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
+        ).length > 0
+      ) {
+        const bestNewLayer = allLayers.layers.sort((a, b) => {
+          return b.extentVisible - a.extentVisible;
+        })[0].properties.identifier;
+
+        if (bestNewLayer != mapState.layers.overlay.id) {
+          changeLayer("overlay", bestNewLayer);
+          mapState.layerChangePopup = true;
+          setTimeout(() => {
+            mapState.layerChangePopup = false;
+          }, 5000);
+        }
+      }
+    }, 500);
   }
 
   function enableAnnotationMode() {
