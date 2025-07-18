@@ -67,7 +67,8 @@
     const [lon, lat] = result.geometry.coordinates;
     requestChangeToMapState(mapState, {
       center: [lon, lat],
-      zoom: 17
+      zoom: 17,
+      dropPin: true
     });
     searchText = result.place_name || result.properties.name;
     results = [];

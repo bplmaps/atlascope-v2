@@ -35,6 +35,7 @@ export const mapState = $state({
     rotation: null,
     requestedMapState: {
       requested: false,
+      dropPin: false,
       animate: 0,
       viewMode: null,
       center: null,

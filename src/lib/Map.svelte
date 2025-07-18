@@ -102,7 +102,6 @@
     return p;
   };
 
-
   // function for changing the layer
   const changeLayer = (layer, id, force = false) => {
     console.log(`Changing ${layer} to ${id}`);
@@ -146,7 +145,11 @@
       mapState.rotation = view.getRotation();
 
       // const extent = view.calculateExtent();
-      const extent = transformExtent(view.calculateExtent(), "EPSG:3857", "EPSG:4326");
+      const extent = transformExtent(
+        view.calculateExtent(),
+        "EPSG:3857",
+        "EPSG:4326",
+      );
       mapState.extent = extent;
 
       allLayers.layers.forEach((lyr) => {
@@ -361,6 +364,17 @@
 
   $effect(() => {
     if (mapState.requestedMapState.requested) {
+      if (
+        mapState.requestedMapState.dropPin &&
+        mapState.requestedMapState.center
+      ) {
+        const targetPoint = fromLonLat(mapState.requestedMapState.center);
+        markerGeometrySource.clear();
+        markerGeometrySource.addFeature(
+          new Feature({ geometry: new Point(targetPoint) }),
+        );
+      }
+
       if (mapState.requestedMapState.overlay) {
         changeLayer("overlay", mapState.requestedMapState.overlay);
       }

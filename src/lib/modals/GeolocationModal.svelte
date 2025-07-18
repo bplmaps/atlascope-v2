@@ -15,7 +15,8 @@
     statusText = "Location found";
     requestChangeToMapState(mapState, {
       center: [pos.coords.longitude, pos.coords.latitude],
-      zoom: 17
+      zoom: 17,
+      dropPin: true
     });
     setTimeout(()=>{appState.modals.geolocation = false;},5000)
   }

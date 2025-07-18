@@ -4,6 +4,7 @@ export function requestChangeToMapState(mapState, requestedMapState) {
         return;
     } else {
         mapState.requestedMapState.requested = true;
+        mapState.requestedMapState.dropPin = requestedMapState.dropPin ? requestedMapState.dropPin : false;
         mapState.requestedMapState.viewMode = requestedMapState.viewMode ? requestedMapState.viewMode : null;
         mapState.requestedMapState.center = requestedMapState.center ? requestedMapState.center : null;
         mapState.requestedMapState.zoom = requestedMapState.zoom ? requestedMapState.zoom : null;
