@@ -13,6 +13,7 @@
     faDoorOpen,
     faArrowsTurnToDots,
     faArrowCircleRight,
+    faShare
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "../ui/LightIconButton.svelte";
 
@@ -22,9 +23,12 @@
   import { onMount } from "svelte";
     import { angle } from "@turf/turf";
 
+  import instanceVariables from "../../config/instance.json";
+
   let loadingFlag = $state(true);
   let tourData = $state(null);
   let currentStop = $state(-1);
+  let shareUrl = `${instanceVariables.baseURL}/#/view:tour$tour:${appState.tour.id}`
 
   function tourStepBack() {
     currentStop = currentStop - 1;
@@ -158,6 +162,13 @@
             </div>
 
             <BibliographicBug />
+            <a target="blank" href={shareUrl}>
+              <button
+                type="button"
+                class="items-center mx-4 gap-2 py-2 px-4 text-md font-medium bg-white border rounded border-gray-300">
+                <Fa icon={faShare} />
+              </button>
+            </a>
           </div>
         {/if}
       </div>
