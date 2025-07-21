@@ -13,7 +13,8 @@
     faDoorOpen,
     faArrowsTurnToDots,
     faArrowCircleRight,
-    faShare
+    faShare,
+    faLink
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "../ui/LightIconButton.svelte";
 
@@ -21,7 +22,6 @@
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
   import { onMount } from "svelte";
-    import { angle } from "@turf/turf";
 
   import instanceVariables from "../../config/instance.json";
 
@@ -159,16 +159,23 @@
               >
                 <Fa icon={faArrowRight} />
               </button>
+
+              
             </div>
 
+            <LightIconButton
+                label="Share link"
+                size="md"
+                icon={faLink}
+                collapsibleLabel={true}
+                on:click={() => {
+                  navigator.clipboard.writeText(shareUrl);
+                  window.alert("Link copied to clipboard");
+                }}
+              />
+
             <BibliographicBug />
-            <a target="blank" href={shareUrl}>
-              <button
-                type="button"
-                class="items-center mx-4 gap-2 py-2 px-4 text-md font-medium bg-white border rounded border-gray-300">
-                <Fa icon={faShare} />
-              </button>
-            </a>
+            
           </div>
         {/if}
       </div>
