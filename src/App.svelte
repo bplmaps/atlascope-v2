@@ -2,6 +2,8 @@
   import { onMount } from "svelte";
 
   import instanceVariables from "./config/instance.json";
+
+  import "@fontsource-variable/inter";
   import "./style/global.css";
 
   import {
@@ -42,7 +44,7 @@
       appState.layersLoaded = true;
     });
 
-    // If the url params are set to a view, close all modals and start a tour
+    // If the url params are set to a share link or tour, close all modals and start a tour
     if (urlParams.view && urlParams.view === "share") {
       appState.modals.splash = false;
     } else if (urlParams.view && urlParams.view === "tour") {
@@ -75,22 +77,15 @@
 </div>
 
 <style>
-  @import url("https://rsms.me/inter/inter.css");
 
   :global(body) {
-    font-family: "Inter", sans-serif;
+    font-family: "Inter Variable", sans-serif;
     overflow: hidden;
   }
 
   :global(body) {
     max-width: 100%;
     max-height: 100%;
-  }
-
-  @supports (font-variation-settings: normal) {
-    :global(body) {
-      font-family: "Inter var", sans-serif;
-    }
   }
 
   #wraps-all {

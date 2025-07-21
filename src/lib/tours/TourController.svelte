@@ -13,6 +13,8 @@
     faDoorOpen,
     faArrowsTurnToDots,
     faArrowCircleRight,
+    faShare,
+    faLink
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "../ui/LightIconButton.svelte";
 
@@ -21,9 +23,12 @@
 
   import { onMount } from "svelte";
 
+  import instanceVariables from "../../config/instance.json";
+
   let loadingFlag = $state(true);
   let tourData = $state(null);
   let currentStop = $state(-1);
+  let shareUrl = `${instanceVariables.baseURL}/#/view:tour$tour:${appState.tour.id}`
 
   function tourStepBack() {
     currentStop = currentStop - 1;
@@ -42,7 +47,8 @@
       zoom: cs.zoom,
       viewMode: cs.viewMode,
       overlay: cs.overlay,
-      base: cs.base
+      base: cs.base,
+      animate: 800
     });
   }
 
@@ -153,9 +159,23 @@
               >
                 <Fa icon={faArrowRight} />
               </button>
+
+              
             </div>
 
+            <LightIconButton
+                label="Share link"
+                size="md"
+                icon={faLink}
+                collapsibleLabel={true}
+                on:click={() => {
+                  navigator.clipboard.writeText(shareUrl);
+                  window.alert("Link copied to clipboard");
+                }}
+              />
+
             <BibliographicBug />
+            
           </div>
         {/if}
       </div>
