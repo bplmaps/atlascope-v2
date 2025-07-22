@@ -19,7 +19,6 @@
 
   import { mapState, appState, allLayers } from "./lib/state.svelte.js";
 
-
   // Initialization functions; parse out the initial url params and fetch the layer data
   onMount(() => {
     const urlParams = parseUrlParams(
@@ -48,7 +47,9 @@
     if (urlParams.view && urlParams.view === "share") {
       appState.modals.splash = false;
     } else if (urlParams.view && urlParams.view === "tour") {
-      return;
+      appState.tour.id = urlParams.tour;
+      appState.tour.active = true;
+      appState.modals.splash = false;
     }
   });
 </script>
@@ -70,14 +71,12 @@
     <TourController />
   {/if}
 
-  {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList }
-  <ModalWrapper />
+  {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList}
+    <ModalWrapper />
   {/if}
-
 </div>
 
 <style>
-
   :global(body) {
     font-family: "Inter Variable", sans-serif;
     overflow: hidden;
