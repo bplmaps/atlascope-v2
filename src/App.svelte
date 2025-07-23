@@ -6,10 +6,7 @@
   import Map from "./lib/Map.svelte";
   import Splash from "./lib/Splash.svelte";
   import SearchModal from "./lib/SearchModal.svelte";
-  import BibliographicInfoModal from "./lib/BibliographicInfoModal.svelte";
-  import TourListModal from "./lib/TourListModal.svelte";
-  import TourController from "./lib/TourController.svelte";
-  import AboutModal from "./lib/AboutModal.svelte";
+
 
   import { allLayers } from "./lib/stores.js";
   import { appState } from "./lib/stores.js";
@@ -53,10 +50,43 @@
   }
 
 
+	let inactivityTimeout;
+
+	const INACTIVITY_LIMIT = 2 * 60 * 1000; // 3 minutes
+
+	function resetInactivityTimer() {
+		clearTimeout(inactivityTimeout);
+		inactivityTimeout = setTimeout(() => {
+			location.reload(); // Full page reload
+		}, INACTIVITY_LIMIT);
+	}
+
+	function startInactivityWatcher() {
+		// More complete set of user activity events, including touch
+		const events = [
+			'mousemove',
+			'mousedown',
+			'keypress',
+			'touchstart',
+			'touchmove',
+			'touchend',
+			'scroll'
+		];
+
+		for (const event of events) {
+			window.addEventListener(event, resetInactivityTimer, { passive: true });
+		}
+
+		resetInactivityTimer(); // Start initial timer
+	}
+
+
   // When the app is mounted, first thing we need to do is load the footprints file
   // We stort it by year and then write it to the `allLayers` store which can be accessed
   // from any module
   onMount(() => {
+    startInactivityWatcher();
+
     $url.hash.substring(2).split("$").map((kv)=>{const i = kv.indexOf(':'); const k = kv.slice(0,i); const v = kv.slice(i+1); urlParams[k]=v; });
 
     fetch(instanceVariables.historicLayersFootprintsFile)
@@ -85,6 +115,11 @@
           "Unable to load map data. Check your internet connection and try reloading the page."
         );
       });
+
+    return () => {
+			clearTimeout(inactivityTimeout);
+		};
+
   });
 </script>
 
