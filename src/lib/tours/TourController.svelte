@@ -137,7 +137,6 @@
                 onclick={() => {
                   appState.tour.active = false;
                 }}
-                disabled={currentStop === tourData.stopsJson.length - 1}
                 type="button"
                 class="flex items-center gap-2 py-2 px-4 text-md font-medium bg-white border-t border-b border-r border-gray-300"
               >

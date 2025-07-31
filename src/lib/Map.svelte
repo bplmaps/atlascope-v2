@@ -238,7 +238,8 @@
     loadedAnnotationsGeometrySource.addFeature(
       new Feature(fromExtent(extentJson)),
     );
-    mapState.layers.overlay.id = selectedAnnotation.layer;
+
+    changeLayer("overlay", selectedAnnotation.layer);
 
     view.fit(extentJson, {
       padding: [100, 100, 300, 100],
