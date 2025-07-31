@@ -49,7 +49,10 @@
       text: `Start at ${instanceVariables.defaultStartLocation.name}`,
       icon: faLandmark,
       action: function () {
-        return;
+        requestChangeToMapState(mapState, {
+          center: instanceVariables.defaultStartLocation.center,
+          zoom: 18,
+        });
       },
     },
   ];
@@ -59,7 +62,6 @@
 
 <section id="splash" class="ui-top-level-layer">
   <div id="splash-inner">
-
     <div class="p-0 mx-auto w-48 mb-3">
       <AtlascopeLogo pulse={true} />
     </div>
@@ -122,7 +124,7 @@
             onSelect={(item) => {
               requestChangeToMapState(mapState, {
                 center: item.center,
-                zoom: 17
+                zoom: 17,
               });
               appState.modals.splash = false;
             }}
