@@ -1,6 +1,4 @@
 <script>
-  import { createEventDispatcher } from "svelte";
-
   import Fa from "svelte-fa";
   import {
     faLocationArrow,
@@ -13,47 +11,57 @@
 
   import SvelteMarkdown from "svelte-markdown";
 
-  const dispatch = createEventDispatcher();
+  import { appState, mapState, allLayers } from "../state.svelte.js";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import instanceVariables from "../../config/instance.json";
 
-  import { allLayers } from "./stores.js";
-  import { appState } from "./stores.js";
-  import instanceVariables from "../config/instance.json";
-  import AtlascopeLogo from "./AtlascopeLogo.svelte";
-  import LightIconButton from "./LightIconButton.svelte";
-  import CoverageComboBox from "./CoverageComboBox.svelte";
-
-  function splashButton(b) {
-    $appState.gateway = false;
-    dispatch("splashButton", b);
-  }
+  import AtlascopeLogo from "../ui/AtlascopeLogo.svelte";
+  import LightIconButton from "../ui/LightIconButton.svelte";
+  import CoverageComboBox from "../ui/CoverageComboBox.svelte";
 
   let buttons = [
-    { id: "find", text: "Find my location", icon: faLocationArrow },
-    { id: "search", text: "Search places", icon: faSearchLocation },
-    { id: "tour", text: "Take a tour", icon: faHiking },
+    {
+      id: "find",
+      text: "Find my location",
+      icon: faLocationArrow,
+      action: function () {
+        appState.modals.geolocation = true;
+      },
+    },
+    {
+      id: "search",
+      text: "Search places",
+      icon: faSearchLocation,
+      action: function () {
+        appState.modals.search = true;
+      },
+    },
+    {
+      id: "tour",
+      text: "Take a tour",
+      icon: faHiking,
+      action: function () {
+        appState.modals.tourList = true;
+      },
+    },
     {
       id: "start",
       text: `Start at ${instanceVariables.defaultStartLocation.name}`,
       icon: faLandmark,
+      action: function () {
+        requestChangeToMapState(mapState, {
+          center: instanceVariables.defaultStartLocation.center,
+          zoom: 18,
+        });
+      },
     },
   ];
 
-  let coverageData = instanceVariables.coverageDescriptiveList;
-
+  const coverageData = instanceVariables.coverageDescriptiveList;
 </script>
 
 <section id="splash" class="ui-top-level-layer">
   <div id="splash-inner">
-    {#if !$appState.gateway}
-      <div class="my-3">
-        <button
-          class="text-xl"
-          on:click={() => {
-            dispatch("closeSelf");
-          }}><Fa icon={faChevronUp} /></button
-        >
-      </div>
-    {/if}
     <div class="p-0 mx-auto w-48 mb-3">
       <AtlascopeLogo pulse={true} />
     </div>
@@ -62,7 +70,7 @@
       {instanceVariables.tagline}.
     </p>
     <p class="text-xl font-bold">How do you want to start exploring?</p>
-    {#if !$appState.layersLoaded}
+    {#if !appState.layersLoaded}
       <div class="grid place-items-center mt-3">
         <div>
           <svg
@@ -92,9 +100,10 @@
             label={button.text}
             icon={button.icon}
             on:click={() => {
-              splashButton({ action: button.id });
+              appState.modals.splash = false;
+              button.action();
             }}
-            disabled={!$appState.layersLoaded}
+            disabled={!appState.layersLoaded}
           />
         {/each}
       </div>
@@ -103,20 +112,21 @@
       <p class="font-semibold">
         Currently serving <span
           class="bg-yellow-900 text-gray-200 text-s font-semibold mx-0.5 px-2.5 py-0.5 rounded"
-          >{$allLayers.length > 0 ? $allLayers.length : "..."}</span
+          >{allLayers.layers.length > 0 ? allLayers.layers.length : "..."}</span
         >
         atlas layers of {instanceVariables.geographicCoverage}
       </p>
     </div>
-    {#if $appState.layersLoaded && coverageData}
+    {#if coverageData}
       <div class="py-3">
-        <div class="relative inline-block text-left w-48">
+        <div class="relative inline-block text-left w-auto">
           <CoverageComboBox
             onSelect={(item) => {
-              splashButton({
-                action: "jumpToCoverageLocation",
+              requestChangeToMapState(mapState, {
                 center: item.center,
+                zoom: 17,
               });
+              appState.modals.splash = false;
             }}
           />
         </div>

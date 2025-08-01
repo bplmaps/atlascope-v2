@@ -1,27 +1,23 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-    import { writeAnnotation } from "./helpers/supabaseFunctions";
 
-    export let pos = [0, 0];
-    export let featureExtent = [0, 0, 0, 0];
-    export let layerID;
-    export let layerName;
+    import { writeAnnotation } from "../helpers/supabaseFunctions";
+    import { mapState } from "../state.svelte.js";
+
+    const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID } = $props();
     const buffer = -15;
 
     let topPos = window.innerWidth > 768 ? Math.min((window.innerHeight - 300), (pos[1] + buffer)) + "px" : "50vh";
     let leftPos = window.innerWidth > 768 ? Math.min((0.68 * window.innerWidth), (pos[0] + buffer)) + "px" : "10vw";
 
-    let annotationBodyEntry;
-    let annotationEmailEntry;
-    let newId;
+    let annotationBodyEntry = $state("");
+    let annotationEmailEntry = $state("");
 
-    let processing = false;
-    let completed = false;
+    let processing = $state(false);
+    let completed = $state(false);
 
-    let dispatch = createEventDispatcher();
 
     function cancelAnnotationEntry() {
-        dispatch("cancel");
+        mapState.annotationSave = false;
     }
 
     function processAnnotationSubmission() {
@@ -41,7 +37,7 @@
                 processing = false;
                 completed = true;
                 setTimeout(() => {
-                    dispatch("cancel");
+                    mapState.annotationSave = false;
                 }, 5000);
             });
         }
@@ -57,7 +53,7 @@
         class="mb-4 w-full bg-gray-50 rounded-lg border border-gray-200"
     >
     <div class="text-sm text-gray-800 px-4 py-2 border-b">
-        Annotations are saved to the overlay layer, <strong>{layerName}</strong>.
+        Annotations are saved to the overlay layer, <strong>{layerID}</strong>.
     </div>
         {#if !completed}
             <form>

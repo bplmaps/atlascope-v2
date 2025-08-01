@@ -5,14 +5,13 @@
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import ModalCloserButton from "./ModalCloserButton.svelte";
 
-  import instanceVariables from "../config/instance.json";
-  import { insideChecker } from "./helpers/intersector";
+  import instanceVariables from "../../config/instance.json";
+  import { insideChecker } from "../helpers/intersector";
 
-  // this fixes the deprecated createEventDispatcher
-  // see the related changes in App.svelte
-  let { goToCoords, closeSelf } = $props();
+  import { appState, mapState } from "../state.svelte";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+
 
   let searchText = $state("");
   let results = $state([]);
@@ -66,12 +65,14 @@
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    goToCoords({
-      lon: lon,
-      lat: lat,
+    requestChangeToMapState(mapState, {
+      center: [lon, lat],
+      zoom: 17,
+      dropPin: true
     });
     searchText = result.place_name || result.properties.name;
     results = [];
+    appState.modals.search = false;
   }
 
   function handleKeydown(e) {
@@ -101,9 +102,9 @@
           id="search-input"
           type="text"
           placeholder="Enter address or location ..."
-          on:input={debounceSearch}
+          oninput={debounceSearch}
           bind:value={searchText}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
         />
       </div>
       {#if results && results.length > 0}
@@ -112,7 +113,7 @@
             {#each results as result}
               <li
                 class="text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
-                on:click={() => {
+                onclick={() => {
                   handleSelection(result);
                 }}
               >
@@ -137,11 +138,7 @@
         </div>
       {/if}
 
-      <ModalCloserButton
-        on:click={() => {
-          closeSelf();
-        }}
-      />
+
     </div>
   </div>
 </section>

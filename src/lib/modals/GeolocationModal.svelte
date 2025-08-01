@@ -1,33 +1,30 @@
 <script>
   import Fa from "svelte-fa";
-
-  import { createEventDispatcher, onMount } from "svelte";
-
   import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
-  import { appState } from "./stores.js";
-
-  let dispatch = createEventDispatcher();
-
+  import { onMount } from "svelte";
+  import { appState, mapState } from "../state.svelte.js";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
   let nav;
-  let status = "loading";
-  let statusText = "Finding your location ...";
+  let status = $state("loading");
+  let statusText = $state("Finding your location ...");
 
   function handleGeolocationSuccess(pos) {
     status = "found";
     statusText = "Location found";
-    dispatch("goToCoords", {
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
+    requestChangeToMapState(mapState, {
+      center: [pos.coords.longitude, pos.coords.latitude],
+      zoom: 17,
+      dropPin: true
     });
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
   }
 
   function handleGeolocationError() {
     status = "failed";
     statusText = "Location unavailable";
-    setTimeout(()=>{$appState.modals.geolocation = false;},5000)
+    setTimeout(()=>{appState.modals.geolocation = false;},5000)
 
   }
 

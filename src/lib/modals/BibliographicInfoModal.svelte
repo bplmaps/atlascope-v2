@@ -2,27 +2,20 @@
   import Fa from "svelte-fa";
   import { faBookBookmark, faCopy } from "@fortawesome/free-solid-svg-icons";
 
-  import { createEventDispatcher } from "svelte";
-  import { onMount } from 'svelte';
-
   import SvelteMarkdown from "svelte-markdown";
+  import TileJsonUrlFetcher from "../helpers/TileJsonUrlFetcher.svelte";
 
-  let dispatch = createEventDispatcher();
+  import { mapState, allLayers } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
 
-  import ModalCloserButton from "./ModalCloserButton.svelte";
-  export let base, overlay;
+  const getLayerDataById = (id) => {
+    return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : instanceVariables.referenceLayers.find((l) => l.properties.identifier === id);
+  }
 
-  let blocks = [
-    { title: "Base Layer", p: base },
-    { title: "Overlay Layer", p: overlay },
-  ];
-
-  let d;
-
-  onMount(async () => {
-    const r = await fetch(blocks[1].p.source.url);
-    d = await r.json()
-  })
+  const blocks = $derived.by(() => [
+    { title: "Overlay Layer", p: getLayerDataById(mapState.layers.overlay.id).properties },
+    { title: "Base Layer", p: getLayerDataById(mapState.layers.base.id).properties }
+  ]);
 
 </script>
 
@@ -37,7 +30,6 @@
       {#each blocks as block}
         <div class="p-3 m-2 bg-gray-50 rounded">
           <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
-
           <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
 
           {#if block.p.sponsors && block.p.sponsors.length > 0}
@@ -66,27 +58,25 @@
                 href={block.p.catalogPermalink}
                 rel="noreferrer"
                 target="_blank"
-                class="bg-blue-800 hover:bg-blue-900 text-gray-100 text-sm px-3 py-2 rounded"
+                class="a-button bg-blue-200 hover:bg-blue-900 text-gray-800 text-sm px-3 py-2 rounded transition-all hover:text-white"
                 >Catalog Record</a
               >
             </p>
           {/if}
 
-          {#if block.p.source && !block.p.source.hidden && d}
+          {#if block.p.source && !block.p.source.hidden }
             <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm  overflow-x-auto">
               <div class="flex"><span class="font-semibold pr-3">Layer type </span><span class="font-mono text-gray-700">{block.p.source.type}</span></div>
               <div class="flex"><span class="font-semibold pr-3">Layer URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.p.source.url}</span></div>
-              <div class="flex"><span class="font-semibold pr-3">XYZ tiles </span><span class="font-mono text-gray-700 whitespace-nowrap">{d.tiles[0]}</span></div>
+              {#if block.p.source.type === "tilejson" && block.p.source.url }
+                <TileJsonUrlFetcher tileJsonUrl={block.p.source.url} />
+              {/if}
             </div>
           {/if}
         </div>
       {/each}
 
-      <ModalCloserButton
-        on:click={() => {
-          dispatch("closeSelf");
-        }}
-      />
+
     </div>
   </div>
 </section>

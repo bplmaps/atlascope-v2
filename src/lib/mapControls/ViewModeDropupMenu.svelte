@@ -1,25 +1,34 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import Fa from "svelte-fa";
+  import { faArrowsH, faArrowsV, faBorderStyle, faCircle } from "@fortawesome/free-solid-svg-icons";
 
-  export let choices;
-  export let chosen;
-  export let label;
+  import { mapState } from "../state.svelte";
+  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+
+  let choices = [
+    { id: "glass", label: "Glass", icon: faCircle },
+    { id: "swipe-x", label: "Swipe X", icon: faArrowsH },
+    { id: "swipe-y", label: "Swipe Y", icon: faArrowsV },
+    { id: "opacity", label: "Opacity", icon: faBorderStyle }
+  ];
 
   let poppedFlag = false;
 
-  let dispatch = createEventDispatcher();
-
-  function handleSelection(id) {
+  const handleSelection = (id) => {
+    requestChangeToMapState(mapState, {
+      viewMode: id
+    });
     poppedFlag = false;
-    dispatch("selectionMade", { id: id });
   }
+
+
 </script>
 
 <div>
   <div class="mt-1 relative">
     <button
       type="button"
-      on:click={() => {
+      onclick={() => {
         poppedFlag = !poppedFlag;
       }}
       class="relative bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -28,21 +37,7 @@
       aria-labelledby="listbox-label"
     >
       <span class="flex items-center">
-        <span class="text-gray-500 mr-2 font-light text-lg">{label}</span>
-        {#if chosen && chosen.title}
-          
-          <span class="ml-1 block truncate text-gray-900 text-lg"
-            >{chosen.title}</span
-          >
-          <span
-            class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-            >{Math.round(chosen.pct * 100)}% coverage</span
-          >
-          {:else}
-          <span class="font-bold text-amber-600 text-lg ml-1 mr-2 block"
-            >No layer</span
-          >
-        {/if}
+        <span class="text-gray-500 font-light text-lg mr-2">View</span><span class="ml-1 block text-gray-900 text-lg"><Fa icon="{choices.find(c=>c.id === mapState.viewMode).icon}" class="inline mr-2" />{choices.find(c=>c.id === mapState.viewMode).label}</span>
       </span>
       <span
         class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
@@ -65,7 +60,7 @@
 
     <ul
       class:hidden={!poppedFlag}
-      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+      class="absolute bottom-12 z-10 mt-1 bg-white shadow-lg max-h-64 rounded-md py-1 text-base ring-1 ring-black/25 overflow-auto focus:outline-none sm:text-sm"
       tabindex="-1"
       role="listbox"
       aria-labelledby="listbox-label"
@@ -74,23 +69,15 @@
       {#each choices as choice}
         <li
           class="text-gray-800 cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
-          id="{label}-layer-option-{choice.id}"
           role="option"
-          on:click={() => {
+          onclick={() => {
             handleSelection(choice.id);
           }}
         >
           <div class="flex items-center">
-            {#if choice && choice.title}
-              <span class="font-bold text-lg ml-1 mr-2 block"
-                >{choice.title}</span
-              ><span class="text-sm">{choice.subtitle}</span><span
-                class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-                >{Math.round(choice.pct * 100)}%</span
-              >
-
-
-            {/if}
+            <span class="font-normal font-bold ml-1 mr-2 block truncate"
+              ><Fa icon="{choice.icon}" class="mr-2 inline" />{choice.label}</span
+            > 
           </div>
         </li>
       {/each}
@@ -99,4 +86,5 @@
 </div>
 
 <style>
+  
 </style>
