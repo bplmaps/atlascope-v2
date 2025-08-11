@@ -7,6 +7,7 @@
     faShare,
     faMap
   } from "@fortawesome/free-solid-svg-icons";
+  import { onMount } from "svelte";
 
   import { appState,mapState, allLayers } from "../state.svelte.js";
 
@@ -33,14 +34,22 @@
   ];
 
   let panelShown = $state(null);
+  let delayed;
 
   const showHideControls = (e) => {
     panelShown = panelShown === e ? null : e;
   };
+
+  onMount(() => 
+    setTimeout(() => {
+      delayed = true
+    }, 500)
+  )
+
 </script>
 
 <section>
-  {#if allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length === 0}
+  {#if allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length === 0 && delayed}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
