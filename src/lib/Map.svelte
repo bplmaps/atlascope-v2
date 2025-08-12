@@ -163,6 +163,7 @@
       // Implement a double check process
       // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
       if (
+        !mapState.lockLayers &&
         currentLayerInfo.extentVisible < 0.4 &&
         allLayers.layers.filter(
           (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
