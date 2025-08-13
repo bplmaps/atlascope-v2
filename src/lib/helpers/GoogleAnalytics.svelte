@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let { gaPropertyId } = $props();
+	let { gaPropertyId, gaTMContainerId } = $props();
 
 	// Utility function to track custom events
 	function trackEvent(eventName: string, parameters?: Record<string, any>) {
@@ -31,10 +31,16 @@
 		}
 
 		// Load Google Analytics script
-		const script = document.createElement('script');
-		script.async = true;
-		script.src = `https://www.googletagmanager.com/gtag/js?id=${gaPropertyId}`;
+		const scriptGA = document.createElement('script');
+		scriptGA.async = true;
+		scriptGA.src = `https://www.googletagmanager.com/gtag/js?id=${gaPropertyId}`;
 		document.head.appendChild(script);
+
+		// Load GA TM script
+		const scriptGATM = document.createElement('script');
+		scriptGATM.async = true;
+		scriptGATM.innerHTML = (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',`${gaTMContainerId}`);
+		document.head.appendChild(scriptGATM);
 
 		// Initialize gtag
 		(window as any).dataLayer = (window as any).dataLayer || [];
