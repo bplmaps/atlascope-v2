@@ -34,7 +34,7 @@
 		const scriptGA = document.createElement('script');
 		scriptGA.async = true;
 		scriptGA.src = `https://www.googletagmanager.com/gtag/js?id=${gaPropertyId}`;
-		document.head.appendChild(script);
+		document.head.appendChild(scriptGA);
 
 		// Load GA TM script
 		const scriptGATM = document.createElement('script');
