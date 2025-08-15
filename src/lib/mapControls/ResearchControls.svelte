@@ -26,6 +26,7 @@
     />
 
     {#each bboxFunctions as f}
+    {#if f.name != "Search postcards here"}
       <LightIconButton
         label={f.name}
         icon={faMagnifyingGlassArrowRight}
@@ -34,6 +35,7 @@
           window.open(url);
         }}
       />
+      {/if}
     {/each}
   </div>
 </div>

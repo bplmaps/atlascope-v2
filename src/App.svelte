@@ -49,6 +49,9 @@
         appState.tour.id = urlParams.tour;
         appState.tour.active = true;
         appState.modals.splash = false;
+      } else if (urlParams.view && urlParams.view === "annotation") {
+        appState.annotation.active = true;
+        appState.modals.splash = false;
       }
     });
   });

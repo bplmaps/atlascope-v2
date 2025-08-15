@@ -37,8 +37,12 @@
 
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import instanceVariables from "../config/instance.json";
+  import AnnotationPostcard from "./annotations/AnnotationPostcard.svelte";
 
+  let intel = $state({});
+  let annoData = $state();
   let map;
+  
   let olLayers = {
     base: new TileLayer(),
     overlay: new TileLayer(),
@@ -232,8 +236,21 @@
     loadedAnnotationsList = [];
   };
 
-  function moveMapToAnnotation(d) {
-    const selectedAnnotation = loadedAnnotationsList[d];
+  function getAnnotationPostcard() {
+    let d = window.location.href.substring(window.location.href.length - 18);
+    getSingleAnnotation(d).then((annotation) => {
+        loadedAnnotationsList = [annotation];
+        annoData = moveMapToAnnotation(annotation, 300);
+      });
+  }
+
+  function moveMapToAnnotation(annotation, duration) {
+    let selectedAnnotation;
+    if (appState.annotation.active) {
+      selectedAnnotation = annotation;
+    } else {
+      selectedAnnotation = loadedAnnotationsList[annotation];
+    }
     const extentJson = JSON.parse(selectedAnnotation.extent);
     loadedAnnotationsGeometrySource.clear();
     loadedAnnotationsGeometrySource.addFeature(
@@ -244,9 +261,11 @@
 
     view.fit(extentJson, {
       padding: [100, 100, 300, 100],
-      duration: 1000,
+      duration: duration,
       maxZoom: 19,
     });
+
+    return selectedAnnotation;
   }
 
   function manipulateDrag(e) {
@@ -271,6 +290,20 @@
       ];
     }
     map.render();
+  }
+
+  function surveil() {
+    if (draggingFlag) {
+
+      intel = {
+        extent: mapState.extent,
+        overlayLayer: mapState.layers.overlay,
+        baseLayer: mapState.layers.base
+      }
+
+      console.log(intel)
+
+    }
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
@@ -427,19 +460,22 @@
 </script>
 
 <section
+  aria-hidden="true"
   id="map"
   onmousemove={manipulateDrag}
   ontouchmove={manipulateDrag}
   onmouseup={() => {
     draggingFlag = false;
+    surveil()
   }}
   ontouchend={() => {
     draggingFlag = false;
   }}
 >
-  <div id="map-div" />
+  <div id="map-div" aria-hidden="true" ></div>
 
   <div
+    aria-hidden="true"
     id="drag-handle"
     class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition {mapState.viewMode ===
     'opacity'
@@ -473,6 +509,7 @@
   </div>
 
   <div
+    aria-hidden="true"
     onclick={() => {
       appState.tour.active = false;
       appState.modals.splash = true;
@@ -518,13 +555,16 @@
     />
   {/if}
 
-  {#if loadedAnnotationsList.length > 0}
+  {#if appState.annotation.active}
+    <AnnotationPostcard {getAnnotationPostcard} {closeAnnotationListModal} {enableAnnotationMode} {loadAnnotations} annoData={annoData} />
+  {/if}
+
+  {#if !appState.annotation.active && loadedAnnotationsList.length > 0}
     <AnnotationsListModal
       annotationsList={loadedAnnotationsList}
       {closeAnnotationListModal}
       {moveMapToAnnotation}
-    />
-  {/if}
+    />  {/if}
 
   {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !appState.tour.active}
     <MapControls />

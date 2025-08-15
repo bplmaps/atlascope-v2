@@ -32,3 +32,11 @@ export async function fetchLayerData() {
       });
     return d;
   }
+
+  export async function stripHash() {
+      history.pushState(
+        "",
+        document.title,
+        window.location.pathname + window.location.search
+      );
+    }

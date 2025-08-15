@@ -11,6 +11,10 @@ export const appState = $state({
     tour: {
         active: false,
         id: null
+    },
+    annotation: {
+        active: false,
+        id: null
     }
 });
 
@@ -28,6 +32,7 @@ export const mapState = $state({
     annotationRead: false,
     annotationEntry: false,
     annotationSave: false,
+    annotationId: null,
     layerChangePopup: false,
     center: null,
     zoom: null,
