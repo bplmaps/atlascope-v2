@@ -1,23 +1,24 @@
 <script>
   import { mapState, appState } from "../state.svelte";
-  import { fly, fade } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { onMount } from "svelte";
-  let { getAnnotationPostcard, closeAnnotationListModal, enableAnnotationMode, loadAnnotations, annoData } = $props();
+  let {
+    getAnnotationPostcard,
+    closeAnnotationListModal,
+    enableAnnotationMode,
+    loadAnnotations,
+    annoData,
+  } = $props();
   import { parseUrlParams, stripHash } from "../helpers/initializingFunctions";
-  import {
-    faQuoteLeft,
-    faPen,
-    faMagnifyingGlassArrowRight,
-    faAddressCard,
-    faArrowLeft
-  } from "@fortawesome/free-solid-svg-icons";
+  import { faQuoteLeft, faArrowLeft, faQuestionCircle, faQuestion } from "@fortawesome/free-solid-svg-icons";
   import { bboxFunctions } from "../../config/research-connections.js";
   import LightIconButton from "../ui/LightIconButton.svelte";
+  import BibliographicBug from "../ui/BibliographicBug.svelte";
   import Fa from "svelte-fa";
 
   let layerData = $state(null);
   let load = $state(false);
-  let formatted = $state()
+  let formatted = $state();
 
   onMount(async () => {
     setTimeout(getYear, 800);
@@ -28,8 +29,11 @@
       `https://s3.us-east-2.wasabisys.com/urbanatlases/${annoData.layer.substring(annoData.layer.length - 9)}/tileset.json`
     );
     layerData = await res.json();
-    const options = { year: "numeric"};
-    formatted = new Date(annoData.timestamp).toLocaleDateString("en-US", options);
+    const options = { year: "numeric" };
+    formatted = new Date(annoData.timestamp).toLocaleDateString(
+      "en-US",
+      options
+    );
     load = true;
   }
 
@@ -56,59 +60,69 @@
   getAnnotationPostcard();
 </script>
 
-<div id="container" class="rounded absolute bottom-10 left-10 right-10">
-  <div class="relative max-w-[1000px] mx-auto rounded-xl bg-white/95">
+<div id="container" class="absolute bottom-10 left-10 right-10 rounded">
+  <div class="relative mx-auto max-w-[1000px] rounded-xl bg-white/95 shadow">
     {#if load}
-      <h1
-        class="text-center font-bold text-lg border-b border-gray-300 p-4"
+      <div
+        class="flex items-center justify-between border-b border-gray-300 px-4 py-3"
       >
-        <Fa icon={faQuoteLeft} class="text-gray-400 text-3xl absolute" />
-        {#if layerData}
-          A digital postcard, from {formatted} to {layerData.name.slice(-4)}
-        {/if}
-      </h1>
-      <div in:fly={{ y: 300 }} class="flex flex-col max-h-36 overflow-auto p-8">
-        <p>{annoData.body}</p>
-
+        <LightIconButton
+          label="Return"
+          icon={faArrowLeft}
+          size="sm"
+          on:click={() => returnToAnnotations()}
+        />
+        <div class="flex flex-col items-center text-center">
+          <h1 class="font-bold text-lg">A digital postcard</h1>
+          <!-- <p class="text-xs text-gray-600">from {formatted} to {layerData.name.slice(-4)}</p> -->
+          <div class="mt-1 text-sm">
+            <BibliographicBug />
+          </div>
+        </div>
         <button
           onclick={trashPostcard}
-          class="absolute top-4 right-4 border border-amber-800 text-amber-800 text-sm px-2 py-1 rounded hover:cursor-pointer hover:bg-amber-50"
+          class="rounded border border-amber-800 px-2 py-0.5 text-sm text-amber-800 hover:bg-amber-50 hover:cursor-pointer"
+          aria-label="Close postcard"
         >
-          x
+          ✕
         </button>
-        <div class="pt-4 pl-4 text-xs">
-          <LightIconButton
-          label="Return to annotations"
-          icon={faArrowLeft}
-          on:click={() => returnToAnnotations()} />
-          <!-- {#each bboxFunctions as f}
-            {#if f.name === "Search postcards here"}
-              <LightIconButton
-                label={"Search more postcards here"}
-                icon={faMagnifyingGlassArrowRight}
-                on:click={() => {
-                  let url = f.searchFunction(mapState.extent);
-                  console.log(mapState.extent)
-                  window.open(url);
-                }}
-              />
-            {/if}
-          {/each} -->
-        </div>
       </div>
       <div
         in:fly={{ y: 300 }}
-        class="border-t border-gray-300 text-gray-500 text-sm py-4 px-8"
+        class="relative flex max-h-36 overflow-y-auto px-6 py-4 items-start"
       >
-        While LMEC staff cannot fact check each annotation, we do read
-        and approve them all for public viewing. <button onclick={startAnnotating} class="font-semibold hover:cursor-pointer text-red-800">Try making your own!</button>
+        <Fa
+          icon={faQuoteLeft}
+          class="text-3xl text-gray-400 mr-3"
+        />
+        <p class="text-gray-800 p-4">{annoData.body}</p>
+      </div>
+      <div
+        in:fly={{ y: 300 }}
+        class="border-t border-gray-300 px-8 py-4 text-xs text-gray-500"
+      > <Fa icon={faQuestionCircle} class="inline"/>
+        The annotation and text in this digital postcard was created by an Atlascope user. LMEC staff
+        cannot fact check each postcard, but we do read and approve them all for
+        public viewing.
+        <button
+          onclick={startAnnotating}
+          id="footerlink"
+          class="font-semibold text-red-800 hover:cursor-pointer pl-[1px]"
+        >
+          Try making your own!
+        </button>
       </div>
     {/if}
   </div>
 </div>
 
+
 <style>
-    div > button:hover {
-        background-image: linear-gradient(0deg, rgba(0, 102, 136, 0.2) 35%, transparent 0);
-    }
+  div > button#footerlink:hover {
+    background-image: linear-gradient(
+      0deg,
+      rgba(0, 102, 136, 0.2) 35%,
+      transparent 0
+    );
+  }
 </style>
