@@ -3,7 +3,7 @@
   import instanceVariables from "../../config/instance.json";
   import {
     faPenToSquare,
-    faShare,
+    faUpRightFromSquare,
     faCopy,
   } from "@fortawesome/free-solid-svg-icons";
   import { appState, mapState } from "../state.svelte.js";
@@ -20,13 +20,12 @@
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {
-        window.alert(`Link copied to clipboard!`);
+        window.alert(`Link to digital postcard copied to clipboard!`);
       })
       .catch(() => {
-        alert("We're sorry — something went wrong in copying this URL.");
+        alert("Something went wrong in copying this URL.");
       });
   }
-
 </script>
 
 <div class="bg-white absolute rounded shadow bottom-3 left-2 right-2">
@@ -53,11 +52,21 @@
             moveMapToAnnotation(i, 1000);
           }}
         >
-          <button class="ml-2 flex items-center text-sm hover:cursor-pointer hover:text-blue-700" onclick={()=>copyURL(a)}
+          <button
+            class="ml-2 flex items-center text-sm hover:cursor-pointer hover:text-blue-700"
+            onclick={() => copyURL(a)}
             ><Fa icon={faCopy} class="inline" /><span
-              class="md:inline ml-1 hidden">Post it</span
+              class="md:inline ml-1 hidden"></span
             >
           </button>
+          <a
+            class="ml-2 flex items-center text-sm hover:cursor-pointer hover:text-blue-700"
+            href="/#/view:annotation$annotation:${a.id}"
+            target="_blank"
+            ><Fa icon={faUpRightFromSquare} class="inline" /><span
+              class="md:inline ml-1 hidden"></span
+            >
+        </a>
           <div class="px-3 flex">
             <input
               class="hidden"
@@ -67,7 +76,7 @@
               readonly
             />
           </div>
-          
+
           <p class="text-left mx-1">{a.body}</p>
         </div>
       {/each}
