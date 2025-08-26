@@ -26,14 +26,13 @@
         {
             "properties": {
                 "globalExtent": true,
-                "identifier": "maptiler-streets",
-                "fallbackSubtitle": "Modern Streets",
-                "year": 2022,
-                "bibliographicEntry": "Modern street map data, [© MapTiler](https://www.maptiler.com/copyright/) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)",
+                "identifier": "massgis-1990s-orthos",
+                "fallbackSubtitle": "Aerial Imagery",
+                "year": 1995,
+                "bibliographicEntry": "Aerial imagery of Massachusetts from the 1990s, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-1990s-aerial-imagery)",
                 "source": {
-                    "hidden": true,
-                    "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=1HCKO0pQuPEfNXXzGgSM"
+                    "type": "xyz",
+                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/BW_Orthos_Tile_Package/MapServer/tile/{z}/{y}/{x}"
                 }
             }
         },
@@ -47,6 +46,33 @@
                 "source": {
                     "type": "xyz",
                     "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
+                }
+            }
+        },
+        {
+            "properties": {
+                "globalExtent": true,
+                "identifier": "massgis-2023-orthos",
+                "fallbackSubtitle": "Aerial Imagery",
+                "year": 2023,
+                "bibliographicEntry": "Aerial imagery of Massachusetts from 2023, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-2023-aerial-imagery)",
+                "source": {
+                    "type": "xyz",
+                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2023/MapServer/tile/{z}/{y}/{x}"
+                }
+            }
+        },
+        {
+            "properties": {
+                "globalExtent": true,
+                "identifier": "maptiler-streets",
+                "fallbackSubtitle": "Modern Streets",
+                "year": 2025,
+                "bibliographicEntry": "Modern street map data, [© MapTiler](https://www.maptiler.com/copyright/) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)",
+                "source": {
+                    "hidden": true,
+                    "type": "tilejson",
+                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
                 }
             }
         }

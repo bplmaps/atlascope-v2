@@ -49,7 +49,6 @@
     historicLayers
       .sort((a, b) => a.properties.year - b.properties.year)
       .forEach((d) => {
-        console.log(d.extentVisible);
         if (d.extentVisible > 0.2) {
           c.push({
             id: d.properties.identifier,
