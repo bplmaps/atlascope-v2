@@ -1,17 +1,14 @@
 <script>
   import Fa from "svelte-fa";
   import {
-    faCopy,
-    faMobileAlt,
-    faStreetView,
+    faCopy
   } from "@fortawesome/free-solid-svg-icons";
-
-  import LightIconButton from "../ui/LightIconButton.svelte";
 
   let showView = $state(true);
 
   import { mapState } from "../state.svelte.js";
   import instanceVariables from "../../config/instance.json";
+  import { copyShareLink } from "../helpers/copyUrl";
 
   let urlField;
 
@@ -22,21 +19,7 @@
     }$overlay:${mapState.layers.overlay.id}`,
   });
 
-  function copyURL() {
-    urlField.select();
-    urlField.setSelectionRange(0, 99999);
-    let messageSuffix = showView
-      ? "This link will take someone to the exact view you're looking at now."
-      : "This link will take someone to the Atlascope app landing page.";
-    navigator.clipboard
-      .writeText(urlField.value)
-      .then(() => {
-        window.alert(`Link copied to clipboard! ${messageSuffix}`);
-      })
-      .catch(() => {
-        alert("We're sorry — something went wrong in copying this URL.");
-      });
-  }
+  
 </script>
 
 <div>
@@ -78,32 +61,13 @@
           bind:this={urlField}
           readonly
         />
-        <button class="ml-2 flex items-center text-sm" onclick={copyURL}
+        <button class="ml-2 flex items-center text-sm" onclick={() => copyShareLink(urlField, showView)}
           ><Fa icon={faCopy} class="inline" /><span
             class="md:inline ml-1 hidden">Copy</span
           ></button
         >
       </div>
     </div>
-
-    {#if navigator.share}
-      <div class="flex flex-wrap mt-2">
-        <LightIconButton
-          label="Share app"
-          icon={faMobileAlt}
-          on:click={() => {
-            navigator.share({ title: "Atlascope", url: appURL });
-          }}
-        />
-        <LightIconButton
-          label="Share view"
-          icon={faStreetView}
-          on:click={() => {
-            navigator.share({ title: "Atlascope", url: viewURL });
-          }}
-        />
-      </div>
-    {/if}
   </div>
 </div>
 

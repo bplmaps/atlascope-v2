@@ -556,7 +556,7 @@
   {/if}
 
   {#if appState.annotation.active}
-    <AnnotationPostcard {getAnnotationPostcard} {closeAnnotationListModal} {enableAnnotationMode} {loadAnnotations} annoData={annoData} />
+    <AnnotationPostcard {getAnnotationPostcard} {closeAnnotationListModal} {enableAnnotationMode} {loadAnnotations} annoData={annoData} map={map}/>
   {/if}
 
   {#if !appState.annotation.active && loadedAnnotationsList.length > 0}

@@ -7,6 +7,7 @@
         disabled = false,
         size = "lg",
         collapsibleLabel = false,
+        bgColor = "white"
     } = $props();
 
     let iconMargin = label === "" ? "mr-0" : "mr-2"
@@ -17,7 +18,7 @@
         on:click
         type="button"
         disabled="{disabled}"
-        class="relative text-{size} bg-white border border-gray-300 rounded-md bg-white shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none hover:bg-sky-50 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+        class="relative text-{size} {bgColor} border border-gray-300 rounded-md shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none hover:bg-sky-50 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
     >
         <div class="flex flex-nowrap items-center cursor-pointer">
             <Fa {icon} class="inline {iconMargin} ml-1" />
@@ -27,6 +28,3 @@
         </div>
     </button>
 </div>
-
-<style>
-</style>

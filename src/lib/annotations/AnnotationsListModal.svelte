@@ -1,31 +1,16 @@
 <script>
-  import Fa from "svelte-fa";
-  import instanceVariables from "../../config/instance.json";
-  import {
-    faPenToSquare,
-    faUpRightFromSquare,
-    faCopy,
-  } from "@fortawesome/free-solid-svg-icons";
   import { appState, mapState } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
+  import Fa from "svelte-fa";
+  import { faPenToSquare, faUpRightFromSquare, faCopy } from "@fortawesome/free-solid-svg-icons";
+  import { copyUrl } from "../helpers/copyUrl";
+
   let { annotationsList, closeAnnotationListModal, moveMapToAnnotation } =
     $props();
 
   let activeAnnotation = $state(null);
   let shareUrl = $state("");
 
-  function copyURL(a) {
-    appState.annotation.id = a.id;
-    console.log(appState);
-    let shareUrl = `${instanceVariables.baseURL}/#/view:annotation$annotation:${a.id}`;
-    navigator.clipboard
-      .writeText(shareUrl)
-      .then(() => {
-        window.alert(`Link to digital postcard copied to clipboard!`);
-      })
-      .catch(() => {
-        alert("Something went wrong in copying this URL.");
-      });
-  }
 </script>
 
 <div class="bg-white absolute rounded shadow bottom-3 left-2 right-2">
@@ -54,7 +39,7 @@
         >
           <button
             class="ml-2 flex items-center text-sm hover:cursor-pointer hover:text-blue-700"
-            onclick={() => copyURL(a)}
+            onclick={() => copyUrl(appState, instanceVariables)}
             ><Fa icon={faCopy} class="inline" /><span
               class="md:inline ml-1 hidden"></span
             >

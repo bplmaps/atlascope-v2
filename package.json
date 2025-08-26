@@ -19,6 +19,7 @@
     "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/vite": "^4.1.10",
     "@turf/turf": "^7.2.0",
+    "html2canvas": "^1.4.1",
     "ol": "^10.6.1",
     "svelte-fa": "^4.0.3",
     "svelte-markdown": "^0.4.1",
