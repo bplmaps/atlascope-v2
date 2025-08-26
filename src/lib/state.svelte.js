@@ -33,6 +33,7 @@ export const mapState = $state({
     zoom: null,
     extent: null,
     rotation: null,
+    lockLayers: false,
     requestedMapState: {
       requested: false,
       dropPin: false,
