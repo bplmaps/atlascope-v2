@@ -158,15 +158,17 @@
           : intersector(lyr.geometry, extent);
       });
 
-      const currentLayerInfo = getLayerDataById(mapState.layers.overlay.id);
+      const currentOverlayLayerInfo = getLayerDataById(mapState.layers.overlay.id);
 
       // Implement a double check process
-      // If the current overlay layer is less than 40% visible AND there is another layer available that's more than 20% better than it, switch
+      // If the current overlay layer is less than 40% visible
+      // AND there is another layer available that's more than 20% better than it, switch
+
       if (
         !mapState.lockLayers &&
-        currentLayerInfo.extentVisible < 0.4 &&
+        currentOverlayLayerInfo.extentVisible < 0.4 &&
         allLayers.layers.filter(
-          (d) => d.extentVisible > currentLayerInfo.extentVisible + 0.2,
+          (d) => d.extentVisible > currentOverlayLayerInfo.extentVisible + 0.2,
         ).length > 0
       ) {
         const bestNewLayer = allLayers.layers.sort((a, b) => {
@@ -182,6 +184,19 @@
         }
       }
     }, 500);
+
+    // Implement a simpler check for the base layer;
+    // if the current layer is less than 40% visible,
+    // just load the maptiler streets
+
+    const currentBaseLayerInfo = getLayerDataById(mapState.layers.base.id)
+    if (
+      !mapState.lockLayers &&
+      currentBaseLayerInfo.extentVisible < 0.4
+    )
+    {
+      changeLayer("base", "maptiler-streets")
+    }
   }
 
   function enableAnnotationMode() {
