@@ -131,7 +131,7 @@
     >
       {#each choices as choice}
         <li
-          class="text-gray-800 {choice.id === currentLayer.id ? 'bg-slate-100' : ''} cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
+          class="text-gray-800 {currentLayer && choice.id === currentLayer.id ? 'bg-slate-100' : ''} cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
           role="option"
           onclick={() => {
             handleSelection(choice.id);
@@ -145,8 +145,6 @@
                 class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
                 >{Math.round(choice.pct * 100)}%</span
               >
-
-
             {/if}
           </div>
         </li>
