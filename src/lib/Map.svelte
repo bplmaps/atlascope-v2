@@ -484,6 +484,7 @@
       bind:value={opacitySliderValue}
       oninput={() => {
         olLayers.overlay.setOpacity(opacitySliderValue / 100);
+        map.render();
       }}
       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
     />
