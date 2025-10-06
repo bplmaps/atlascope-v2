@@ -482,6 +482,9 @@
       id="default-range"
       type="range"
       bind:value={opacitySliderValue}
+      oninput={() => {
+        map.render();
+      }}
       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
     />
     <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
