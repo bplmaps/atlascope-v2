@@ -60,7 +60,7 @@
   >
 </svelte:head>
 
-<GoogleAnalytics gaPropertyId={instanceVariables.gaMeasurementId} />
+<GoogleAnalytics gaPropertyId={instanceVariables.gaMeasurementId} gaTMContainerId={instanceVariables.gaTMContainerId} />
 
 <div id="wraps-all">
   {#if appState.layersLoaded}
