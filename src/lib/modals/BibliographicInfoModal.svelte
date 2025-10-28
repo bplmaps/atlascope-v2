@@ -5,11 +5,11 @@
   import SvelteMarkdown from "svelte-markdown";
   import TileJsonUrlFetcher from "../helpers/TileJsonUrlFetcher.svelte";
 
-  import { mapState, allLayers } from "../state.svelte.js";
+  import { mapState, allLayers, referenceLayers } from "../state.svelte.js";
   import instanceVariables from "../../config/instance.json";
 
   const getLayerDataById = (id) => {
-    return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : instanceVariables.referenceLayers.find((l) => l.properties.identifier === id);
+    return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : referenceLayers.layers.find((l) => l.properties.identifier === id);
   }
 
   const blocks = $derived.by(() => [
