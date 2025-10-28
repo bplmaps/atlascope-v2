@@ -51,3 +51,7 @@ export const mapState = $state({
 export const allLayers = $state({
     layers: []
 })
+
+export const referenceLayers = $state({
+    layers: []
+})

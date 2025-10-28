@@ -1,5 +1,5 @@
 <script>
-  import { mapState, allLayers } from "../state.svelte.js";
+  import { mapState, allLayers, referenceLayers } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
   import instanceVariables from "../../config/instance.json";
 
@@ -44,8 +44,9 @@
           });
         }
       });
+      
     // add the reference layers
-    instanceVariables.referenceLayers.forEach((d) =>
+    referenceLayers.layers.forEach((d) =>
       c.push({
         id: d.properties.identifier,
         title: d.properties.fallbackTitle

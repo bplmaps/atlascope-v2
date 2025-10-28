@@ -32,3 +32,12 @@ export async function fetchLayerData() {
       });
     return d;
   }
+
+export async function fetchReferenceLayerData () {
+  let d = await fetch(instanceVariables.referenceLayers)
+    .then((r) => r.json())
+    .then((rl) => {
+      return rl;
+    })
+  return d;
+}

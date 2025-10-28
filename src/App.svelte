@@ -9,6 +9,7 @@
   import {
     parseUrlParams,
     fetchLayerData,
+    fetchReferenceLayerData
   } from "./lib/helpers/initializingFunctions.js";
 
   import Map from "./lib/Map.svelte";
@@ -17,7 +18,7 @@
 
   import GoogleAnalytics from "./lib/helpers/GoogleAnalytics.svelte";
 
-  import { mapState, appState, allLayers } from "./lib/state.svelte.js";
+  import { mapState, appState, allLayers, referenceLayers } from "./lib/state.svelte.js";
 
   // Initialization functions; parse out the initial url params and fetch the layer data
   onMount(() => {
@@ -37,6 +38,10 @@
     mapState.layers.overlay.id = urlParams.overlay
       ? urlParams.overlay
       : instanceVariables.defaultStartLocation.overlayLayerId;
+
+    fetchReferenceLayerData().then((d) => {
+      referenceLayers.layers = d
+    })
 
     fetchLayerData().then((d) => {
       allLayers.layers = d;

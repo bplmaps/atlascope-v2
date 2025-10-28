@@ -35,7 +35,7 @@
     getSingleAnnotation,
   } from "./helpers/supabaseFunctions";
 
-  import { mapState, appState, allLayers } from "./state.svelte.js";
+  import { mapState, appState, allLayers, referenceLayers } from "./state.svelte.js";
   import instanceVariables from "../config/instance.json";
 
   let map;
@@ -95,9 +95,7 @@
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
     if (!p) {
-      p = instanceVariables.referenceLayers.find(
-        (d) => d.properties.identifier === layerId,
-      );
+      p = referenceLayers.layers.find((d) => d.properties.identifier === layerId);
     }
     return p;
   };
