@@ -7,13 +7,13 @@
         disabled = false,
         size = "lg",
         collapsibleLabel = false,
-        hidden = false,
+        hideableOnMobile = false,
     } = $props();
 
     let iconMargin = label === "" ? "mr-0" : "mr-2"
 </script>
 
-<div class={`${hidden ? "hidden md:flex" : ""} mt-1 mr-2 relative`}>
+<div class={`${hideableOnMobile ? "hidden md:block" : ""} mt-1 mr-2 relative`}>
     <button
         on:click
         type="button"
