@@ -102,10 +102,8 @@
 
   // function for changing the layer
   const changeLayer = (layer, id, force = false) => {
-    console.log(`Changing ${layer} to ${id}`);
     if (force || id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
-
       if (newLayer.properties.source.type === "tilejson") {
         olLayers[layer].setSource(
           new TileJSON({
@@ -231,7 +229,6 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      console.log(d);
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];

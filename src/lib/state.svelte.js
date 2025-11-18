@@ -1,5 +1,6 @@
 export const appState = $state({
     layersLoaded: false,
+    referenceLayersLoaded: false,
     modals: {
         splash: true,
         search: false,

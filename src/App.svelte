@@ -39,10 +39,6 @@
       ? urlParams.overlay
       : instanceVariables.defaultStartLocation.overlayLayerId;
 
-    fetchReferenceLayerData().then((d) => {
-      referenceLayers.layers = d
-    })
-
     fetchLayerData().then((d) => {
       allLayers.layers = d;
       appState.layersLoaded = true;
@@ -56,6 +52,11 @@
         appState.modals.splash = false;
       }
     });
+
+    fetchReferenceLayerData().then((d) => {
+      referenceLayers.layers = d;
+      appState.referenceLayersLoaded = true;
+    });
   });
 </script>
 
@@ -68,7 +69,7 @@
 <GoogleAnalytics gaPropertyId={instanceVariables.gaMeasurementId} />
 
 <div id="wraps-all">
-  {#if appState.layersLoaded}
+  {#if appState.layersLoaded && appState.referenceLayersLoaded}
     <Map />
   {/if}
 
