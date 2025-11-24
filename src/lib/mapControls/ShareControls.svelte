@@ -19,7 +19,7 @@
     app: instanceVariables.baseURL,
     view: `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center.map((c) => c.toFixed(6)).join(",")}$zoom:${mapState.zoom.toFixed(2)}$base:${
       mapState.layers.base.id
-    }$overlay:${mapState.layers.overlay.id}`,
+    }$overlay:${mapState.layers.overlay.id}$rotation:${mapState.rotation}`,
   });
 
   function copyURL() {

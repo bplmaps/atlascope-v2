@@ -38,6 +38,11 @@
     mapState.layers.overlay.id = urlParams.overlay
       ? urlParams.overlay
       : instanceVariables.defaultStartLocation.overlayLayerId;
+    mapState.rotation = urlParams.rotation
+      ? urlParams.rotation
+      : null
+    
+    console.log(urlParams.rotation)
 
     fetchLayerData().then((d) => {
       allLayers.layers = d;

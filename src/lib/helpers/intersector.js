@@ -1,12 +1,14 @@
 import intersect from "@turf/intersect";
+import buffer from "@turf/buffer";
 import bboxPolygon from "@turf/bbox-polygon";
 import area from "@turf/area";
 import { featureCollection, multiPolygon, point} from "@turf/turf";
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
 export const intersector = (footprint, extent) => {
-    const extentPolygon = bboxPolygon(extent);
+    const extentPolygon = buffer(bboxPolygon(extent), 0);
     const intersection = intersect(featureCollection([multiPolygon(footprint.coordinates), extentPolygon]));
+    console.log(intersection)
     if(intersection == null) {
         return 0;
     } else {

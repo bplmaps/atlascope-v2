@@ -52,6 +52,7 @@
   let view = new View({
     center: fromLonLat(mapState.center),
     zoom: mapState.zoom,
+    rotation: mapState.rotation,
     minZoom: 14,
   });
 
