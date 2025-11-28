@@ -3,8 +3,10 @@ import instanceVariables from "../../config/instance.json";
 
 export function parseUrlParams(initialUrl) {
     let urlParams = {};
+    let delim = "$"
+    let fallback = "%24"
     initialUrl
-      .split("$")
+      .split(initialUrl.includes(fallback) ? fallback : delim)
       .map((kv) => {
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
