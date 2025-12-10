@@ -14,6 +14,7 @@
   import Map from "./lib/Map.svelte";
   import ModalWrapper from "./lib/modals/ModalWrapper.svelte";
   import TourController from "./lib/tours/TourController.svelte";
+
   import GoogleAnalytics from "./lib/helpers/GoogleAnalytics.svelte";
 
   import { mapState, appState, allLayers } from "./lib/state.svelte.js";
