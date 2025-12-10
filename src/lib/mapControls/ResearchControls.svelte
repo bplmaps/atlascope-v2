@@ -29,6 +29,7 @@
       <LightIconButton
         label={f.name}
         icon={faMagnifyingGlassArrowRight}
+        hideableOnMobile={f.hiddenOnMobile}
         on:click={() => {
           let url = f.searchFunction(mapState.extent);
           window.open(url);
