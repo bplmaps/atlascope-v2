@@ -3,16 +3,16 @@ import instanceVariables from "../../config/instance.json";
 
 export function parseUrlParams(initialUrl) {
     let urlParams = {};
-    let delim = "$"
-    let fallback = "%24"
-    initialUrl
-      .split(initialUrl.includes(fallback) ? fallback : delim)
-      .map((kv) => {
+    const delim = "$";
+    let normalizedUrl = initialUrl.replaceAll("%24", delim);
+    normalizedUrl
+      .split(delim)
+      .forEach((kv) => {
         const i = kv.indexOf(":");
         const k = kv.slice(0, i);
         const v = kv.slice(i + 1);
-        urlParams[k] = v
-      })
+        urlParams[k] = v;
+      });
     return urlParams;
 }
 
