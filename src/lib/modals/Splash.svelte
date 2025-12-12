@@ -1,11 +1,9 @@
 <script>
-  import Fa from "svelte-fa";
   import {
     faLocationArrow,
     faSearchLocation,
     faHiking,
     faLandmark,
-    faChevronUp,
     faQuestionCircle,
   } from "@fortawesome/free-solid-svg-icons";
 
