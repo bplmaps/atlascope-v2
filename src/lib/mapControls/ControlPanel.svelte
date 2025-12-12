@@ -42,6 +42,9 @@
 
   onMount(() => 
     setTimeout(() => {
+      if (window.location.href.includes("share")) {
+        showHideControls("layer-controls")
+      }
       delayed = true
     }, 500)
   )
