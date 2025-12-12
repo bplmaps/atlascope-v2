@@ -233,7 +233,12 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      console.log(d);
+      if (d.length === 0) {
+        mapState.annotationNonePopup = true;
+        setTimeout(() => {
+          mapState.annotationNonePopup = false;
+        }, 5000);
+      }
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];

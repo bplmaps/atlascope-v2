@@ -28,6 +28,7 @@ export const mapState = $state({
     annotationRead: false,
     annotationEntry: false,
     annotationSave: false,
+    annotationNonePopup: false,
     layerChangePopup: false,
     center: null,
     zoom: null,

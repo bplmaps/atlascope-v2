@@ -77,6 +77,18 @@
     </div>
   {/if}
 
+  {#if mapState.annotationNonePopup}
+    <div
+      class="z-1000 w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
+    >
+      <Fa icon={faExclamationCircle} class="inline mr-0.5" /> You're looking at a
+      location with no user annotations.
+      <p class="font-light text-sm">
+        Click "Annotate Map" to make your own annotation on this atlas.
+      </p>
+    </div>
+  {/if}
+
   {#each controlGroups as cg}
     <div
       class="control-tab mr-2 select-none"
