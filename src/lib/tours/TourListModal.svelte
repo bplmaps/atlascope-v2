@@ -36,7 +36,6 @@
       >
         <Fa icon={faHiking} class="inline mr-2" />Take a tour
       </h1>
-      <div class="">
         {#if loadingFlag}
           <div class="text-center text-gray-600 w-full p-5">
             <div>
@@ -84,7 +83,6 @@
          <div class="text-gray-700 bg-gray-100 px-8 py-8 italic text-sm"><a class="underline text-red-900" href="mailto:frontdesk@leventhalmap.org">Get in touch</a> to learn how you can write your own Atlascope tour</div>
       </div>
     </div>
-  </div>
 </section>
 
 <style>
