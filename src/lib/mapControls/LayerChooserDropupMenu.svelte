@@ -1,5 +1,5 @@
 <script>
-  import { mapState, allLayers, referenceLayers } from "../state.svelte.js";
+  import { mapState, allLayers } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
   import instanceVariables from "../../config/instance.json";
 
@@ -44,20 +44,6 @@
           });
         }
       });
-      
-    // add the reference layers
-    referenceLayers.layers.forEach((d) =>
-      c.push({
-        id: d.properties.identifier,
-        title: d.properties.fallbackTitle
-          ? d.properties.fallbackTitle
-          : d.properties.year,
-        subtitle: d.properties.fallbackSubtitle
-          ? d.properties.fallbackSubtitle
-          : d.properties.publisherShort,
-        pct: 1.0,
-      })
-    );
     return c;
   });
 

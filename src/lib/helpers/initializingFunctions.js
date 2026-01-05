@@ -16,11 +16,10 @@ export function parseUrlParams(initialUrl) {
 
 
 export async function fetchLayerData() {
-    let d = await fetch(instanceVariables.historicLayersFootprintsFile)
+    let d = await fetch(instanceVariables.volumeExtentsFile)
       .then((r) => r.json())
       .then((d) => {
         let al = topojson.feature(d, "boston-volume-extents-with-reference").features;
-        console.log(al)
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
