@@ -5,7 +5,6 @@
     faSearchLocation,
     faHiking,
     faLandmark,
-    faChevronUp,
     faQuestionCircle,
   } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,6 +17,8 @@
   import AtlascopeLogo from "../ui/AtlascopeLogo.svelte";
   import LightIconButton from "../ui/LightIconButton.svelte";
   import CoverageComboBox from "../ui/CoverageComboBox.svelte";
+
+  let referenceLayers = $derived(allLayers.layers.filter(feature => feature.geometry === null));
 
   let buttons = [
     {
@@ -112,7 +113,7 @@
       <p class="font-semibold">
         Currently serving <span
           class="bg-yellow-900 text-gray-200 text-s font-semibold mx-0.5 px-2.5 py-0.5 rounded"
-          >{allLayers.layers.length > 0 ? allLayers.layers.length : "..."}</span
+          >{allLayers.layers.length > 0 ? allLayers.layers.length - referenceLayers.length : "..."}</span
         >
         atlas layers of {instanceVariables.geographicCoverage}
       </p>

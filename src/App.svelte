@@ -9,7 +9,7 @@
   import {
     parseUrlParams,
     fetchLayerData,
-    fetchReferenceLayerData
+    // fetchReferenceLayerData
   } from "./lib/helpers/initializingFunctions.js";
 
   import Map from "./lib/Map.svelte";
@@ -42,7 +42,6 @@
     fetchLayerData().then((d) => {
       allLayers.layers = d;
       appState.layersLoaded = true;
-
       // If the url params are set to a share link or tour, close all modals and start a tour
       if (urlParams.view && urlParams.view === "share") {
         appState.modals.splash = false;
@@ -53,10 +52,6 @@
       }
     });
 
-    fetchReferenceLayerData().then((d) => {
-      referenceLayers.layers = d;
-      appState.referenceLayersLoaded = true;
-    });
   });
 </script>
 
@@ -69,7 +64,7 @@
 <GoogleAnalytics gaPropertyId={instanceVariables.gaMeasurementId} />
 
 <div id="wraps-all">
-  {#if appState.layersLoaded && appState.referenceLayersLoaded}
+  {#if appState.layersLoaded}
     <Map />
   {/if}
 

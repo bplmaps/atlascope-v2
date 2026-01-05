@@ -19,7 +19,8 @@ export async function fetchLayerData() {
     let d = await fetch(instanceVariables.historicLayersFootprintsFile)
       .then((r) => r.json())
       .then((d) => {
-        let al = topojson.feature(d, "boston-volume-extents").features;
+        let al = topojson.feature(d, "boston-volume-extents-with-reference").features;
+        console.log(al)
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
@@ -32,12 +33,3 @@ export async function fetchLayerData() {
       });
     return d;
   }
-
-export async function fetchReferenceLayerData () {
-  let d = await fetch(instanceVariables.referenceLayers)
-    .then((r) => r.json())
-    .then((rl) => {
-      return rl;
-    })
-  return d;
-}
