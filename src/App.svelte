@@ -9,7 +9,6 @@
   import {
     parseUrlParams,
     fetchLayerData,
-    // fetchReferenceLayerData
   } from "./lib/helpers/initializingFunctions.js";
 
   import Map from "./lib/Map.svelte";

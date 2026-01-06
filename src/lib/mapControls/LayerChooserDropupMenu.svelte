@@ -1,7 +1,6 @@
 <script>
   import { mapState, allLayers } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
-  import instanceVariables from "../../config/instance.json";
 
   const { layerName } = $props();
 
@@ -27,7 +26,10 @@
 
   let choices = $derived.by(() => {
     let c = [];
-    // push the layers which are more than 20% visible to the layerChoices array, mapping the appropriate variables for menu generation
+    
+    // push the layers which are more than 20% visible to the layerChoices array,
+    // mapping the appropriate variables for menu generation
+
     allLayers.layers
       .toSorted((a, b) => a.properties.year - b.properties.year)
       .forEach((d) => {
