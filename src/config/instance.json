@@ -22,7 +22,7 @@
         "baseLayerId": "maptiler-streets"
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
-    "volumeExtentsFile": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/refs/heads/main/atlascope/atlascope-boston/boston-volume-extents-with-reference.topojson",
+    "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
     "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/extents-dissolved.geojson",
     "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
