@@ -164,7 +164,7 @@
           (d) => d.extentVisible > currentOverlayLayerInfo.extentVisible + 0.2,
         ).length > 0
       ) {
-        const bestNewLayer = allLayers.layers.sort((a, b) => {
+        const bestNewLayer = allLayers.layers.filter((d) => d.geometry !== null).sort((a, b) => {
           return b.extentVisible - a.extentVisible;
         })[0].properties.identifier;
 
