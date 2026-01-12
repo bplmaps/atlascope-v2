@@ -4,7 +4,7 @@
 
 
     const getLayerDataById = (id) => {
-        return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : instanceVariables.referenceLayers.find((l) => l.properties.identifier === id);
+        return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : allLayers.layers.find((l) => l.properties.identifier === id);
     }
 
     let baseLayer = $derived(getLayerDataById(mapState.layers.base.id));

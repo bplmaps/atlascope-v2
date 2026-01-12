@@ -94,20 +94,13 @@
 
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
-    if (!p) {
-      p = instanceVariables.referenceLayers.find(
-        (d) => d.properties.identifier === layerId,
-      );
-    }
     return p;
   };
 
   // function for changing the layer
   const changeLayer = (layer, id, force = false) => {
-    console.log(`Changing ${layer} to ${id}`);
     if (force || id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
-
       if (newLayer.properties.source.type === "tilejson") {
         olLayers[layer].setSource(
           new TileJSON({
@@ -171,7 +164,7 @@
           (d) => d.extentVisible > currentOverlayLayerInfo.extentVisible + 0.2,
         ).length > 0
       ) {
-        const bestNewLayer = allLayers.layers.sort((a, b) => {
+        const bestNewLayer = allLayers.layers.filter((d) => d.geometry !== null).sort((a, b) => {
           return b.extentVisible - a.extentVisible;
         })[0].properties.identifier;
 
@@ -233,7 +226,6 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      console.log(d);
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];

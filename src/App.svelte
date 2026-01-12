@@ -41,7 +41,6 @@
     fetchLayerData().then((d) => {
       allLayers.layers = d;
       appState.layersLoaded = true;
-
       // If the url params are set to a share link or tour, close all modals and start a tour
       if (urlParams.view && urlParams.view === "share") {
         appState.modals.splash = false;
@@ -51,6 +50,7 @@
         appState.modals.splash = false;
       }
     });
+
   });
 </script>
 

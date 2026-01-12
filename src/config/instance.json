@@ -22,63 +22,8 @@
         "baseLayerId": "maptiler-streets"
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
-    "historicLayersFootprintsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
-    "footprintsDissolved": "https://raw.githubusercontent.com/bplmaps/lmec-digital-library-metadata/refs/heads/main/atlascope/atlascope-boston/boston-volume-extents-dissolved.geojson",
-    "referenceLayers": [
-        {
-            "properties": {
-                "globalExtent": true,
-                "identifier": "massgis-1990s-orthos",
-                "fallbackSubtitle": "Aerial Imagery",
-                "year": 1995,
-                "bibliographicEntry": "Aerial imagery of Massachusetts from the 1990s, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-1990s-aerial-imagery)",
-                "source": {
-                    "type": "xyz",
-                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/BW_Orthos_Tile_Package/MapServer/tile/{z}/{y}/{x}"
-                }
-            }
-        },
-        {
-            "properties": {
-                "globalExtent": true,
-                "identifier": "massgis-2021-orthos",
-                "fallbackSubtitle": "Aerial Imagery",
-                "year": 2021,
-                "bibliographicEntry": "Aerial imagery of Massachusetts from 2021, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery)",
-                "source": {
-                    "type": "xyz",
-                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}"
-                }
-            }
-        },
-        {
-            "properties": {
-                "globalExtent": true,
-                "identifier": "massgis-2023-orthos",
-                "fallbackSubtitle": "Aerial Imagery",
-                "year": 2023,
-                "bibliographicEntry": "Aerial imagery of Massachusetts from 2023, provided by [MassGIS](https://www.mass.gov/info-details/massgis-data-2023-aerial-imagery)",
-                "source": {
-                    "type": "xyz",
-                    "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2023/MapServer/tile/{z}/{y}/{x}"
-                }
-            }
-        },
-        {
-            "properties": {
-                "globalExtent": true,
-                "identifier": "maptiler-streets",
-                "fallbackSubtitle": "Modern Streets",
-                "year": 2025,
-                "bibliographicEntry": "Modern street map data, [© MapTiler](https://www.maptiler.com/copyright/) and [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)",
-                "source": {
-                    "hidden": true,
-                    "type": "tilejson",
-                    "url": "https://api.maptiler.com/maps/streets/tiles.json?key=DY88zutnCSJjg1OmMrUF"
-                }
-            }
-        }
-    ],
+    "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
+    "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/extents-dissolved.geojson",
     "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
     "outOfBoundsMessage": {
