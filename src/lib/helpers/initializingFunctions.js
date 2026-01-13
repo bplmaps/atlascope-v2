@@ -21,11 +21,11 @@ export async function fetchLayerData() {
     let d = await fetch(instanceVariables.volumeExtentsFile)
       .then((r) => r.json())
       .then((d) => {
-        let al = topojson.feature(d, "boston-volume-extents-with-reference").features;
+        let al = topojson.feature(d, "boston-volume-extents").features;
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
-        return al;
+        return al;s
       })
       .catch(() => {
         window.alert(
