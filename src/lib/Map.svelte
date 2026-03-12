@@ -94,20 +94,13 @@
 
   const getLayerDataById = (layerId) => {
     let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
-    if (!p) {
-      p = instanceVariables.referenceLayers.find(
-        (d) => d.properties.identifier === layerId,
-      );
-    }
     return p;
   };
 
   // function for changing the layer
   const changeLayer = (layer, id, force = false) => {
-    console.log(`Changing ${layer} to ${id}`);
     if (force || id != mapState.layers[layer].id) {
       let newLayer = getLayerDataById(id);
-
       if (newLayer.properties.source.type === "tilejson") {
         olLayers[layer].setSource(
           new TileJSON({
@@ -171,7 +164,7 @@
           (d) => d.extentVisible > currentOverlayLayerInfo.extentVisible + 0.2,
         ).length > 0
       ) {
-        const bestNewLayer = allLayers.layers.sort((a, b) => {
+        const bestNewLayer = allLayers.layers.filter((d) => d.geometry !== null).sort((a, b) => {
           return b.extentVisible - a.extentVisible;
         })[0].properties.identifier;
 
@@ -233,7 +226,6 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      console.log(d);
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];
@@ -286,6 +278,65 @@
       ];
     }
     map.render();
+  }
+
+  function exportMapImage() {
+    if (!map) return;
+
+    map.once("rendercomplete", function () {
+      const size = map.getSize();
+      if (!size) return;
+
+      const exportCanvas = document.createElement("canvas");
+      const [width, height] = size;
+      exportCanvas.width = width;
+      exportCanvas.height = height;
+      const context = exportCanvas.getContext("2d");
+      if (!context) return;
+
+      const canvases = document.querySelectorAll("#map-div canvas");
+
+      canvases.forEach((canvas) => {
+        if (!(canvas instanceof HTMLCanvasElement)) return;
+        if (canvas.width === 0 || canvas.height === 0) return;
+
+        const opacity = (canvas.parentElement && canvas.parentElement.style.opacity) || "";
+        context.globalAlpha = opacity === "" ? 1 : Number(opacity);
+
+        const transform = canvas.style.transform;
+        if (transform && transform.startsWith("matrix(")) {
+          const matrix = transform
+            .substring(7, transform.length - 1)
+            .split(",")
+            .map((v) => Number(v.trim()));
+
+          if (matrix.length === 6 && matrix.every((n) => !Number.isNaN(n))) {
+            context.setTransform(
+              matrix[0],
+              matrix[1],
+              matrix[2],
+              matrix[3],
+              matrix[4],
+              matrix[5],
+            );
+          }
+        } else {
+          context.setTransform(1, 0, 0, 1, 0, 0);
+        }
+
+        context.drawImage(canvas, 0, 0);
+      });
+
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.globalAlpha = 1;
+
+      const link = document.createElement("a");
+      link.href = exportCanvas.toDataURL("image/png");
+      link.download = "atlascope-map.png";
+      link.click();
+    });
+
+    map.renderSync();
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
@@ -377,6 +428,23 @@
     dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     mapMoved();
     mapState.mounted = true;
+
+    const handleKeydown = (event) => {
+      if (
+        event.code === "KeyE" &&
+        event.shiftKey &&
+        event.altKey
+      ) {
+        event.preventDefault();
+        exportMapImage();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
   });
 
   $effect(() => {

@@ -9,10 +9,8 @@
   } from "@fortawesome/free-solid-svg-icons";
   import { onMount } from "svelte";
 
-  import { appState,mapState, allLayers } from "../state.svelte.js";
-
-  import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
-  import LightIconButton from "../ui/LightIconButton.svelte";
+  import { mapState, allLayers } from "../state.svelte.js";
+  
   import ShareControls from "./ShareControls.svelte";
   import MapControls from "./MapControls.svelte";
   import LayerControls from "./LayerControls.svelte";
@@ -20,21 +18,17 @@
 
   import instanceVariables from "../../config/instance.json";
 
-  import { bboxFunctions } from "../../config/research-connections.js";
-
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faMap },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
-    {
-      id: "research-controls",
-      name: "Research",
-      icon: faMagnifyingGlassArrowRight,
-    },
+    { id: "research-controls", name: "Research", icon: faMagnifyingGlassArrowRight },
     { id: "share-controls", name: "Share", icon: faShare },
   ];
 
   let panelShown = $state(null);
-  let delayed;
+  let delayed = $state();
+
+  let referenceLayers = $derived(allLayers.layers.filter(feature => feature.geometry === null));
 
   const showHideControls = (e) => {
     panelShown = panelShown === e ? null : e;
@@ -89,7 +83,7 @@
       {#if cg.id === "layer-controls"}
         <span
           class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
-          >{allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length}</span
+          >{allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length - referenceLayers.length}</span
         >
       {/if}
       <span class="hidden md:inline control-tab-label">{cg.name}</span>

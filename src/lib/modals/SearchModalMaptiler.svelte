@@ -5,13 +5,11 @@
     faSearchLocation,
   } from "@fortawesome/free-solid-svg-icons";
 
-
   import instanceVariables from "../../config/instance.json";
   import { insideChecker } from "../helpers/intersector";
 
   import { appState, mapState } from "../state.svelte";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
-
 
   let searchText = $state("");
   let results = $state([]);
@@ -23,7 +21,7 @@
   async function debounceSearch(e) {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      results = []; // prevent results list from growing indefinitely - but this feels inelegant?
+      results = []; // prevent results list from growing indefinitely
       executeSearch(e.target.value);
     }, 100);
   }
@@ -35,7 +33,8 @@
         return;
       }
     }
-    const mapTilerPlaceTypes = 'joint_municipality,joint_submunicipality,municipality,municipal_district,locality,neighbourhood,place,postal_code,address,road,poi';
+    const mapTilerPlaceTypes =
+      "joint_municipality,joint_submunicipality,municipality,municipal_district,locality,neighbourhood,place,postal_code,address,road,poi";
     const bbox = "-73.508,41.237,-69.928,42.886"; // this sets a max extent of Massachusetts for the initial query
     const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${bbox}&country=us`;
 
@@ -60,7 +59,7 @@
   fetch(instanceVariables.footprintsDissolved)
     .then((d) => d.json())
     .then((d) => {
-      atlasExtentsGeometry = d.features[0].geometry;
+      atlasExtentsGeometry = d.geometries[0];
     });
 
   function handleSelection(result) {
@@ -68,7 +67,7 @@
     requestChangeToMapState(mapState, {
       center: [lon, lat],
       zoom: 17,
-      dropPin: true
+      dropPin: true,
     });
     searchText = result.place_name || result.properties.name;
     results = [];
@@ -111,17 +110,19 @@
         <div>
           <ul>
             {#each results as result}
-              <li
-                class="text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
-                onclick={() => {
-                  handleSelection(result);
-                }}
-              >
-                <Fa
-                  icon={faCircleArrowRight}
-                  class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
-                />
-                {result.place_name || result.properties.name}
+              <li>
+                <button
+                  class="text-left text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"
+                  onclick={() => {
+                    handleSelection(result);
+                  }}
+                >
+                  <Fa
+                    icon={faCircleArrowRight}
+                    class="mr-1 inline text-sm text-slate-100 group-hover:text-red-900"
+                  />
+                  {result.place_name || result.properties.name}
+                </button>
               </li>
             {/each}
           </ul>
@@ -137,8 +138,6 @@
           </ul>
         </div>
       {/if}
-
-
     </div>
   </div>
 </section>
