@@ -226,6 +226,9 @@
   function loadAnnotations() {
     loadedAnnotationsList = [];
     getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
+      if (d.length === 0) {
+        loadedAnnotationsList = [{body: "No annotations here yet. Click here to add one!", annotations: false}]
+      }
       d.forEach((x) => {
         getSingleAnnotation(x.id).then((annotation) => {
           loadedAnnotationsList = [...loadedAnnotationsList, annotation];
