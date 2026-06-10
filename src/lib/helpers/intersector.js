@@ -14,6 +14,12 @@ export const intersector = (footprint, extent) => {
     }
 }
 
+// Cheap [minX, minY, maxX, maxY] overlap test, used to skip the full
+// polygon intersection for layers nowhere near the viewport
+export const bboxesOverlap = (a, b) => {
+    return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
 export const insideChecker = (ll, poly) => {
     const pt = point(ll);
     const polygon = multiPolygon(poly.coordinates);

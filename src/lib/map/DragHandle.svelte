@@ -15,6 +15,22 @@
 
   let draggingFlag = $state(false);
 
+  // Pointer events can fire faster than the display refreshes (120Hz+
+  // devices), and each position update forces a map re-render. Buffer the
+  // latest position and flush at most once per animation frame.
+  let latestPos = null;
+  let frameQueued = false;
+
+  function flushDrag() {
+    frameQueued = false;
+    if (!latestPos) return;
+    dragXY = [
+      Math.min(window.innerWidth - 40, Math.max(10, latestPos[0] - dragAdjuster)),
+      Math.min(window.innerHeight - 150, Math.max(10, latestPos[1] - dragAdjuster)),
+    ];
+    onrender();
+  }
+
   function manipulateDrag(e) {
     // self-heal if the mouseup landed before the effect attached listeners
     if (!e.touches && e.buttons === 0) {
@@ -24,21 +40,30 @@
 
     e.preventDefault();
 
-    let posX, posY;
-
     if (e.touches) {
-      posX = e.targetTouches.item(0).clientX;
-      posY = e.targetTouches.item(0).clientY;
+      latestPos = [
+        e.targetTouches.item(0).clientX,
+        e.targetTouches.item(0).clientY,
+      ];
     } else {
-      posX = e.clientX || e.pageX;
-      posY = e.clientY || e.pageY;
+      latestPos = [e.clientX || e.pageX, e.clientY || e.pageY];
     }
 
-    dragXY = [
-      Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
-      Math.min(window.innerHeight - 150, Math.max(10, posY - dragAdjuster)),
-    ];
-    onrender();
+    if (!frameQueued) {
+      frameQueued = true;
+      requestAnimationFrame(flushDrag);
+    }
+  }
+
+  // Same once-per-frame guard for the opacity slider's map re-renders
+  let renderQueued = false;
+  function scheduleRender() {
+    if (renderQueued) return;
+    renderQueued = true;
+    requestAnimationFrame(() => {
+      renderQueued = false;
+      onrender();
+    });
   }
 
   // Listeners go on the window (so a drag keeps tracking outside the
@@ -93,7 +118,7 @@
     id="default-range"
     type="range"
     bind:value={opacitySliderValue}
-    oninput={onrender}
+    oninput={scheduleRender}
     class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
   />
   <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>

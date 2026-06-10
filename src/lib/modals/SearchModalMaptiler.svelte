@@ -1,3 +1,10 @@
+<script module>
+  // The dissolved-footprints GeoJSON gates searching; the modal is
+  // re-mounted on every open, so cache the fetch at module level to load
+  // it once per session instead of once per open
+  let footprintsPromise;
+</script>
+
 <script>
   import Fa from "svelte-fa";
   import {
@@ -54,13 +61,15 @@
     }
   }
 
-  // load this once, and we'll prevent search from occuring before it's loaded
+  // load this once per session, and we'll prevent search from occurring before it's loaded
 
-  fetch(instanceVariables.footprintsDissolved)
+  footprintsPromise ??= fetch(instanceVariables.footprintsDissolved)
     .then((d) => d.json())
-    .then((d) => {
-      atlasExtentsGeometry = d.geometries[0];
-    });
+    .then((d) => d.geometries[0]);
+
+  footprintsPromise.then((geometry) => {
+    atlasExtentsGeometry = geometry;
+  });
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;

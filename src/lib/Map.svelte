@@ -20,7 +20,7 @@
   import VectorLayer from "ol/layer/Vector";
   import { Fill, Stroke, Style, Circle } from "ol/style";
 
-  import { intersector } from "./helpers/intersector";
+  import { intersector, bboxesOverlap } from "./helpers/intersector";
 
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import { registerMap, unregisterMap } from "./map/mapActions.js";
@@ -101,9 +101,18 @@
 
       const visibility = {};
       allLayers.layers.forEach((lyr) => {
-        visibility[lyr.properties.identifier] = lyr.properties.globalExtent
-          ? 1.0
-          : intersector(lyr.geometry, extent);
+        if (lyr.properties.globalExtent) {
+          visibility[lyr.properties.identifier] = 1.0;
+        } else if (lyr.bbox && !bboxesOverlap(lyr.bbox, extent)) {
+          // bounding boxes don't even touch — skip the expensive
+          // polygon intersection entirely
+          visibility[lyr.properties.identifier] = 0;
+        } else {
+          visibility[lyr.properties.identifier] = intersector(
+            lyr.geometry,
+            extent,
+          );
+        }
       });
       allLayers.visibility = visibility;
 
