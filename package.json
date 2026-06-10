@@ -27,7 +27,6 @@
     "ol": "^10.6.1",
     "svelte-fa": "^4.0.3",
     "svelte-markdown": "^0.4.1",
-    "svelte-meta-tags": "^4.0.4",
     "tailwindcss": "^4.1.11",
     "topojson-client": "^3.1.0"
   },

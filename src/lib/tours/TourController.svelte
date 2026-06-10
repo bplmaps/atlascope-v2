@@ -103,7 +103,6 @@
             </div>
             <div class="p-3 grow">
               <h2 class="inline text-xl font-bold">
-                {console.log(tourData)}
                 {tourData.metadataJson.title}
               </h2>
             </div>

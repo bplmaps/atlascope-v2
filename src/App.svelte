@@ -26,10 +26,10 @@
     );
     mapState.viewMode = urlParams.mode ? urlParams.mode : "glass";
     mapState.center = urlParams.center
-      ? urlParams.center.split(",")
+      ? urlParams.center.split(",").map(Number)
       : instanceVariables.defaultStartLocation.center;
     mapState.zoom = urlParams.zoom
-      ? urlParams.zoom
+      ? Number(urlParams.zoom)
       : instanceVariables.defaultStartLocation.zoom;
     mapState.layers.base.id = urlParams.base
       ? urlParams.base

@@ -25,7 +25,7 @@ export async function fetchLayerData() {
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
-        return al;s
+        return al;
       })
       .catch(() => {
         window.alert(

@@ -1,6 +1,5 @@
 export function requestChangeToMapState(mapState, requestedMapState) {
     if (mapState.requestedMapState.requested) {
-        console.log("cannot request change to map state since a request is already pending");
         return;
     } else {
         mapState.requestedMapState.requested = true;

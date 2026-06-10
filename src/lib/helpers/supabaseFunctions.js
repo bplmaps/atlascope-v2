@@ -9,27 +9,15 @@ const sb = createClient(supabaseUrl, supabaseAnonKey);
 // tour functions
 
 export const loadAllTours = async () => {
-  return new Promise((resolve, reject) => {
-    sb.from("tours")
-      .select()
-      .eq("published", true)
-      .order("id", { ascending: true })
-      .then((d) => {
-        resolve(d);
-      });
-  });
+  return sb
+    .from("tours")
+    .select()
+    .eq("published", true)
+    .order("id", { ascending: true });
 };
 
 export const loadSingleTour = async (ref) => {
-
-  return new Promise((resolve, reject) => {
-    sb.from("tours")
-      .select()
-      .eq("id", ref)
-      .then((d) => {
-        resolve(d);
-      });
-  });
+  return sb.from("tours").select().eq("id", ref);
 };
 
 // annotation read functions
@@ -43,7 +31,7 @@ export const getAnnotationsWithinExtent = async (extent) => {
     .lte('min_x', extent[2])
     .lte('min_y', extent[3])
   if (error) {
-    console.log(error)
+    console.error(error)
   }
   return data;
 };
@@ -51,7 +39,7 @@ export const getAnnotationsWithinExtent = async (extent) => {
 export const getSingleAnnotation = async (ref) => {
     const { data, error } = await sb.from("annotations").select().eq('id', ref);
     if (error) {
-        console.log(error)
+        console.error(error)
       }
     return data[0];
 };
@@ -63,14 +51,13 @@ export const newAnnotationId = async () => {
     const oldId = data[0].id
     let newId = parseInt(oldId)+100
     if (error) {
-        console.log(error)
+        console.error(error)
     }
     return newId;
 };
 
 export const writeAnnotation = async (extent, body, email, layerID) => {
     const id = await newAnnotationId()
-    console.log(extent)
     let now = new Date().toISOString()
     const { data, error } = await sb
         .from("annotations")
@@ -92,7 +79,7 @@ export const writeAnnotation = async (extent, body, email, layerID) => {
         )
         .select();
     if (error) {
-        console.log(error)
+        console.error(error)
     }
     return data;
 };

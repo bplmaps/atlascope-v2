@@ -8,7 +8,7 @@
   import instanceVariables from "../../config/instance.json";
   import { insideChecker } from "../helpers/intersector";
 
-  import { appState, mapState } from "../state.svelte";
+  import { appState, mapState } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";
 
   let searchText = $state("");
