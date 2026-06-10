@@ -33,7 +33,8 @@
     allLayers.layers
       .toSorted((a, b) => a.properties.year - b.properties.year)
       .forEach((d) => {
-        if (d.extentVisible > 0.2) {
+        const pct = allLayers.visibility[d.properties.identifier];
+        if (pct > 0.2) {
           c.push({
             id: d.properties.identifier,
             title: d.properties.fallbackTitle
@@ -42,7 +43,7 @@
             subtitle: d.properties.fallbackSubtitle
               ? d.properties.fallbackSubtitle
               : d.properties.publisherShort,
-            pct: d.extentVisible,
+            pct,
           });
         }
       });

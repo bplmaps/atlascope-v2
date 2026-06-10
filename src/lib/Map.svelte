@@ -122,9 +122,10 @@
     }
   };
 
-  // This function updates the `allLayers` store every time the map is moved, to figure out how many layers are available in the new viewport
-  // It does it by running the `intersector` function on each layer's geometry relative to the viewport extent
-  // and then sets the `extentVisible` property on that layer in the store
+  // This function updates the `allLayers` visibility record every time the map is moved,
+  // to figure out how many layers are available in the new viewport.
+  // It does it by running the `intersector` function on each layer's geometry relative
+  // to the viewport extent and writing the coverage fraction into `allLayers.visibility`
   function mapMoved() {
     // Clear any existing timeout
     if (mapMovedTimeout) {
@@ -137,7 +138,6 @@
       mapState.zoom = view.getZoom();
       mapState.rotation = view.getRotation();
 
-      // const extent = view.calculateExtent();
       const extent = transformExtent(
         view.calculateExtent(),
         "EPSG:3857",
@@ -145,13 +145,15 @@
       );
       mapState.extent = extent;
 
+      const visibility = {};
       allLayers.layers.forEach((lyr) => {
-        lyr.extentVisible = lyr.properties.globalExtent
+        visibility[lyr.properties.identifier] = lyr.properties.globalExtent
           ? 1.0
           : intersector(lyr.geometry, extent);
       });
+      allLayers.visibility = visibility;
 
-      const currentOverlayLayerInfo = getLayerDataById(mapState.layers.overlay.id);
+      const overlayVisible = visibility[mapState.layers.overlay.id];
 
       // Implement a double check process
       // If the current overlay layer is less than 40% visible
@@ -159,13 +161,13 @@
 
       if (
         !mapState.lockLayers &&
-        currentOverlayLayerInfo.extentVisible < 0.4 &&
+        overlayVisible < 0.4 &&
         allLayers.layers.filter(
-          (d) => d.extentVisible > currentOverlayLayerInfo.extentVisible + 0.2,
+          (d) => visibility[d.properties.identifier] > overlayVisible + 0.2,
         ).length > 0
       ) {
         const bestNewLayer = allLayers.layers.filter((d) => d.geometry !== null).sort((a, b) => {
-          return b.extentVisible - a.extentVisible;
+          return visibility[b.properties.identifier] - visibility[a.properties.identifier];
         })[0].properties.identifier;
 
         if (bestNewLayer != mapState.layers.overlay.id) {
@@ -181,13 +183,11 @@
     // Implement a simpler check for the base layer;
     // if the current layer is less than 40% visible,
     // just load the maptiler streets
+    // (uses the visibility computed on the previous move, since the
+    // debounced recompute above hasn't run yet)
 
-    const currentBaseLayerInfo = getLayerDataById(mapState.layers.base.id)
-    if (
-      !mapState.lockLayers &&
-      currentBaseLayerInfo.extentVisible < 0.4
-    )
-    {
+    const baseVisible = allLayers.visibility[mapState.layers.base.id];
+    if (!mapState.lockLayers && baseVisible < 0.4) {
       changeLayer("base", "maptiler-streets")
     }
   }
