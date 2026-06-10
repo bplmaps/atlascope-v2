@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@humanspeak/svelte-markdown": "^1.6.0",
     "@supabase/supabase-js": "^2.108.1",
     "@tailwindcss/vite": "^4.3.0",
