@@ -612,7 +612,7 @@
     />
   {/if}
 
-  {#if !mapState.annotationMode && loadedAnnotationsList.length === 0 && !appState.tour.active}
+  {#if !mapState.annotationEntry && loadedAnnotationsList.length === 0 && !appState.tour.active}
     <MapControls />
   {/if}
 </section>
