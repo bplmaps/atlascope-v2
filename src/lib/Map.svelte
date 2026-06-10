@@ -2,11 +2,7 @@
   import { onMount } from "svelte";
 
   import Fa from "svelte-fa";
-  import {
-    faHand,
-    faPenToSquare,
-    faStopCircle,
-  } from "@fortawesome/free-solid-svg-icons";
+  import { faPenToSquare, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 
   import AtlascopeLogo from "./ui/AtlascopeLogo.svelte";
   import MapControls from "./mapControls/ControlPanel.svelte";
@@ -14,29 +10,24 @@
   import AnnotationEntryForm from "./annotations/AnnotationEntryForm.svelte";
   import AnnotationsListModal from "./annotations/AnnotationsListModal.svelte";
   import LightIconButton from "./ui/LightIconButton.svelte";
+  import DragHandle from "./map/DragHandle.svelte";
 
   import "ol/ol.css";
   import { Map, View } from "ol";
   import TileLayer from "ol/layer/Tile";
-  import XYZ from "ol/source/XYZ";
-  import TileJSON from "ol/source/TileJSON";
   import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
-  import Draw, { createBox } from "ol/interaction/Draw";
   import VectorSource from "ol/source/Vector";
   import VectorLayer from "ol/layer/Vector";
-  import Feature from "ol/Feature";
-  import { fromExtent } from "ol/geom/Polygon";
   import { Fill, Stroke, Style, Circle } from "ol/style";
 
   import { intersector } from "./helpers/intersector";
-  import {
-    getAnnotationsWithinExtent,
-    getSingleAnnotation,
-  } from "./helpers/supabaseFunctions";
 
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import { registerMap, unregisterMap } from "./map/mapActions.js";
-  import instanceVariables from "../config/instance.json";
+  import { createLayerSwitcher, pickBestOverlayLayer } from "./map/layerSwitching.js";
+  import { createViewModeHandlers } from "./map/viewModeRendering.js";
+  import { createAnnotationManager } from "./map/annotationManager.js";
+  import { exportMapImage } from "./map/exportImage.js";
 
   let map;
   let olLayers = {
@@ -46,7 +37,6 @@
 
   let opacitySliderValue = $state(50);
   let dragXY = $state([0, 0]);
-  let draggingFlag = $state(false);
   const dragAdjuster = 14;
 
   let view = new View({
@@ -55,24 +45,21 @@
     minZoom: 14,
   });
 
-  let annotationDrawer;
-  let annotationDrawerGeometrySource = new VectorSource({ wrapX: false });
-  let annotationDrawerLayer = new VectorLayer({
-    source: annotationDrawerGeometrySource,
-  });
-
-  let loadedAnnotationsGeometrySource = new VectorSource({ wrapX: false });
-  let loadedAnnotationsLayer = new VectorLayer({
-    source: loadedAnnotationsGeometrySource,
-    style: new Style({
-      stroke: new Stroke({
-        color: "rgba(255, 255, 255, 0.9)",
-        width: 5,
-      }),
-    }),
-  });
+  const changeLayer = createLayerSwitcher(olLayers);
 
   let loadedAnnotationsList = $state([]);
+  let annotationEntryCoords = $state([0, 0]);
+  let annotationExtentCoords = $state(null);
+
+  const annotations = createAnnotationManager({
+    getMap: () => map,
+    getView: () => view,
+    changeLayer,
+    onDrawEnd: (extent, pixel) => {
+      annotationExtentCoords = extent;
+      annotationEntryCoords = pixel;
+    },
+  });
 
   let markerGeometrySource = new VectorSource({ wrapX: false });
   let markerLayer = new VectorLayer({
@@ -86,41 +73,8 @@
     }),
   });
 
-  let annotationEntryCoords = $state([0, 0]);
-  let annotationExtentCoords = $state(null);
-
   // Debounce timer for mapMoved function
   let mapMovedTimeout;
-
-  const getLayerDataById = (layerId) => {
-    let p = allLayers.layers.find((d) => d.properties.identifier === layerId);
-    return p;
-  };
-
-  // function for changing the layer
-  const changeLayer = (layer, id, force = false) => {
-    if (force || id != mapState.layers[layer].id) {
-      let newLayer = getLayerDataById(id);
-      if (newLayer.properties.source.type === "tilejson") {
-        olLayers[layer].setSource(
-          new TileJSON({
-            url: newLayer.properties.source.url,
-            crossOrigin: "anonymous",
-            tileSize:
-              newLayer.properties.identifier === "maptiler-streets" ? 512 : 256, // klugey hack for maptiler-streets, which is 512px tiles
-          }),
-        );
-      } else if (newLayer.properties.source.type === "xyz") {
-        olLayers[layer].setSource(
-          new XYZ({
-            url: newLayer.properties.source.url,
-            crossOrigin: "anonymous",
-          }),
-        );
-      }
-      mapState.layers[layer].id = newLayer.properties.identifier;
-    }
-  };
 
   // This function updates the `allLayers` visibility record every time the map is moved,
   // to figure out how many layers are available in the new viewport.
@@ -153,30 +107,13 @@
       });
       allLayers.visibility = visibility;
 
-      const overlayVisible = visibility[mapState.layers.overlay.id];
-
-      // Implement a double check process
-      // If the current overlay layer is less than 40% visible
-      // AND there is another layer available that's more than 20% better than it, switch
-
-      if (
-        !mapState.lockLayers &&
-        overlayVisible < 0.4 &&
-        allLayers.layers.filter(
-          (d) => visibility[d.properties.identifier] > overlayVisible + 0.2,
-        ).length > 0
-      ) {
-        const bestNewLayer = allLayers.layers.filter((d) => d.geometry !== null).sort((a, b) => {
-          return visibility[b.properties.identifier] - visibility[a.properties.identifier];
-        })[0].properties.identifier;
-
-        if (bestNewLayer != mapState.layers.overlay.id) {
-          changeLayer("overlay", bestNewLayer);
-          mapState.layerChangePopup = true;
-          setTimeout(() => {
-            mapState.layerChangePopup = false;
-          }, 5000);
-        }
+      const bestNewLayer = pickBestOverlayLayer(visibility);
+      if (bestNewLayer) {
+        changeLayer("overlay", bestNewLayer);
+        mapState.layerChangePopup = true;
+        setTimeout(() => {
+          mapState.layerChangePopup = false;
+        }, 5000);
       }
     }, 500);
 
@@ -192,156 +129,24 @@
     }
   }
 
-  function enableAnnotationMode() {
-    mapState.annotationEntry = true;
-    map.addLayer(annotationDrawerLayer);
-    annotationDrawer = new Draw({
-      source: annotationDrawerGeometrySource,
-      type: "Circle",
-      geometryFunction: createBox(),
-    });
-
-    annotationDrawer.on("drawend", (e) => {
-      annotationExtentCoords = e.feature.getGeometry().getExtent();
-      annotationEntryCoords = [e.target.downPx_[0], e.target.downPx_[1]];
-      mapState.annotationSave = true;
-      map.removeInteraction(annotationDrawer);
-    });
-    map.addInteraction(annotationDrawer);
-  }
-
-  function disableAnnotationMode() {
-    map.removeInteraction(annotationDrawer);
-    mapState.annotationEntry = false;
-    annotationDrawerGeometrySource.clear();
-    map.removeLayer(annotationDrawerLayer);
-  }
-
-  function cancelAnnotation() {
-    map.addInteraction(annotationDrawer);
-    mapState.annotationEntry = false;
-    annotationDrawerGeometrySource.clear();
-  }
-
   function loadAnnotations() {
     loadedAnnotationsList = [];
-    getAnnotationsWithinExtent(view.calculateExtent()).then((d) => {
-      d.forEach((x) => {
-        getSingleAnnotation(x.id).then((annotation) => {
-          loadedAnnotationsList = [...loadedAnnotationsList, annotation];
-        });
-      });
+    annotations.loadWithinCurrentExtent((annotation) => {
+      loadedAnnotationsList = [...loadedAnnotationsList, annotation];
     });
   }
 
   const closeAnnotationListModal = () => {
-    loadedAnnotationsGeometrySource.clear();
+    annotations.clearLoaded();
     loadedAnnotationsList = [];
   };
 
   function moveMapToAnnotation(d) {
-    const selectedAnnotation = loadedAnnotationsList[d];
-    const extentJson = JSON.parse(selectedAnnotation.extent);
-    loadedAnnotationsGeometrySource.clear();
-    loadedAnnotationsGeometrySource.addFeature(
-      new Feature(fromExtent(extentJson)),
-    );
-
-    changeLayer("overlay", selectedAnnotation.layer);
-
-    view.fit(extentJson, {
-      padding: [100, 100, 300, 100],
-      duration: 1000,
-      maxZoom: 19,
-    });
-  }
-
-  function manipulateDrag(e) {
-    if (!draggingFlag) {
-      return;
-    } else {
-      e.preventDefault();
-
-      let posX, posY;
-
-      if (e.touches) {
-        posX = e.targetTouches.item(0).clientX;
-        posY = e.targetTouches.item(0).clientY;
-      } else {
-        posX = e.clientX || e.pageX;
-        posY = e.clientY || e.pageY;
-      }
-
-      dragXY = [
-        Math.min(window.innerWidth - 40, Math.max(10, posX - dragAdjuster)),
-        Math.min(window.innerHeight - 150, Math.max(10, posY - dragAdjuster)),
-      ];
-    }
-    map.render();
-  }
-
-  function exportMapImage() {
-    if (!map) return;
-
-    map.once("rendercomplete", function () {
-      const size = map.getSize();
-      if (!size) return;
-
-      const exportCanvas = document.createElement("canvas");
-      const [width, height] = size;
-      exportCanvas.width = width;
-      exportCanvas.height = height;
-      const context = exportCanvas.getContext("2d");
-      if (!context) return;
-
-      const canvases = document.querySelectorAll("#map-div canvas");
-
-      canvases.forEach((canvas) => {
-        if (!(canvas instanceof HTMLCanvasElement)) return;
-        if (canvas.width === 0 || canvas.height === 0) return;
-
-        const opacity = (canvas.parentElement && canvas.parentElement.style.opacity) || "";
-        context.globalAlpha = opacity === "" ? 1 : Number(opacity);
-
-        const transform = canvas.style.transform;
-        if (transform && transform.startsWith("matrix(")) {
-          const matrix = transform
-            .substring(7, transform.length - 1)
-            .split(",")
-            .map((v) => Number(v.trim()));
-
-          if (matrix.length === 6 && matrix.every((n) => !Number.isNaN(n))) {
-            context.setTransform(
-              matrix[0],
-              matrix[1],
-              matrix[2],
-              matrix[3],
-              matrix[4],
-              matrix[5],
-            );
-          }
-        } else {
-          context.setTransform(1, 0, 0, 1, 0, 0);
-        }
-
-        context.drawImage(canvas, 0, 0);
-      });
-
-      context.setTransform(1, 0, 0, 1, 0, 0);
-      context.globalAlpha = 1;
-
-      const link = document.createElement("a");
-      link.href = exportCanvas.toDataURL("image/png");
-      link.download = "atlascope-map.png";
-      link.click();
-    });
-
-    map.renderSync();
+    annotations.showAnnotation(loadedAnnotationsList[d]);
   }
 
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
-    const pixelRatio = window.devicePixelRatio;
     map = new Map({
       target: "map-div",
       controls: [],
@@ -349,7 +154,7 @@
       layers: [
         olLayers.base,
         olLayers.overlay,
-        loadedAnnotationsLayer,
+        annotations.loadedLayer,
         markerLayer,
       ],
     });
@@ -357,71 +162,17 @@
     changeLayer("base", mapState.layers.base.id, true);
     changeLayer("overlay", mapState.layers.overlay.id, true);
 
-    // This is the function that executes the rendering of the spyglass, swipe, or opacity feature for the overlay layer
-    // It's bound to the `prerender` event on `overlayLayer`
-    olLayers.overlay.on("prerender", function (event) {
-      if (mapState.viewMode === "opacity") {
-        olLayers.overlay.setOpacity(opacitySliderValue / 100);
-      } else {
-        olLayers.overlay.setOpacity(1);
-        const ctx = event.context;
-
-        ctx.save();
-        ctx.beginPath();
-
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "rgba(0,0,0,0.5)";
-
-        if (mapState.viewMode === "swipe-y") {
-          ctx.rect(
-            0,
-            0,
-            ctx.canvas.width,
-            (dragXY[1] + dragAdjuster) * pixelRatio,
-          );
-        } else if (mapState.viewMode === "swipe-x") {
-          ctx.rect(
-            0,
-            0,
-            (dragXY[0] + dragAdjuster) * pixelRatio,
-            ctx.canvas.height,
-          );
-        } else if (mapState.viewMode === "glass") {
-          ctx.arc(
-            ctx.canvas.width / 2,
-            ctx.canvas.height / 2,
-            Math.abs(
-              Math.floor(
-                Math.sqrt(
-                  Math.pow(
-                    (dragXY[0] + dragAdjuster - window.innerWidth / 2) *
-                      pixelRatio,
-                    2,
-                  ) +
-                    Math.pow(
-                      (dragXY[1] + dragAdjuster - window.innerHeight / 2) *
-                        pixelRatio,
-                      2,
-                    ),
-                ),
-              ),
-            ),
-            0,
-            2 * Math.PI,
-          );
-        } else ctx.fillStyle = "rgba(10,10,10,0.85)";
-        ctx.fill();
-
-        ctx.stroke();
-        ctx.clip();
-      }
+    // Renders the spyglass, swipe, or opacity effect by clipping the
+    // overlay layer's canvas around the drag handle position
+    const viewModeHandlers = createViewModeHandlers({
+      overlayLayer: olLayers.overlay,
+      getDragXY: () => dragXY,
+      getOpacity: () => opacitySliderValue,
+      dragAdjuster,
+      pixelRatio: window.devicePixelRatio,
     });
-
-    // after rendering the layer, restore the canvas context
-    olLayers.overlay.on("postrender", function (event) {
-      var ctx = event.context;
-      ctx.restore();
-    });
+    olLayers.overlay.on("prerender", viewModeHandlers.prerender);
+    olLayers.overlay.on("postrender", viewModeHandlers.postrender);
 
     map.on("moveend", mapMoved);
 
@@ -443,7 +194,7 @@
         event.altKey
       ) {
         event.preventDefault();
-        exportMapImage();
+        exportMapImage(map);
       }
     };
 
@@ -457,9 +208,9 @@
 
   $effect(() => {
     if (mapState.annotationEntry) {
-      enableAnnotationMode();
+      annotations.enableEntryMode();
     } else {
-      disableAnnotationMode();
+      annotations.disableEntryMode();
     }
   });
 
@@ -471,54 +222,17 @@
   });
 </script>
 
-<section
-  id="map"
-  onmousemove={manipulateDrag}
-  ontouchmove={manipulateDrag}
-  onmouseup={() => {
-    draggingFlag = false;
-  }}
-  ontouchend={() => {
-    draggingFlag = false;
-  }}
->
+<section id="map">
   <div id="map-div"></div>
 
-  <div
-    id="drag-handle"
-    class="select-none cursor-move rounded-full bg-pink-800 ring-2 ring-white p-2 text-white drop-shadow hover:ring-4 hover:bg-pink-900 transition {mapState.viewMode ===
-    'opacity'
-      ? 'hidden'
-      : ''}"
-    style="left: {dragXY[0]}px; top: {dragXY[1]}px"
-    onmousedown={() => {
-      draggingFlag = true;
+  <DragHandle
+    bind:dragXY
+    bind:opacitySliderValue
+    {dragAdjuster}
+    onrender={() => {
+      map.render();
     }}
-    ontouchstart={() => {
-      draggingFlag = true;
-    }}
-  >
-    <Fa icon={faHand} />
-  </div>
-
-  <div
-    id="opacity-control-holder"
-    class="absolute top-2 right-2 w-1/3 bg-gray-50 p-2 rounded {mapState.viewMode ===
-    'opacity'
-      ? ''
-      : 'hidden'}"
-  >
-    <input
-      id="default-range"
-      type="range"
-      bind:value={opacitySliderValue}
-      oninput={() => {
-        map.render();
-      }}
-      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-900"
-    />
-    <div class="text-sm font-semibold">Opacity {opacitySliderValue}%</div>
-  </div>
+  />
 
   <div
     onclick={() => {
@@ -549,7 +263,7 @@
         Click once to begin drawing a box, then click again to finish.
       </p>
       <LightIconButton
-        onclick={disableAnnotationMode}
+        onclick={annotations.disableEntryMode}
         icon={faStopCircle}
         label="Stop annotating"
         size="sm"
@@ -562,7 +276,7 @@
       pos={annotationEntryCoords}
       featureExtent={annotationExtentCoords}
       layerID={mapState.layers.overlay.id}
-      oncancel={cancelAnnotation}
+      oncancel={annotations.cancelEntry}
     />
   {/if}
 
@@ -593,9 +307,5 @@
     width: 100%;
     height: 100%;
     margin: 0;
-  }
-
-  #drag-handle {
-    position: absolute;
   }
 </style>
