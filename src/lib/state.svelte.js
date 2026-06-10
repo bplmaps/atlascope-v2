@@ -33,19 +33,7 @@ export const mapState = $state({
     zoom: null,
     extent: null,
     rotation: null,
-    lockLayers: false,
-    requestedMapState: {
-      requested: false,
-      dropPin: false,
-      animate: 0,
-      viewMode: null,
-      center: null,
-      zoom: null,
-      extent: null,
-      rotation: null,
-      base: null,
-      overlay: null
-    }
+    lockLayers: false
 })
 
 // Layer metadata is a large array of TopoJSON features (geometries included),

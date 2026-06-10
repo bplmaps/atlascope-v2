@@ -9,7 +9,7 @@
   import { insideChecker } from "../helpers/intersector";
 
   import { appState, mapState } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   let searchText = $state("");
   let results = $state([]);
@@ -64,7 +64,7 @@
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    requestChangeToMapState(mapState, {
+    applyMapState({
       center: [lon, lat],
       zoom: 17,
       dropPin: true,

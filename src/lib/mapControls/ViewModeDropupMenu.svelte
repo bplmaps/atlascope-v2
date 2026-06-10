@@ -3,7 +3,7 @@
   import { faArrowsH, faArrowsV, faBorderStyle, faCircle } from "@fortawesome/free-solid-svg-icons";
 
   import { mapState } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   let choices = [
     { id: "glass", label: "Glass", icon: faCircle },
@@ -15,7 +15,7 @@
   let poppedFlag = false;
 
   const handleSelection = (id) => {
-    requestChangeToMapState(mapState, {
+    applyMapState({
       viewMode: id
     });
     poppedFlag = false;

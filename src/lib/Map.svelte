@@ -26,7 +26,6 @@
   import VectorLayer from "ol/layer/Vector";
   import Feature from "ol/Feature";
   import { fromExtent } from "ol/geom/Polygon";
-  import Point from "ol/geom/Point";
   import { Fill, Stroke, Style, Circle } from "ol/style";
 
   import { intersector } from "./helpers/intersector";
@@ -36,6 +35,7 @@
   } from "./helpers/supabaseFunctions";
 
   import { mapState, appState, allLayers } from "./state.svelte.js";
+  import { registerMap, unregisterMap } from "./map/mapActions.js";
   import instanceVariables from "../config/instance.json";
 
   let map;
@@ -429,6 +429,13 @@
     mapMoved();
     mapState.mounted = true;
 
+    registerMap({
+      map,
+      view,
+      markerSource: markerGeometrySource,
+      changeLayer,
+    });
+
     const handleKeydown = (event) => {
       if (
         event.code === "KeyE" &&
@@ -444,53 +451,8 @@
 
     return () => {
       window.removeEventListener("keydown", handleKeydown);
+      unregisterMap();
     };
-  });
-
-  $effect(() => {
-    if (mapState.requestedMapState.requested) {
-      if (
-        mapState.requestedMapState.dropPin &&
-        mapState.requestedMapState.center
-      ) {
-        const targetPoint = fromLonLat(mapState.requestedMapState.center);
-        markerGeometrySource.clear();
-        markerGeometrySource.addFeature(
-          new Feature({ geometry: new Point(targetPoint) }),
-        );
-      }
-
-      if (mapState.requestedMapState.overlay) {
-        changeLayer("overlay", mapState.requestedMapState.overlay);
-      }
-
-      if (mapState.requestedMapState.base) {
-        changeLayer("base", mapState.requestedMapState.base);
-      }
-
-      if (mapState.requestedMapState.viewMode) {
-        mapState.viewMode = mapState.requestedMapState.viewMode;
-        map.render();
-      }
-
-      view.animate({
-        center: mapState.requestedMapState.center
-          ? fromLonLat(mapState.requestedMapState.center)
-          : view.getCenter(),
-        zoom: mapState.requestedMapState.zoom
-          ? mapState.requestedMapState.zoom
-          : view.getZoom(),
-        rotation:
-          mapState.requestedMapState.rotation !== null
-            ? mapState.requestedMapState.rotation
-            : view.getRotation(),
-        duration: mapState.requestedMapState.animate
-          ? mapState.requestedMapState.animate
-          : 0,
-      });
-
-      mapState.requestedMapState.requested = false;
-    }
   });
 
   $effect(() => {

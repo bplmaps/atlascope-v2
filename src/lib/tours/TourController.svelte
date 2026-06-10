@@ -18,8 +18,8 @@
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "../ui/LightIconButton.svelte";
 
-  import { mapState, appState } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { appState } from "../state.svelte.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   import { onMount } from "svelte";
 
@@ -42,7 +42,7 @@
 
   function goToCurrentStop() {
     let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
-    requestChangeToMapState(mapState, {
+    applyMapState({
       center: cs.center,
       zoom: cs.zoom,
       viewMode: cs.viewMode,

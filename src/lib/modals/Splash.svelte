@@ -10,8 +10,8 @@
 
   import SvelteMarkdown from "@humanspeak/svelte-markdown";
 
-  import { appState, mapState, allLayers } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { appState, allLayers } from "../state.svelte.js";
+  import { applyMapState } from "../map/mapActions.js";
   import instanceVariables from "../../config/instance.json";
 
   import AtlascopeLogo from "../ui/AtlascopeLogo.svelte";
@@ -50,7 +50,7 @@
       text: `Start at ${instanceVariables.defaultStartLocation.name}`,
       icon: faLandmark,
       action: function () {
-        requestChangeToMapState(mapState, {
+        applyMapState({
           center: instanceVariables.defaultStartLocation.center,
           zoom: 18,
         });
@@ -123,7 +123,7 @@
         <div class="relative inline-block text-left w-auto">
           <CoverageComboBox
             onSelect={(item) => {
-              requestChangeToMapState(mapState, {
+              applyMapState({
                 center: item.center,
                 zoom: 17,
               });

@@ -1,6 +1,6 @@
 <script>
   import { mapState, allLayers } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   const { layerName } = $props();
 
@@ -57,7 +57,7 @@
 
   function handleSelection(id) {
     poppedFlag = false;
-    requestChangeToMapState(mapState, {
+    applyMapState({
       [layerName]: id
     });
   }
