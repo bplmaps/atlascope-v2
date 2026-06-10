@@ -8,7 +8,7 @@
     faQuestionCircle,
   } from "@fortawesome/free-solid-svg-icons";
 
-  import SvelteMarkdown from "svelte-markdown";
+  import SvelteMarkdown from "@humanspeak/svelte-markdown";
 
   import { appState, mapState, allLayers } from "../state.svelte.js";
   import { requestChangeToMapState } from "../helpers/mapHelpers.js";

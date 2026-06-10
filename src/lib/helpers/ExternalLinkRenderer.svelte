@@ -1,21 +1,18 @@
-
 <script>
-    import { onMount } from 'svelte'
-    export let href = "";
-    export let text = "";
-    export let title = undefined;
-    let external;
-    onMount(() => {
-      external = (href.charAt(0) === "/" ? false :
-      (new URL(href).origin !== location.origin ? true : false));
-    });
-  </script>
-  
-  <a
-    {href}
-    title={title ? title : undefined}
-    target={external ? "_blank" : undefined}
-    rel={external ? "nofollow noopener noreferrer" : undefined}
-  >
-    {text}
-  </a>
+  const { href = "", title = undefined, children } = $props();
+
+  // Treat any absolute URL pointing off-origin as external
+  const external = $derived(
+    href.charAt(0) !== "/" &&
+      new URL(href, location.origin).origin !== location.origin,
+  );
+</script>
+
+<a
+  {href}
+  title={title ? title : undefined}
+  target={external ? "_blank" : undefined}
+  rel={external ? "nofollow noopener noreferrer" : undefined}
+>
+  {@render children?.()}
+</a>

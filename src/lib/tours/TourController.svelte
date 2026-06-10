@@ -1,7 +1,7 @@
 <script>
   import Fa from "svelte-fa";
 
-  import SvelteMarkdown from "svelte-markdown";
+  import SvelteMarkdown from "@humanspeak/svelte-markdown";
   import ExternalLinkRenderer from "../helpers/ExternalLinkRenderer.svelte";
   import BibliographicBug from "../ui/BibliographicBug.svelte";
 
