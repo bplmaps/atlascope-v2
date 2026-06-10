@@ -3,7 +3,7 @@
     import { writeAnnotation } from "../helpers/supabaseFunctions";
     import { mapState } from "../state.svelte.js";
 
-    const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID } = $props();
+    const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID, oncancel } = $props();
     const buffer = -15;
 
     let topPos = window.innerWidth > 768 ? Math.min((window.innerHeight - 300), (pos[1] + buffer)) + "px" : "50vh";
@@ -18,6 +18,7 @@
 
     function cancelAnnotationEntry() {
         mapState.annotationSave = false;
+        oncancel?.();
     }
 
     function processAnnotationSubmission() {

@@ -600,7 +600,7 @@
       pos={annotationEntryCoords}
       featureExtent={annotationExtentCoords}
       layerID={mapState.layers.overlay.id}
-      on:cancel={cancelAnnotation}
+      oncancel={cancelAnnotation}
     />
   {/if}
 
