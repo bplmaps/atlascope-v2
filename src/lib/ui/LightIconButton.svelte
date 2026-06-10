@@ -8,6 +8,7 @@
         size = "lg",
         collapsibleLabel = false,
         hideableOnMobile = false,
+        onclick,
     } = $props();
 
     let iconMargin = label === "" ? "mr-0" : "mr-2"
@@ -15,7 +16,7 @@
 
 <div class={`${hideableOnMobile ? "hidden md:block" : ""} mt-1 mr-2 relative`}>
     <button
-        on:click
+        {onclick}
         type="button"
         disabled="{disabled}"
         class="relative text-{size} bg-white border border-gray-300 rounded-md bg-white shadow-sm px-2 py-2 text-left cursor-pointer focus:outline-none hover:bg-sky-50 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"

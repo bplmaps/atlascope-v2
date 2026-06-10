@@ -69,14 +69,14 @@
         <LightIconButton
           label="Search places"
           icon={faSearchLocation}
-          on:click={() => {
+          onclick={() => {
             appState.modals.search = true;
           }}
         />
         <LightIconButton
           label="Find my location"
           icon={faLocationArrow}
-          on:click={() => {
+          onclick={() => {
             appState.modals.geolocation = true;
           }}
         />

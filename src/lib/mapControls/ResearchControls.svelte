@@ -13,14 +13,14 @@
     <LightIconButton
       label="Annotate map"
       icon={faPenToSquare}
-      on:click={() => {
+      onclick={() => {
         mapState.annotationEntry = true;
       }}
     />
     <LightIconButton
       label="Load annotations"
       icon={faMapPin}
-      on:click={() => {
+      onclick={() => {
         mapState.annotationRead = true;
       }}
     />
@@ -30,7 +30,7 @@
         label={f.name}
         icon={faMagnifyingGlassArrowRight}
         hideableOnMobile={f.hiddenOnMobile}
-        on:click={() => {
+        onclick={() => {
           let url = f.searchFunction(mapState.extent);
           window.open(url);
         }}

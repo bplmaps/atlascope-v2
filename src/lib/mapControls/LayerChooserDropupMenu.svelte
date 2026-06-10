@@ -118,7 +118,7 @@
       aria-labelledby="listbox-label"
       aria-activedescendant="listbox-option-3"
     >
-      {#each choices as choice}
+      {#each choices as choice (choice.id)}
         <li
           class="text-gray-800 {currentLayer && choice.id === currentLayer.id ? 'bg-slate-100' : ''} cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
           role="option"

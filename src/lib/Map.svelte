@@ -520,7 +520,7 @@
     draggingFlag = false;
   }}
 >
-  <div id="map-div" />
+  <div id="map-div"></div>
 
   <div
     id="drag-handle"
@@ -587,7 +587,7 @@
         Click once to begin drawing a box, then click again to finish.
       </p>
       <LightIconButton
-        on:click={disableAnnotationMode}
+        onclick={disableAnnotationMode}
         icon={faStopCircle}
         label="Stop annotating"
         size="sm"

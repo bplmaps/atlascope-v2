@@ -110,7 +110,7 @@
               label="Start tour"
               size="lg"
               icon={faArrowCircleRight}
-              on:click={tourStepForward}
+              onclick={tourStepForward}
             />
           </div>
         {:else}
@@ -166,7 +166,7 @@
                 size="md"
                 icon={faLink}
                 collapsibleLabel={true}
-                on:click={() => {
+                onclick={() => {
                   navigator.clipboard.writeText(shareUrl);
                   window.alert("Link copied to clipboard");
                 }}
@@ -202,7 +202,7 @@
               label="Back to the beginning"
               size="xs"
               icon={faArrowsTurnToDots}
-              on:click={startOver}
+              onclick={startOver}
             />{/if}
         {/if}
       </div>

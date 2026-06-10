@@ -100,7 +100,7 @@
           <LightIconButton
             label={button.text}
             icon={button.icon}
-            on:click={() => {
+            onclick={() => {
               appState.modals.splash = false;
               button.action();
             }}
@@ -144,7 +144,7 @@
         icon={faQuestionCircle}
         label="About & Credits"
         size="sm"
-        on:click={() => {
+        onclick={() => {
           window.open(instanceVariables.aboutPage);
         }}
       />

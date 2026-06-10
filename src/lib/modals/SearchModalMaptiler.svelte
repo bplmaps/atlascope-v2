@@ -109,7 +109,7 @@
       {#if results && results.length > 0}
         <div>
           <ul>
-            {#each results as result}
+            {#each results as result (result.id || result.place_name)}
               <li>
                 <button
                   class="text-left text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"

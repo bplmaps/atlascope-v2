@@ -26,5 +26,5 @@
     {:else if appState.modals.tourList}
         <TourListModal />
     {/if}
-    <ModalCloserButton on:click={closeAllModals} />
+    <ModalCloserButton onclick={closeAllModals} />
 </div>
