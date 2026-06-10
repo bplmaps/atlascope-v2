@@ -19,6 +19,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     /**
+     * This is a plain-JS codebase; newer svelte-check versions
+     * default to strict, which floods JS files with
+     * implicit-any errors. Keep the pre-upgrade behavior.
+     */
+    "strict": false,
+    /**
      * Typecheck JS in `.svelte` and `.js` files by default.
      * Disable this if you'd like to use dynamic types.
      */
