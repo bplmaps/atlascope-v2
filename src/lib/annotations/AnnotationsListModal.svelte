@@ -19,11 +19,19 @@
 
 
     <div class="max-h-28 lg:max-h-44 overflow-y-scroll">
-    {#each annotationsList as a, i (a.id)}
-
-    <div class="py-2 px-3 border-t text-sm hover:bg-amber-50 text-gray-600 hover:text-gray-900 cursor-pointer {activeAnnotation===i ? 'bg-amber-100' : 'truncate'}" onclick={()=>{activeAnnotation=i; moveMapToAnnotation(i)} }>{a.body}</div>
-
-    {/each}
+      {#each annotationsList as a, i (a.id)}
+        <div
+          class="py-2 px-3 border-t text-sm hover:bg-amber-50 text-gray-600 hover:text-gray-900 cursor-pointer {activeAnnotation===i ? 'bg-amber-100' : 'truncate'}"
+          onclick={() => {
+            if (a.annotations === false) {
+              mapState.annotationEntry = true;
+            } else {
+              activeAnnotation = i;
+              moveMapToAnnotation(i);
+            }
+          }}
+        >{a.body}</div>
+      {/each}
     </div>
 
     <div class="p-3 bg-gray-100 flex">

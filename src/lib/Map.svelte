@@ -140,9 +140,19 @@
 
   function loadAnnotations() {
     loadedAnnotationsList = [];
-    annotations.loadWithinCurrentExtent((annotation) => {
-      loadedAnnotationsList = [...loadedAnnotationsList, annotation];
-    });
+    annotations.loadWithinCurrentExtent(
+      (annotation) => {
+        loadedAnnotationsList = [...loadedAnnotationsList, annotation];
+      },
+      () => {
+        loadedAnnotationsList = [
+          {
+            body: "No annotations here yet. Click here to add one!",
+            annotations: false,
+          },
+        ];
+      },
+    );
   }
 
   const closeAnnotationListModal = () => {
@@ -247,6 +257,7 @@
     onclick={() => {
       appState.tour.active = false;
       appState.modals.splash = true;
+      closeAnnotationListModal();
     }}
     class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3 hover:bg-gray-50 hover:ring-2 hover:ring-red-200"
   >
