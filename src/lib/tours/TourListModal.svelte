@@ -2,7 +2,6 @@
   import Fa from "svelte-fa";
 
   import {
-    faArrowCircleRight,
     faCircleArrowRight,
     faHiking,
   } from "@fortawesome/free-solid-svg-icons";
@@ -31,11 +30,12 @@
 
 <section id="search-modal">
   <div class="modal-outer">
-    <div class="modal-inner relative w-full">
-      <h1 class="text-xl font-bold mb-3">
+    <div class="modal-inner relative w-full md:w-[60%] mx-auto">
+      <h1
+        class="sticky absolute top-0 left-0 right-0 bg-white/90 text-xl font-bold p-4"
+      >
         <Fa icon={faHiking} class="inline mr-2" />Take a tour
       </h1>
-
       {#if loadingFlag}
         <div class="text-center text-gray-600 w-full p-5">
           <div>
@@ -59,7 +59,7 @@
           Loading tours ...
         </div>
       {:else}
-        <div>
+        <div class="px-5">
           <ul>
             {#each tours as tour (tour.id)}
               {#if tour?.metadataJson?.title}
@@ -80,6 +80,11 @@
           </ul>
         </div>
       {/if}
+      <div class="text-gray-700 bg-gray-100 px-8 py-8 italic text-sm">
+        <a class="underline text-red-900" href="mailto:frontdesk@leventhalmap.org"
+          >Get in touch</a
+        > to learn how you can write your own Atlascope tour
+      </div>
     </div>
   </div>
 </section>
@@ -100,7 +105,8 @@
   .modal-inner {
     background-color: white;
     border-radius: 5px;
-    padding: 20px;
     min-height: 200px;
+    max-height: 500px;
+    overflow-y: auto;
   }
 </style>

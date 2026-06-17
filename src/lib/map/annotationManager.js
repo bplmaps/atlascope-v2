@@ -68,9 +68,14 @@ export function createAnnotationManager({ getMap, getView, changeLayer, onDrawEn
   }
 
   // Fetches annotations within the current view extent, invoking
-  // `onAnnotation` for each one as it arrives
-  function loadWithinCurrentExtent(onAnnotation) {
+  // `onAnnotation` for each one as it arrives. If the extent contains no
+  // annotations, `onEmpty` is called instead.
+  function loadWithinCurrentExtent(onAnnotation, onEmpty) {
     getAnnotationsWithinExtent(getView().calculateExtent()).then((d) => {
+      if (d.length === 0) {
+        onEmpty?.();
+        return;
+      }
       d.forEach((x) => {
         getSingleAnnotation(x.id).then(onAnnotation);
       });

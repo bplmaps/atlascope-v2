@@ -1,5 +1,4 @@
 <script>
-  import Fa from "svelte-fa";
   import {
     faLocationArrow,
     faSearchLocation,
