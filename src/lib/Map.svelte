@@ -15,6 +15,7 @@
   import "ol/ol.css";
   import { Map, View } from "ol";
   import TileLayer from "ol/layer/Tile";
+  import { WarpedMapLayer } from "@allmaps/openlayers";
   import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
   import VectorSource from "ol/source/Vector";
   import VectorLayer from "ol/layer/Vector";
@@ -34,6 +35,13 @@
     base: new TileLayer(),
     overlay: new TileLayer(),
   };
+  // Custom Allmaps maps are only allowed on the base slot (the base is never
+  // canvas-clipped by the glass/swipe view modes, so a WebGL2 WarpedMapLayer
+  // renders correctly there).
+  let warpedLayers = {
+    base: new WarpedMapLayer(),
+  };
+  warpedLayers.base.setVisible(false);
 
   let opacitySliderValue = $state(50);
   let dragXY = $state([0, 0]);
@@ -45,7 +53,7 @@
     minZoom: 14,
   });
 
-  const changeLayer = createLayerSwitcher(olLayers);
+  const changeLayer = createLayerSwitcher(olLayers, warpedLayers);
 
   let loadedAnnotationsList = $state([]);
   let annotationEntryCoords = $state([0, 0]);
@@ -172,6 +180,7 @@
       view: view,
       layers: [
         olLayers.base,
+        warpedLayers.base,
         olLayers.overlay,
         annotations.loadedLayer,
         markerLayer,
@@ -204,6 +213,8 @@
       view,
       markerSource: markerGeometrySource,
       changeLayer,
+      warpedLayers,
+      olLayers,
     });
 
     const handleKeydown = (event) => {
