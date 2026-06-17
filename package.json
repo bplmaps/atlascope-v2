@@ -19,6 +19,7 @@
     "vite": "^8.0.16"
   },
   "dependencies": {
+    "@allmaps/openlayers": "^1.0.0-beta.86",
     "@fontsource-variable/inter": "^5.2.8",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@humanspeak/svelte-markdown": "^1.6.0",
@@ -26,6 +27,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@turf/turf": "^7.3.5",
     "ol": "^10.9.0",
+    "proj4": "^2.20.9",
     "svelte-fa": "^4.0.4",
     "tailwindcss": "^4.3.0",
     "topojson-client": "^3.1.0"

@@ -2,6 +2,7 @@
     import Splash from "./Splash.svelte";
     import SearchModalMaptiler from "./SearchModalMaptiler.svelte";
     import BibliographicInfoModal from "./BibliographicInfoModal.svelte";
+    import AllmapsUrlModal from "./AllmapsUrlModal.svelte";
     import TourListModal from "../tours/TourListModal.svelte";
 
     import ModalCloserButton from "./ModalCloserButton.svelte";
@@ -25,6 +26,8 @@
         <BibliographicInfoModal />
     {:else if appState.modals.tourList}
         <TourListModal />
+    {:else if appState.modals.allmaps}
+        <AllmapsUrlModal />
     {/if}
     <ModalCloserButton onclick={closeAllModals} />
 </div>
