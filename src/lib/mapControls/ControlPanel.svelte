@@ -30,6 +30,12 @@
 
   let referenceLayers = $derived(allLayers.layers.filter(feature => feature.geometry === null));
 
+  let visibleLayerCount = $derived(
+    allLayers.layers.filter(
+      (layer) => allLayers.visibility[layer.properties.identifier] > 0.2,
+    ).length,
+  );
+
   const showHideControls = (e) => {
     panelShown = panelShown === e ? null : e;
   };
@@ -43,7 +49,7 @@
 </script>
 
 <section>
-  {#if allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length === 0 && delayed}
+  {#if visibleLayerCount === 0 && delayed}
     <div
       class="w-2/3 mx-auto bg-orange-100/90 text-rose-900 py-2 px-5 rounded drop-shadow mb-4 font-semibold text-center"
     >
@@ -75,7 +81,7 @@
     <div
       class="control-tab mr-2 select-none"
       class:control-tab-active={cg.id === panelShown}
-      on:click={() => {
+      onclick={() => {
         showHideControls(cg.id);
       }}
     >
@@ -83,7 +89,7 @@
       {#if cg.id === "layer-controls"}
         <span
           class="bg-green-800 text-gray-200 text-s ml-2 mr-1 px-1.5 py-0.5 rounded"
-          >{allLayers.layers.filter((layer) => layer.extentVisible > 0.2).length - referenceLayers.length}</span
+          >{visibleLayerCount - referenceLayers.length}</span
         >
       {/if}
       <span class="hidden md:inline control-tab-label">{cg.name}</span>

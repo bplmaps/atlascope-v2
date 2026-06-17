@@ -3,7 +3,7 @@
     import { writeAnnotation } from "../helpers/supabaseFunctions";
     import { mapState } from "../state.svelte.js";
 
-    const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID } = $props();
+    const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID, oncancel } = $props();
     const buffer = -15;
 
     let topPos = window.innerWidth > 768 ? Math.min((window.innerHeight - 300), (pos[1] + buffer)) + "px" : "50vh";
@@ -18,6 +18,7 @@
 
     function cancelAnnotationEntry() {
         mapState.annotationSave = false;
+        oncancel?.();
     }
 
     function processAnnotationSubmission() {
@@ -84,7 +85,10 @@
                     class="flex items-center py-2 px-3 border-t"
                 >
                     <button
-                        on:click|preventDefault={processAnnotationSubmission}
+                        onclick={(e) => {
+                            e.preventDefault();
+                            processAnnotationSubmission();
+                        }}
                         disabled={processing}
                         type="submit"
                         class="inline-flex items-center py-2 px-3 mr-2 text-sm border border-blue-900 text-blue-900 hover:bg-blue-50 font-medium text-center rounded-lg focus:ring-4 focus:ring-blue-200"
@@ -93,7 +97,7 @@
                     </button>
                     {#if !processing}
                         <button
-                            on:click={cancelAnnotationEntry}
+                            onclick={cancelAnnotationEntry}
                             class="inline-flex items-center py-2 px-3 mr-2 text-sm border border-red-900 text-red-900 hover:bg-red-50 font-medium text-center rounded-lg focus:ring-4 focus:ring-blue-200"
                         >
                             Cancel

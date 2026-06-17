@@ -91,14 +91,14 @@
         <LightIconButton
           label="Share app"
           icon={faMobileAlt}
-          on:click={() => {
+          onclick={() => {
             navigator.share({ title: "Atlascope", url: shareURLs.app });
           }}
         />
         <LightIconButton
           label="Share view"
           icon={faStreetView}
-          on:click={() => {
+          onclick={() => {
             navigator.share({ title: "Atlascope", url: shareURLs.view });
           }}
         />

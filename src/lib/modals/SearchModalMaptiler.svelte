@@ -1,3 +1,10 @@
+<script module>
+  // The dissolved-footprints GeoJSON gates searching; the modal is
+  // re-mounted on every open, so cache the fetch at module level to load
+  // it once per session instead of once per open
+  let footprintsPromise;
+</script>
+
 <script>
   import Fa from "svelte-fa";
   import {
@@ -8,8 +15,8 @@
   import instanceVariables from "../../config/instance.json";
   import { insideChecker } from "../helpers/intersector";
 
-  import { appState, mapState } from "../state.svelte";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { appState, mapState } from "../state.svelte.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   let searchText = $state("");
   let results = $state([]);
@@ -54,17 +61,19 @@
     }
   }
 
-  // load this once, and we'll prevent search from occuring before it's loaded
+  // load this once per session, and we'll prevent search from occurring before it's loaded
 
-  fetch(instanceVariables.footprintsDissolved)
+  footprintsPromise ??= fetch(instanceVariables.footprintsDissolved)
     .then((d) => d.json())
-    .then((d) => {
-      atlasExtentsGeometry = d.geometries[0];
-    });
+    .then((d) => d.geometries[0]);
+
+  footprintsPromise.then((geometry) => {
+    atlasExtentsGeometry = geometry;
+  });
 
   function handleSelection(result) {
     const [lon, lat] = result.geometry.coordinates;
-    requestChangeToMapState(mapState, {
+    applyMapState({
       center: [lon, lat],
       zoom: 17,
       dropPin: true,
@@ -109,7 +118,7 @@
       {#if results && results.length > 0}
         <div>
           <ul>
-            {#each results as result}
+            {#each results as result (result.id || result.place_name)}
               <li>
                 <button
                   class="text-left text-gray-700 ml-2 mb-1 cursor-pointer text-md hover:text-red-900 group"

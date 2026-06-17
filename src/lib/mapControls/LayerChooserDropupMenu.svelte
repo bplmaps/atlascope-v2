@@ -1,6 +1,6 @@
 <script>
   import { mapState, allLayers } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   const { layerName } = $props();
 
@@ -33,7 +33,8 @@
     allLayers.layers
       .toSorted((a, b) => a.properties.year - b.properties.year)
       .forEach((d) => {
-        if (d.extentVisible > 0.2) {
+        const pct = allLayers.visibility[d.properties.identifier];
+        if (pct > 0.2) {
           c.push({
             id: d.properties.identifier,
             title: d.properties.fallbackTitle
@@ -42,7 +43,7 @@
             subtitle: d.properties.fallbackSubtitle
               ? d.properties.fallbackSubtitle
               : d.properties.publisherShort,
-            pct: d.extentVisible,
+            pct,
           });
         }
       });
@@ -56,7 +57,7 @@
 
   function handleSelection(id) {
     poppedFlag = false;
-    requestChangeToMapState(mapState, {
+    applyMapState({
       [layerName]: id
     });
   }
@@ -118,7 +119,7 @@
       aria-labelledby="listbox-label"
       aria-activedescendant="listbox-option-3"
     >
-      {#each choices as choice}
+      {#each choices as choice (choice.id)}
         <li
           class="text-gray-800 {currentLayer && choice.id === currentLayer.id ? 'bg-slate-100' : ''} cursor-pointer select-none relative py-2 pl-3 pr-9 hover:text-red-900"
           role="option"

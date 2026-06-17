@@ -1,7 +1,7 @@
 <script>
   import Fa from "svelte-fa";
 
-  import SvelteMarkdown from "svelte-markdown";
+  import SvelteMarkdown from "@humanspeak/svelte-markdown";
   import ExternalLinkRenderer from "../helpers/ExternalLinkRenderer.svelte";
   import BibliographicBug from "../ui/BibliographicBug.svelte";
 
@@ -18,8 +18,8 @@
   } from "@fortawesome/free-solid-svg-icons";
   import LightIconButton from "../ui/LightIconButton.svelte";
 
-  import { mapState, appState } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { appState } from "../state.svelte.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   import { onMount } from "svelte";
 
@@ -42,7 +42,7 @@
 
   function goToCurrentStop() {
     let cs = tourData.stopsJson[currentStop === -1 ? 0 : currentStop];
-    requestChangeToMapState(mapState, {
+    applyMapState({
       center: cs.center,
       zoom: cs.zoom,
       viewMode: cs.viewMode,
@@ -103,7 +103,6 @@
             </div>
             <div class="p-3 grow">
               <h2 class="inline text-xl font-bold">
-                {console.log(tourData)}
                 {tourData.metadataJson.title}
               </h2>
             </div>
@@ -111,7 +110,7 @@
               label="Start tour"
               size="lg"
               icon={faArrowCircleRight}
-              on:click={tourStepForward}
+              onclick={tourStepForward}
             />
           </div>
         {:else}
@@ -167,7 +166,7 @@
                 size="md"
                 icon={faLink}
                 collapsibleLabel={true}
-                on:click={() => {
+                onclick={() => {
                   navigator.clipboard.writeText(shareUrl);
                   window.alert("Link copied to clipboard");
                 }}
@@ -203,7 +202,7 @@
               label="Back to the beginning"
               size="xs"
               icon={faArrowsTurnToDots}
-              on:click={startOver}
+              onclick={startOver}
             />{/if}
         {/if}
       </div>

@@ -33,21 +33,17 @@ export const mapState = $state({
     zoom: null,
     extent: null,
     rotation: null,
-    lockLayers: false,
-    requestedMapState: {
-      requested: false,
-      dropPin: false,
-      animate: 0,
-      viewMode: null,
-      center: null,
-      zoom: null,
-      extent: null,
-      rotation: null,
-      base: null,
-      overlay: null
-    }
+    lockLayers: false
 })
 
-export const allLayers = $state({
-    layers: []
-})
+// Layer metadata is a large array of TopoJSON features (geometries included),
+// so it's deliberately $state.raw: treated as immutable after load, replaced
+// wholesale, and never deep-proxied. Per-layer viewport coverage lives in the
+// small flat `visibility` record instead, keyed by properties.identifier and
+// rewritten once per (debounced) map move.
+class LayerStore {
+    layers = $state.raw([]);
+    visibility = $state({});
+}
+
+export const allLayers = new LayerStore();

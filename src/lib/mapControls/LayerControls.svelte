@@ -24,7 +24,7 @@
     <LightIconButton
       label="Bibliographic information"
       icon={faBookBookmark}
-      on:click={() => {
+      onclick={() => {
         appState.modals.biblio = true;
       }}
     />

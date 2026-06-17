@@ -2,14 +2,14 @@
   import Fa from "svelte-fa";
   import { faBookBookmark, faCopy } from "@fortawesome/free-solid-svg-icons";
 
-  import SvelteMarkdown from "svelte-markdown";
+  import SvelteMarkdown from "@humanspeak/svelte-markdown";
   import TileJsonUrlFetcher from "../helpers/TileJsonUrlFetcher.svelte";
 
   import { mapState, allLayers } from "../state.svelte.js";
   import instanceVariables from "../../config/instance.json";
 
   const getLayerDataById = (id) => {
-    return allLayers.layers.find((l) => l.properties.identifier === id) ? allLayers.layers.find((l) => l.properties.identifier === id) : allLayers.layers.find((l) => l.properties.identifier === id);
+    return allLayers.layers.find((l) => l.properties.identifier === id);
   }
 
   const blocks = $derived.by(() => [
@@ -30,7 +30,7 @@
       {#each blocks as block}
         <div class="p-3 m-2 bg-gray-50 rounded">
           <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
-          <p><SvelteMarkdown source={block.p.bibliographicEntry} /></p>
+          <SvelteMarkdown source={block.p.bibliographicEntry} />
 
           {#if block.p.sponsors && block.p.sponsors.length > 0}
           <p class="my-3">

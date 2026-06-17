@@ -3,8 +3,8 @@
   import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 
   import { onMount } from "svelte";
-  import { appState, mapState } from "../state.svelte.js";
-  import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+  import { appState } from "../state.svelte.js";
+  import { applyMapState } from "../map/mapActions.js";
 
   let nav;
   let status = $state("loading");
@@ -13,7 +13,7 @@
   function handleGeolocationSuccess(pos) {
     status = "found";
     statusText = "Location found";
-    requestChangeToMapState(mapState, {
+    applyMapState({
       center: [pos.coords.longitude, pos.coords.latitude],
       zoom: 17,
       dropPin: true

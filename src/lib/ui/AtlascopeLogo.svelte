@@ -1,14 +1,14 @@
 <script>
 
 import {cubicInOut} from "svelte/easing";
-import {tweened} from 'svelte/motion';
+import {Tween} from 'svelte/motion';
 import { onMount } from "svelte";
 
 const smallR = 3.4;
 const largeR = 4.9;
-const r = tweened(smallR, {easing: cubicInOut, duration: 1000});
+const r = new Tween(smallR, {easing: cubicInOut, duration: 1000});
 
-export let pulse = false;
+let { pulse = false } = $props();
 
 onMount(()=>{
   if (pulse) {
@@ -36,7 +36,7 @@ onMount(()=>{
         <path class="cls-2" d="M77.25,11.99V3.26h6.29v1.91h-3.92v1.5h3.6v1.91h-3.6v1.5h3.9v1.91h-6.27Z"/>
         <g>
           <rect class="cls-2" x="56.4" width="10.54" height="15.25"/>
-          <circle class="cls-1" cx="61.67" cy="7.62" r="{$r}"/>
+          <circle class="cls-1" cx="61.67" cy="7.62" r={r.current}/>
         </g>
       </svg>
 </div>

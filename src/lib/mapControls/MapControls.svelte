@@ -5,7 +5,7 @@
     import { faPlus, faMinus, faRotateRight, faSearchLocation, faLocationArrow, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
     import { mapState, appState } from "../state.svelte.js";
-    import { requestChangeToMapState } from "../helpers/mapHelpers.js";
+    import { applyMapState } from "../map/mapActions.js";
 </script>
 
 <div>
@@ -18,7 +18,7 @@
         <div class="mt-1 mr-3 inline-flex rounded-md shadow-sm" role="group">
           <button
             onclick={() => {
-              requestChangeToMapState(mapState, {
+              applyMapState({
                 zoom: mapState.zoom + 1,
                 animate: 600
               });
@@ -30,7 +30,7 @@
           </button>
           <button
             onclick={() => {
-              requestChangeToMapState(mapState, {
+              applyMapState({
                 zoom: mapState.zoom - 1,
                 animate: 600
               });
@@ -42,7 +42,7 @@
           </button>
           <button
             onclick={() => {
-              requestChangeToMapState(mapState, {
+              applyMapState({
                 rotation: mapState.rotation + 0.5 * Math.PI,
                 animate: 600
               });
@@ -54,7 +54,7 @@
           </button>
           <button
             onclick={() => {
-              requestChangeToMapState(mapState, {
+              applyMapState({
                 rotation: 0,
                 animate: 600
               });
@@ -69,14 +69,14 @@
         <LightIconButton
           label="Search places"
           icon={faSearchLocation}
-          on:click={() => {
+          onclick={() => {
             appState.modals.search = true;
           }}
         />
         <LightIconButton
           label="Find my location"
           icon={faLocationArrow}
-          on:click={() => {
+          onclick={() => {
             appState.modals.geolocation = true;
           }}
         />

@@ -1,4 +1,5 @@
 import * as topojson from "topojson-client";
+import bbox from "@turf/bbox";
 import instanceVariables from "../../config/instance.json";
 
 export function parseUrlParams(initialUrl) {
@@ -25,7 +26,15 @@ export async function fetchLayerData() {
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
-        return al;s
+        // Precompute each footprint's bounding box once, so per-move
+        // visibility checks can skip the full polygon intersection for
+        // layers nowhere near the viewport
+        al.forEach((f) => {
+          if (f.geometry) {
+            f.bbox = bbox(f.geometry);
+          }
+        });
+        return al;
       })
       .catch(() => {
         window.alert(

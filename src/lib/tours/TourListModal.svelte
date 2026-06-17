@@ -61,7 +61,7 @@
       {:else}
         <div>
           <ul>
-            {#each tours as tour}
+            {#each tours as tour (tour.id)}
               {#if tour?.metadataJson?.title}
                 <li
                   onclick={() => {
