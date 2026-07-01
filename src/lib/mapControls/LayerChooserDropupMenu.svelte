@@ -1,8 +1,11 @@
 <script>
-  import { mapState, allLayers } from "../state.svelte.js";
+  import { mapState, allLayers, appState } from "../state.svelte.js";
   import { applyMapState } from "../map/mapActions.js";
+  import { isCustomLayer } from "../map/layerSwitching.js";
 
   const { layerName } = $props();
+
+  const CUSTOM_ALLMAPS_ID = "allmaps-custom";
 
   let poppedFlag = $state(false);
   const customLayerNamesByViewMode = {
@@ -47,6 +50,17 @@
           });
         }
       });
+
+    // Custom Allmaps layers are only supported on the base slot.
+    if (layerName === "base") {
+      c.push({
+        id: CUSTOM_ALLMAPS_ID,
+        title: "Allmaps",
+        subtitle: "Load annotation ...",
+        custom: true,
+      });
+    }
+
     return c;
   });
 
@@ -54,9 +68,16 @@
     return choices.find((d) => d.id === mapState.layers[layerName].id);
   });
 
+  let showingCustom = $derived(isCustomLayer(layerName));
+
 
   function handleSelection(id) {
     poppedFlag = false;
+    if (id === CUSTOM_ALLMAPS_ID) {
+      appState.allmapsTargetSlot = layerName;
+      appState.modals.allmaps = true;
+      return;
+    }
     applyMapState({
       [layerName]: id
     });
@@ -77,8 +98,12 @@
     >
       <span class="flex items-center">
         <span class="text-gray-500 mr-1 md:mr-2 font-light text-sm md:text-lg">{customLayerNamesByViewMode[mapState.viewMode][layerName]}</span>
-        {#if currentLayer && currentLayer.title}
-          
+        {#if showingCustom}
+          <div class="ml-1 block truncate text-gray-900 text-lg"
+            >Allmaps</div
+          >
+        {:else if currentLayer && currentLayer.title}
+
           <div class="ml-1 block truncate text-gray-900 text-lg"
             >{currentLayer.title}</div
           >
@@ -131,10 +156,13 @@
             {#if choice && choice.title}
               <span class="font-bold text-lg ml-1 mr-2 block"
                 >{choice.title}</span
-              ><span class="text-sm">{choice.subtitle}</span><span
-                class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
-                >{Math.round(choice.pct * 100)}%</span
-              >
+              ><span class="text-sm">{choice.subtitle}</span>
+              {#if !choice.custom}
+                <span
+                  class="ml-2 text-xs bg-slate-300 text-white rounded font-semibold py-1 px-1"
+                  >{Math.round(choice.pct * 100)}%</span
+                >
+              {/if}
             {/if}
           </div>
         </li>
