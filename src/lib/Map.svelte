@@ -197,7 +197,6 @@
       getDragXY: () => dragXY,
       getOpacity: () => opacitySliderValue,
       dragAdjuster,
-      pixelRatio: window.devicePixelRatio,
     });
     olLayers.overlay.on("prerender", viewModeHandlers.prerender);
     olLayers.overlay.on("postrender", viewModeHandlers.postrender);
