@@ -9,6 +9,13 @@
   let nav;
   let status = $state("loading");
   let statusText = $state("Finding your location ...");
+  let dismissTimeout;
+
+  function dismissAfterDelay() {
+    dismissTimeout = setTimeout(() => {
+      appState.modals.geolocation = false;
+    }, 5000);
+  }
 
   function handleGeolocationSuccess(pos) {
     status = "found";
@@ -18,14 +25,13 @@
       zoom: 17,
       dropPin: true
     });
-    setTimeout(()=>{appState.modals.geolocation = false;},5000)
+    dismissAfterDelay();
   }
 
   function handleGeolocationError() {
     status = "failed";
     statusText = "Location unavailable";
-    setTimeout(()=>{appState.modals.geolocation = false;},5000)
-
+    dismissAfterDelay();
   }
 
   onMount(() => {
@@ -40,6 +46,8 @@
     } else {
       handleGeolocationError();
     }
+
+    return () => clearTimeout(dismissTimeout);
   });
 </script>
 
