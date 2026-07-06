@@ -1,29 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
-
-// import supabase credentials
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const sb = createClient(supabaseUrl, supabaseAnonKey);
-
-// tour functions
-
-export const loadAllTours = async () => {
-  return sb
-    .from("tours")
-    .select()
-    .eq("published", true)
-    .order("id", { ascending: true });
-};
-
-export const loadSingleTour = async (ref) => {
-  return sb.from("tours").select().eq("id", ref);
-};
+import { getClient } from "../helpers/supabaseClient.js";
 
 // annotation read functions
 
 export const getAnnotationsWithinExtent = async (extent) => {
-  const { data, error } = await sb
+  const { data, error } = await getClient()
     .from("annotations")
     .select()
     .gte('max_x', extent[0])
@@ -37,7 +17,7 @@ export const getAnnotationsWithinExtent = async (extent) => {
 };
 
 export const getSingleAnnotation = async (ref) => {
-    const { data, error } = await sb.from("annotations").select().eq('id', ref);
+    const { data, error } = await getClient().from("annotations").select().eq('id', ref);
     if (error) {
         console.error(error)
       }
@@ -47,7 +27,7 @@ export const getSingleAnnotation = async (ref) => {
 // annotation write functions
 
 export const newAnnotationId = async () => {
-    const {data, error } = await sb.from("annotations").select("id").order("id", { ascending: false }).limit(1)
+    const {data, error } = await getClient().from("annotations").select("id").order("id", { ascending: false }).limit(1)
     const oldId = data[0].id
     let newId = parseInt(oldId)+100
     if (error) {
@@ -59,7 +39,7 @@ export const newAnnotationId = async () => {
 export const writeAnnotation = async (extent, body, email, layerID) => {
     const id = await newAnnotationId()
     let now = new Date().toISOString()
-    const { data, error } = await sb
+    const { data, error } = await getClient()
         .from("annotations")
         .insert(
             {
