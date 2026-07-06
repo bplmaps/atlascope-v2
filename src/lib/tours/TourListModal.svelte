@@ -11,6 +11,7 @@
   import LoadingSpinner from "../ui/LoadingSpinner.svelte";
 
   import { appState } from "../state.svelte.js";
+  import instanceVariables from "../../config/instance.json";
 
   let loadingFlag = $state(true);
   let tours = $state([]);
@@ -66,11 +67,13 @@
           </ul>
         </div>
       {/if}
-      <div class="text-gray-700 bg-gray-100 px-8 py-8 italic text-sm">
-        <a class="underline text-red-900" href="mailto:frontdesk@leventhalmap.org"
-          >Get in touch</a
-        > to learn how you can write your own Atlascope tour
-      </div>
+      {#if instanceVariables.contactEmail}
+        <div class="text-gray-700 bg-gray-100 px-8 py-8 italic text-sm">
+          <a class="underline text-red-900" href="mailto:{instanceVariables.contactEmail}"
+            >Get in touch</a
+          > to learn how you can write your own Atlascope tour
+        </div>
+      {/if}
     </div>
   </div>
 </section>

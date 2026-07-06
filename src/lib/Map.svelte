@@ -23,6 +23,7 @@
 
   import { intersector, bboxesOverlap } from "./helpers/intersector";
 
+  import instanceVariables from "../config/instance.json";
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import { registerMap, unregisterMap } from "./map/mapActions.js";
   import { createLayerSwitcher, pickBestOverlayLayer } from "./map/layerSwitching.js";
@@ -50,7 +51,7 @@
   let view = new View({
     center: fromLonLat(mapState.center),
     zoom: mapState.zoom,
-    minZoom: 14,
+    minZoom: instanceVariables.map.minZoom,
   });
 
   const changeLayer = createLayerSwitcher(olLayers, warpedLayers);
@@ -136,13 +137,13 @@
 
     // Implement a simpler check for the base layer;
     // if the current layer is less than 40% visible,
-    // just load the maptiler streets
+    // just load the instance's fallback base layer
     // (uses the visibility computed on the previous move, since the
     // debounced recompute above hasn't run yet)
 
     const baseVisible = allLayers.visibility[mapState.layers.base.id];
     if (!mapState.lockLayers && baseVisible < 0.4) {
-      changeLayer("base", "maptiler-streets")
+      changeLayer("base", instanceVariables.map.fallbackBaseLayerId)
     }
   }
 

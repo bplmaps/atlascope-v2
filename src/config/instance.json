@@ -21,6 +21,23 @@
         "overlayLayerId": "ark:/76611/al7rtfm98",
         "baseLayerId": "maptiler-streets"
     },
+    "contactEmail": "frontdesk@leventhalmap.org",
+    "map": {
+        "minZoom": 14,
+        "fallbackBaseLayerId": "maptiler-streets",
+        "tileSize512LayerIds": [
+            "maptiler-streets"
+        ]
+    },
+    "geocoder": {
+        "bbox": [
+            -73.508,
+            41.237,
+            -69.928,
+            42.886
+        ],
+        "country": "us"
+    },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
     "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
     "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/extents-dissolved.geojson",

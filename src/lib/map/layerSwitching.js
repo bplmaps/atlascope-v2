@@ -1,6 +1,7 @@
 import XYZ from "ol/source/XYZ";
 import TileJSON from "ol/source/TileJSON";
 
+import instanceVariables from "../../config/instance.json";
 import { mapState, allLayers } from "../state.svelte.js";
 
 export const getLayerDataById = (layerId) => {
@@ -36,7 +37,11 @@ export function createLayerSwitcher(olLayers, warpedLayers) {
             url: newLayer.properties.source.url,
             crossOrigin: "anonymous",
             tileSize:
-              newLayer.properties.identifier === "maptiler-streets" ? 512 : 256, // klugey hack for maptiler-streets, which is 512px tiles
+              instanceVariables.map.tileSize512LayerIds.includes(
+                newLayer.properties.identifier,
+              )
+                ? 512
+                : 256, // some tilejson basemaps (e.g. maptiler-streets) serve 512px tiles
           }),
         );
       } else if (newLayer.properties.source.type === "xyz") {
