@@ -1,7 +1,7 @@
 import intersect from "@turf/intersect";
 import bboxPolygon from "@turf/bbox-polygon";
 import area from "@turf/area";
-import { featureCollection, multiPolygon, point} from "@turf/turf";
+import { featureCollection, multiPolygon, point } from "@turf/helpers";
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 
 export const intersector = (footprint, extent) => {
