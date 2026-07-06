@@ -91,19 +91,23 @@ export function pickBestOverlayLayer(visibility) {
   const overlayVisible = visibility[mapState.layers.overlay.id];
   if (!(overlayVisible < 0.4)) return null;
 
-  const betterExists = allLayers.layers.some(
-    (d) => visibility[d.properties.identifier] > overlayVisible + 0.2,
-  );
-  if (!betterExists) return null;
+  // Single pass over the layers: note whether anything beats the current
+  // overlay by the 0.2 margin, and track the most-visible atlas layer.
+  // Strict > keeps the earliest layer in the (year-sorted) array on ties,
+  // matching the stable sort this replaced.
+  let betterExists = false;
+  let best = null;
+  let bestVisibility = -Infinity;
+  for (const d of allLayers.layers) {
+    const v = visibility[d.properties.identifier];
+    if (v > overlayVisible + 0.2) betterExists = true;
+    if (d.geometry !== null && v > bestVisibility) {
+      best = d;
+      bestVisibility = v;
+    }
+  }
+  if (!betterExists || !best) return null;
 
-  const bestNewLayer = allLayers.layers
-    .filter((d) => d.geometry !== null)
-    .sort((a, b) => {
-      return (
-        visibility[b.properties.identifier] -
-        visibility[a.properties.identifier]
-      );
-    })[0].properties.identifier;
-
+  const bestNewLayer = best.properties.identifier;
   return bestNewLayer != mapState.layers.overlay.id ? bestNewLayer : null;
 }
