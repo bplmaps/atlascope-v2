@@ -10,20 +10,29 @@
   import { onMount } from "svelte";
 
   import { mapState, allLayers } from "../state.svelte.js";
-  
+
   import ShareControls from "./ShareControls.svelte";
   import MapControls from "./MapControls.svelte";
   import LayerControls from "./LayerControls.svelte";
   import ResearchControls from "./ResearchControls.svelte";
 
   import instanceVariables from "../../config/instance.json";
+  import { annotationsEnabled } from "../../config/features.js";
+  import { bboxFunctions } from "../../config/research-connections.js";
 
+  // The Research tab only appears when the instance gives it content:
+  // annotation tools and/or external bbox search links
   let controlGroups = [
     { id: "map-controls", name: "Controls", icon: faMap },
     { id: "layer-controls", name: "Atlases", icon: faLayerGroup },
     { id: "research-controls", name: "Research", icon: faMagnifyingGlassArrowRight },
     { id: "share-controls", name: "Share", icon: faShare },
-  ];
+  ].filter(
+    (cg) =>
+      cg.id !== "research-controls" ||
+      annotationsEnabled ||
+      bboxFunctions.length > 0,
+  );
 
   let panelShown = $state(null);
   let delayed = $state();

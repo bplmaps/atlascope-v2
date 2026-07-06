@@ -1,15 +1,9 @@
 <script>
   import { onMount } from "svelte";
 
-  import Fa from "svelte-fa";
-  import { faPenToSquare, faStopCircle } from "@fortawesome/free-solid-svg-icons";
-
   import AtlascopeLogo from "./ui/AtlascopeLogo.svelte";
   import MapControls from "./mapControls/ControlPanel.svelte";
   import GeolocationModal from "./modals/GeolocationModal.svelte";
-  import AnnotationEntryForm from "./annotations/AnnotationEntryForm.svelte";
-  import AnnotationsListModal from "./annotations/AnnotationsListModal.svelte";
-  import LightIconButton from "./ui/LightIconButton.svelte";
   import DragHandle from "./map/DragHandle.svelte";
 
   import "ol/ol.css";
@@ -24,11 +18,11 @@
   import { intersector, bboxesOverlap } from "./helpers/intersector";
 
   import instanceVariables from "../config/instance.json";
+  import { annotationsEnabled } from "../config/features.js";
   import { mapState, appState, allLayers } from "./state.svelte.js";
   import { registerMap, unregisterMap } from "./map/mapActions.js";
   import { createLayerSwitcher, pickBestOverlayLayer } from "./map/layerSwitching.js";
   import { createViewModeHandlers } from "./map/viewModeRendering.js";
-  import { createAnnotationManager } from "./map/annotationManager.js";
   import { exportMapImage } from "./map/exportImage.js";
 
   let map;
@@ -56,19 +50,10 @@
 
   const changeLayer = createLayerSwitcher(olLayers, warpedLayers);
 
-  let loadedAnnotationsList = $state([]);
-  let annotationEntryCoords = $state([0, 0]);
-  let annotationExtentCoords = $state(null);
-
-  const annotations = createAnnotationManager({
-    getMap: () => map,
-    getView: () => view,
-    changeLayer,
-    onDrawEnd: (extent, pixel) => {
-      annotationExtentCoords = extent;
-      annotationEntryCoords = pixel;
-    },
-  });
+  // The user-annotation feature is optional per instance; its component
+  // (map wiring + UI) is only fetched when the flag is on, keeping
+  // annotation code out of the bundle for instances that disable it
+  let MapAnnotations = $state(null);
 
   let markerGeometrySource = new VectorSource({ wrapX: false });
   let markerLayer = new VectorLayer({
@@ -147,32 +132,6 @@
     }
   }
 
-  function loadAnnotations() {
-    loadedAnnotationsList = [];
-    annotations.loadWithinCurrentExtent(
-      (annotation) => {
-        loadedAnnotationsList = [...loadedAnnotationsList, annotation];
-      },
-      () => {
-        loadedAnnotationsList = [
-          {
-            body: "No annotations here yet. Click here to add one!",
-            annotations: false,
-          },
-        ];
-      },
-    );
-  }
-
-  const closeAnnotationListModal = () => {
-    annotations.clearLoaded();
-    loadedAnnotationsList = [];
-  };
-
-  function moveMapToAnnotation(d) {
-    annotations.showAnnotation(loadedAnnotationsList[d]);
-  }
-
   // We wait to initialize the main `map` object until the Svelte module has mounted, otherwise we won't have a sized element in the DOM onto which to bind it
   onMount(() => {
     map = new Map({
@@ -183,7 +142,6 @@
         olLayers.base,
         warpedLayers.base,
         olLayers.overlay,
-        annotations.loadedLayer,
         markerLayer,
       ],
     });
@@ -207,6 +165,12 @@
     dragXY = [window.innerWidth / 4, window.innerHeight / 4];
     mapMoved();
     mapState.mounted = true;
+
+    if (annotationsEnabled) {
+      import("./annotations/MapAnnotations.svelte").then((m) => {
+        MapAnnotations = m.default;
+      });
+    }
 
     registerMap({
       map,
@@ -236,20 +200,6 @@
     };
   });
 
-  $effect(() => {
-    if (mapState.annotationEntry) {
-      annotations.enableEntryMode();
-    } else {
-      annotations.disableEntryMode();
-    }
-  });
-
-  $effect(() => {
-    if (mapState.annotationRead) {
-      loadAnnotations();
-      mapState.annotationRead = false;
-    }
-  });
 </script>
 
 <section id="map">
@@ -268,7 +218,6 @@
     onclick={() => {
       appState.tour.active = false;
       appState.modals.splash = true;
-      closeAnnotationListModal();
     }}
     class="absolute top-0 w-24 left-5 bg-white p-2 rounded-b-lg cursor-pointer transition-all drop-shadow hover:pt-3 hover:bg-gray-50 hover:ring-2 hover:ring-red-200"
   >
@@ -283,43 +232,11 @@
     </div>
   {/if}
 
-  {#if mapState.annotationEntry}
-    <div
-      class="absolute top-5 right-5 max-w-xs bg-slate-100 py-3 px-4 rounded shadow"
-    >
-      <strong
-        ><Fa icon={faPenToSquare} class="inline mr-2" /> Annotation mode enabled</strong
-      >
-      <p class="text-sm">
-        Click once to begin drawing a box, then click again to finish.
-      </p>
-      <LightIconButton
-        onclick={annotations.disableEntryMode}
-        icon={faStopCircle}
-        label="Stop annotating"
-        size="sm"
-      />
-    </div>
+  {#if MapAnnotations && mapState.mounted}
+    <MapAnnotations getMap={() => map} getView={() => view} {changeLayer} />
   {/if}
 
-  {#if mapState.annotationSave}
-    <AnnotationEntryForm
-      pos={annotationEntryCoords}
-      featureExtent={annotationExtentCoords}
-      layerID={mapState.layers.overlay.id}
-      oncancel={annotations.cancelEntry}
-    />
-  {/if}
-
-  {#if loadedAnnotationsList.length > 0}
-    <AnnotationsListModal
-      annotationsList={loadedAnnotationsList}
-      {closeAnnotationListModal}
-      {moveMapToAnnotation}
-    />
-  {/if}
-
-  {#if !mapState.annotationEntry && loadedAnnotationsList.length === 0 && !appState.tour.active}
+  {#if !mapState.annotationEntry && !mapState.annotationsListShowing && !appState.tour.active}
     <MapControls />
   {/if}
 </section>

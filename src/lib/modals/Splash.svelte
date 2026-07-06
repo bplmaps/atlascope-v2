@@ -12,6 +12,7 @@
   import { appState, allLayers } from "../state.svelte.js";
   import { applyMapState } from "../map/mapActions.js";
   import instanceVariables from "../../config/instance.json";
+  import { toursEnabled } from "../../config/features.js";
 
   import AtlascopeLogo from "../ui/AtlascopeLogo.svelte";
   import LightIconButton from "../ui/LightIconButton.svelte";
@@ -56,7 +57,7 @@
         });
       },
     },
-  ];
+  ].filter((button) => button.id !== "tour" || toursEnabled);
 
   const coverageData = instanceVariables.coverageDescriptiveList;
 </script>

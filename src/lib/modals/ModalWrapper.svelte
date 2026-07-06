@@ -3,11 +3,22 @@
     import SearchModalMaptiler from "./SearchModalMaptiler.svelte";
     import BibliographicInfoModal from "./BibliographicInfoModal.svelte";
     import AllmapsUrlModal from "./AllmapsUrlModal.svelte";
-    import TourListModal from "../tours/TourListModal.svelte";
 
     import ModalCloserButton from "./ModalCloserButton.svelte";
 
+    import { toursEnabled } from "../../config/features.js";
     import { appState } from "../state.svelte.js";
+
+    // The tour list is optional per instance; fetch it the first time the
+    // modal is opened rather than bundling it
+    let TourListModal = $state(null);
+    $effect(() => {
+        if (appState.modals.tourList && toursEnabled && !TourListModal) {
+            import("../tours/TourListModal.svelte").then((m) => {
+                TourListModal = m.default;
+            });
+        }
+    });
 
     function closeAllModals() {
         Object.keys(appState.modals).forEach((key) => {
@@ -24,7 +35,7 @@
         <SearchModalMaptiler />
     {:else if appState.modals.biblio}
         <BibliographicInfoModal />
-    {:else if appState.modals.tourList}
+    {:else if appState.modals.tourList && TourListModal}
         <TourListModal />
     {:else if appState.modals.allmaps}
         <AllmapsUrlModal />

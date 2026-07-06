@@ -21,6 +21,10 @@
         "overlayLayerId": "ark:/76611/al7rtfm98",
         "baseLayerId": "maptiler-streets"
     },
+    "features": {
+        "annotations": true,
+        "tours": true
+    },
     "contactEmail": "frontdesk@leventhalmap.org",
     "map": {
         "minZoom": 14,
