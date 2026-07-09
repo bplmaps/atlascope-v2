@@ -1,6 +1,6 @@
 <script>
 
-    import { writeAnnotation } from "../helpers/supabaseFunctions";
+    import { writeAnnotation } from "./annotationFunctions.js";
     import { mapState } from "../state.svelte.js";
 
     const { pos = [0, 0], featureExtent = [0, 0, 0, 0], layerID, oncancel } = $props();

@@ -14,18 +14,25 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
-    "svelte": "^5.56.3",
-    "svelte-check": "^4.6.0",
-    "vite": "^8.0.16"
+    "svelte": "^5.56.4",
+    "svelte-check": "^4.7.1",
+    "vite": "^8.1.3"
   },
   "dependencies": {
+    "@allmaps/openlayers": "^1.0.0-beta.86",
     "@fontsource-variable/inter": "^5.2.8",
-    "@fortawesome/free-solid-svg-icons": "^7.2.0",
-    "@humanspeak/svelte-markdown": "^1.6.0",
-    "@supabase/supabase-js": "^2.108.1",
-    "@tailwindcss/vite": "^4.3.0",
-    "@turf/turf": "^7.3.5",
+    "@fortawesome/free-solid-svg-icons": "^7.3.0",
+    "@humanspeak/svelte-markdown": "^1.6.5",
+    "@supabase/supabase-js": "^2.110.0",
+    "@tailwindcss/vite": "^4.3.2",
+    "@turf/area": "^7.3.5",
+    "@turf/bbox": "^7.3.5",
+    "@turf/bbox-polygon": "^7.3.5",
+    "@turf/boolean-point-in-polygon": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
+    "@turf/intersect": "^7.3.5",
     "ol": "^10.9.0",
+    "proj4": "^2.20.9",
     "svelte-fa": "^4.0.4",
     "tailwindcss": "^4.3.0",
     "topojson-client": "^3.1.0"

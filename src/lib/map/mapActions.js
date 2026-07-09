@@ -3,6 +3,7 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 
 import { mapState } from "../state.svelte.js";
+import { loadAllmapsLayer } from "./layerSwitching.js";
 
 // Non-reactive references to the live OpenLayers objects, registered by
 // Map.svelte on mount. A request made before the map exists is held
@@ -22,6 +23,17 @@ export function registerMap(instances) {
 
 export function unregisterMap() {
   registered = null;
+}
+
+// Loads a parsed Allmaps annotation onto a slot ("base"/"overlay"). The modal
+// calls this rather than touching the live map directly. Throws if the map
+// isn't registered yet or the annotation has no usable maps.
+export async function loadAllmapsAnnotation(slot, annotation, url) {
+  if (!registered) {
+    throw new Error("map not ready");
+  }
+  const { warpedLayers, olLayers } = registered;
+  await loadAllmapsLayer(warpedLayers, olLayers, slot, annotation, url);
 }
 
 // Imperatively applies a requested map state: drops a pin, switches

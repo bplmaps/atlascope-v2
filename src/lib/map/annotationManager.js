@@ -9,7 +9,7 @@ import { mapState } from "../state.svelte.js";
 import {
   getAnnotationsWithinExtent,
   getSingleAnnotation,
-} from "../helpers/supabaseFunctions";
+} from "../annotations/annotationFunctions.js";
 
 // Owns the OpenLayers sources, layers, and Draw interaction for the
 // annotation feature. Created once per Map component; `getMap`/`getView`

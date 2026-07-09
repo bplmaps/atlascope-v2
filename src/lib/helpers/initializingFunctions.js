@@ -22,7 +22,10 @@ export async function fetchLayerData() {
     let d = await fetch(instanceVariables.volumeExtentsFile)
       .then((r) => r.json())
       .then((d) => {
-        let al = topojson.feature(d, "boston-volume-extents").features;
+        // The extents file contains a single TopoJSON object whose name is
+        // an artifact of how it was generated, so take the first key rather
+        // than hardcoding an instance-specific name
+        let al = topojson.feature(d, Object.keys(d.objects)[0]).features;
         al.sort((a, b) => {
           return +a.properties.year - b.properties.year;
         });
