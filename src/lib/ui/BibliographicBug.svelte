@@ -14,7 +14,7 @@
 
 <div class="bibliographic-bug">
 <div class="inline-flex rounded-lg overflow-hidden text-md border-2 border-gray-200">
-  <div class="px-2 py-1 border-r-2 border-gray-200"><span class="font-light">Base</span> <span class="font-bold">{baseLayer.properties.year}</span></div>
-  <div class="px-2 py-1"><span class="font-light">Overlay</span> <span class="font-bold">{overlayLayer.properties.year}</span></div>
+  <div class="px-2 py-1 border-r-2 border-gray-200"><span class="font-light">Base</span> <span class="font-bold">{baseLayer ? baseLayer.properties.year : "Custom map"}</span></div>
+  <div class="px-2 py-1"><span class="font-light">Overlay</span> <span class="font-bold">{overlayLayer ? overlayLayer.properties.year : "Custom map"}</span></div>
 </div>
 </div>

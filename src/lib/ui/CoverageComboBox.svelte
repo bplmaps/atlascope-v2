@@ -13,12 +13,15 @@
       item.name.toLowerCase().includes(searchTerm.toLowerCase()),
     ),
   );
+  let newItemCount = $derived(filteredItems.filter((item) => item.new).length);
 
   async function fetchCoverage() {
     let r = await fetch(instanceVariables.coverageDescriptiveList);
     let d = await r.json();
     if (r.ok) {
-      items = d;
+      // New items sort to the top once here, so the filtered list keeps
+      // that order without re-sorting on every keystroke
+      items = d.sort((a, b) => (a.new ? -1 : b.new ? 1 : 0));
     }
   }
 
@@ -92,15 +95,13 @@
       <ul
         class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto"
       >
-        {#each filteredItems.sort( (a, b) => (a.new ? -1 : b.new ? 1 : 0), ) as item, i}
+        {#each filteredItems as item, i}
           <li
             class="px-4 py-2 text-left hover:bg-gray-200 cursor-pointer {i ===
             highlightedIndex
               ? 'bg-blue-100'
-              : ''} {item.neighborhood ? 'text-xs' : ''} {filteredItems.filter(
-              (item) => item.new,
-            ).length > 0 &&
-            i + 1 == filteredItems.filter((item) => item.new).length
+              : ''} {item.neighborhood ? 'text-xs' : ''} {newItemCount > 0 &&
+            i + 1 == newItemCount
               ? 'border-b border-gray-300 border-dotted'
               : ''}"
             onclick={() => selectItem(item)}

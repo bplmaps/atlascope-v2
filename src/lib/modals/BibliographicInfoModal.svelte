@@ -12,9 +12,16 @@
     return allLayers.layers.find((l) => l.properties.identifier === id);
   }
 
+  const buildBlock = (title, slot) => {
+    if (mapState.layers[slot].type === "allmaps") {
+      return { title, custom: true, url: mapState.layers[slot].annotationUrl };
+    }
+    return { title, p: getLayerDataById(mapState.layers[slot].id).properties };
+  };
+
   const blocks = $derived.by(() => [
-    { title: "Overlay Layer", p: getLayerDataById(mapState.layers.overlay.id).properties },
-    { title: "Base Layer", p: getLayerDataById(mapState.layers.base.id).properties }
+    buildBlock("Overlay Layer", "overlay"),
+    buildBlock("Base Layer", "base")
   ]);
 
 </script>
@@ -30,6 +37,14 @@
       {#each blocks as block}
         <div class="p-3 m-2 bg-gray-50 rounded">
           <h2 class="text-lg text-gray-800 font-semibold">{block.title}</h2>
+          {#if block.custom}
+            <p class="text-sm text-gray-700">Custom Allmaps annotation</p>
+            {#if block.url}
+              <div class="my-3 p-2 bg-gray-200 rounded shadow-inner text-sm overflow-x-auto">
+                <div class="flex"><span class="font-semibold pr-3">Annotation URL </span><span class="font-mono text-gray-700 whitespace-nowrap">{block.url}</span></div>
+              </div>
+            {/if}
+          {:else}
           <SvelteMarkdown source={block.p.bibliographicEntry} />
 
           {#if block.p.sponsors && block.p.sponsors.length > 0}
@@ -72,6 +87,7 @@
                 <TileJsonUrlFetcher tileJsonUrl={block.p.source.url} />
               {/if}
             </div>
+          {/if}
           {/if}
         </div>
       {/each}

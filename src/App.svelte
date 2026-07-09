@@ -13,11 +13,22 @@
 
   import Map from "./lib/Map.svelte";
   import ModalWrapper from "./lib/modals/ModalWrapper.svelte";
-  import TourController from "./lib/tours/TourController.svelte";
 
   import GoogleAnalytics from "./lib/helpers/GoogleAnalytics.svelte";
 
+  import { toursEnabled } from "./config/features.js";
   import { mapState, appState, allLayers } from "./lib/state.svelte.js";
+
+  // The tour player is optional per instance and only needed once a tour
+  // starts, so it's fetched on first activation rather than bundled
+  let TourController = $state(null);
+  $effect(() => {
+    if (appState.tour.active && toursEnabled && !TourController) {
+      import("./lib/tours/TourController.svelte").then((m) => {
+        TourController = m.default;
+      });
+    }
+  });
 
   // Initialization functions; parse out the initial url params and fetch the layer data
   onMount(() => {
@@ -44,7 +55,7 @@
       // If the url params are set to a share link or tour, close all modals and start a tour
       if (urlParams.view && urlParams.view === "share") {
         appState.modals.splash = false;
-      } else if (urlParams.view && urlParams.view === "tour") {
+      } else if (urlParams.view && urlParams.view === "tour" && toursEnabled) {
         appState.tour.id = urlParams.tour;
         appState.tour.active = true;
         appState.modals.splash = false;
@@ -67,11 +78,11 @@
     <Map />
   {/if}
 
-  {#if appState.tour.active}
+  {#if appState.tour.active && TourController}
     <TourController />
   {/if}
 
-  {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList}
+  {#if appState.modals.splash || appState.modals.search || appState.modals.biblio || appState.modals.tourList || appState.modals.allmaps}
     <ModalWrapper />
   {/if}
 </div>

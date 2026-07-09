@@ -6,8 +6,10 @@ export const appState = $state({
         biblio: false,
         geolocation: false,
         tourList: false,
-        about: false
+        about: false,
+        allmaps: false
     },
+    allmapsTargetSlot: null,
     tour: {
         active: false,
         id: null
@@ -18,16 +20,21 @@ export const mapState = $state({
     mounted: false,
     layers: {
       base: {
-        id: null
+        id: null,
+        type: "tile",
+        annotationUrl: null
       },
       overlay: {
-        id: null
+        id: null,
+        type: "tile",
+        annotationUrl: null
       },
     },
     viewMode: "glass",
     annotationRead: false,
     annotationEntry: false,
     annotationSave: false,
+    annotationsListShowing: false,
     layerChangePopup: false,
     center: null,
     zoom: null,

@@ -42,8 +42,13 @@
     }
     const mapTilerPlaceTypes =
       "joint_municipality,joint_submunicipality,municipality,municipal_district,locality,neighbourhood,place,postal_code,address,road,poi";
-    const bbox = "-73.508,41.237,-69.928,42.886"; // this sets a max extent of Massachusetts for the initial query
-    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${bbox}&country=us`;
+    // The instance's geocoder bbox caps the initial query region; country
+    // narrows results further and is omitted when the instance doesn't set it
+    const bbox = instanceVariables.geocoder.bbox.join(",");
+    const countryParam = instanceVariables.geocoder.country
+      ? `&country=${instanceVariables.geocoder.country}`
+      : "";
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${bbox}${countryParam}`;
 
     try {
       const res = await fetch(url);
