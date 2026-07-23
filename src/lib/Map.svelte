@@ -22,7 +22,7 @@
   import instanceVariables from "../config/instance.json";
   import { annotationsEnabled } from "../config/features.js";
   import { mapState, appState, allLayers } from "./state.svelte.js";
-  import { registerMap, unregisterMap, reloadScratchData, clearScratchData } from "./map/mapActions.js";
+  import { registerMap, unregisterMap } from "./map/mapActions.js";
   import { createLayerSwitcher, pickBestOverlayLayer } from "./map/layerSwitching.js";
   import { createViewModeHandlers } from "./map/viewModeRendering.js";
   import { exportMapImage } from "./map/exportImage.js";
@@ -57,6 +57,10 @@
   // annotation code out of the bundle for instances that disable it
   let MapAnnotations = $state(null);
 
+  // The loaded-data badge is code-split into its own chunk, fetched on mount so
+  // it's ready by the time a research data query is triggered.
+  let DataLayerBadge = $state(null);
+
   let markerGeometrySource = new VectorSource({ wrapX: false });
   let markerLayer = new VectorLayer({
     source: markerGeometrySource,
@@ -73,10 +77,11 @@
   // Each feature carries a `_label` and `_targetUrl` (both surfaced in the
   // click popup, set in mapActions.loadScratchData). Points are unlabeled on
   // the map itself and drawn as a hand-built "+" SVG marker (white halo under
-  // a rose plus for contrast over both historic and modern basemaps).
+  // an indigo plus for contrast over both historic and modern basemaps).
+  // #4338ca is Tailwind's indigo-700, matching the data-layer badge.
   const plusIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
-      <circle cx="9" cy="9" r="7.25" fill="#ffffff" stroke="rgb(180,30,90)" stroke-width="1.5"/>
-      <path d="M9 5.5 V12.5 M5.5 9 H12.5" stroke="rgb(180,30,90)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="9" cy="9" r="7.25" fill="#ffffff" stroke="#4338ca" stroke-width="1.5"/>
+      <path d="M9 5.5 V12.5 M5.5 9 H12.5" stroke="#4338ca" stroke-width="2" stroke-linecap="round"/>
     </svg>`;
   let scratchSource = new VectorSource({ wrapX: false });
   let scratchLayer = new VectorLayer({
@@ -244,6 +249,10 @@
       });
     }
 
+    import("./mapControls/DataLayerBadge.svelte").then((m) => {
+      DataLayerBadge = m.default;
+    });
+
     registerMap({
       map,
       view,
@@ -304,28 +313,8 @@
     {/if}
   </div>
 
-  {#if mapState.activeDataConnectorName}
-    <div
-      class="absolute top-10 left-1/2 -translate-x-1/2 z-20 bg-white/95 text-gray-900 py-2 px-4 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3"
-    >
-      <span class="font-semibold text-sm">
-        {mapState.scratchPointCount} point{mapState.scratchPointCount === 1
-          ? ""
-          : "s"} displayed from {mapState.activeDataConnectorName}
-      </span>
-      <button
-        class="bg-rose-700 text-white rounded px-3 py-1 text-sm font-semibold hover:bg-rose-800 cursor-pointer"
-        onclick={() => clearScratchData()}>Clear data</button
-      >
-      <button
-        class="rounded px-3 py-1 text-sm font-semibold {mapState.scratchReloadAvailable
-          ? 'bg-sky-700 text-white hover:bg-sky-800 cursor-pointer'
-          : 'bg-gray-200 text-gray-400 cursor-not-allowed'}"
-        disabled={!mapState.scratchReloadAvailable}
-        onclick={() => reloadScratchData(mapState.extent)}
-        >Reload data for this area</button
-      >
-    </div>
+  {#if DataLayerBadge}
+    <DataLayerBadge />
   {/if}
 
   <DragHandle

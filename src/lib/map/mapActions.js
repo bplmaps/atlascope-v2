@@ -102,33 +102,41 @@ export async function loadScratchData(connector, bbox) {
     return 0;
   }
   const { scratchSource } = registered;
-  const res = await fetch(connector.queryUrl(bbox));
-  const json = await res.json();
-  const features = new GeoJSON()
-    .readFeatures(json, {
-      dataProjection: "EPSG:4326",
-      featureProjection: "EPSG:3857",
-    })
-    .filter((f) => f.getGeometry()?.getType() === "Point");
 
-  features.forEach((f) => {
-    const props = f.getProperties();
-    // Guard against null/undefined AND whitespace-only labels.
-    const rawLabel = connector.label(props);
-    const label = (typeof rawLabel === "string" ? rawLabel : "").trim();
-    f.set("_label", label || "Unnamed resource");
-    f.set("_targetUrl", connector.targetUrl(props));
-  });
-
-  scratchSource.clear();
-  scratchSource.addFeatures(features);
-
+  // Surface the badge (with its spinner) immediately, before the request
+  // returns, and disable its buttons until it does.
   activeConnector = connector;
   mapState.activeDataConnectorName = connector.name;
-  mapState.scratchPointCount = features.length;
+  mapState.scratchLoading = true;
   mapState.scratchReloadAvailable = false;
 
-  return features.length;
+  try {
+    const res = await fetch(connector.queryUrl(bbox));
+    const json = await res.json();
+    const features = new GeoJSON()
+      .readFeatures(json, {
+        dataProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
+      })
+      .filter((f) => f.getGeometry()?.getType() === "Point");
+
+    features.forEach((f) => {
+      const props = f.getProperties();
+      // Guard against null/undefined AND whitespace-only labels.
+      const rawLabel = connector.label(props);
+      const label = (typeof rawLabel === "string" ? rawLabel : "").trim();
+      f.set("_label", label || "Unnamed resource");
+      f.set("_targetUrl", connector.targetUrl(props));
+    });
+
+    scratchSource.clear();
+    scratchSource.addFeatures(features);
+    mapState.scratchPointCount = features.length;
+
+    return features.length;
+  } finally {
+    mapState.scratchLoading = false;
+  }
 }
 
 // Re-runs the active dataConnector at a new bbox (invoked by the reload
@@ -145,6 +153,7 @@ export function clearScratchData() {
   registered?.scratchSource.clear();
   activeConnector = null;
   mapState.activeDataConnectorName = null;
+  mapState.scratchLoading = false;
   mapState.scratchPointCount = 0;
   mapState.scratchReloadAvailable = false;
 }
