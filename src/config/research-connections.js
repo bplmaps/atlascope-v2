@@ -27,7 +27,13 @@ export const searchConnectors = [
         urlFunction: (geo) => `https://www.digitalcommonwealth.org/search?coordinates=%5B${geo[1]}%2C${geo[0]}%20TO%20${geo[3]}%2C${geo[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Maps&spatial_search_type=bbox&view=gallery`,
     },
     {
-        name: "Historic photographs in Digital Commonwealth",
+        name: "More maps in Allmaps Explore (beta)",
+        queryType: "centerpoint",
+        hiddenOnMobile: true,
+        urlFunction: (geo) => `https://dev.explore.allmaps.org/#12/${geo[1]}/${geo[0]}`,
+    },
+    {
+        name: "Photographs in Digital Commonwealth",
         queryType: "bbox",
         hiddenOnMobile: false,
         urlFunction: (geo) => `https://www.digitalcommonwealth.org/search?coordinates=%5B${geo[1]}%2C${geo[0]}%20TO%20${geo[3]}%2C${geo[2]}%5D&spatial_search_type=bbox&view=gallery&f%5Bgenre_basic_ssim%5D%5B%5D=Photographs`,
@@ -37,12 +43,6 @@ export const searchConnectors = [
         queryType: "bbox",
         hiddenOnMobile: true,
         urlFunction: (geo) => `https://maps.massgis.digital.mass.gov/MassMapper/MassMapper.html?bl=MassGIS%20Basemap__100&l=Basemaps_L3Parcels____ON__100&b=${geo.join(",")}`,
-    },
-    {
-        name: "More maps in Allmaps Explore (beta)",
-        queryType: "centerpoint",
-        hiddenOnMobile: true,
-        urlFunction: (geo) => `https://dev.explore.allmaps.org/#12/${geo[1]}/${geo[0]}`,
     }
 ];
 
