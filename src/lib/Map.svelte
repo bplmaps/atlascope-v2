@@ -306,7 +306,7 @@
 
   {#if mapState.activeDataConnectorName}
     <div
-      class="absolute top-5 left-1/2 -translate-x-1/2 z-20 bg-white/95 text-gray-900 py-2 px-4 rounded-lg shadow-lg flex items-center gap-3"
+      class="absolute top-10 left-1/2 -translate-x-1/2 z-20 bg-white/95 text-gray-900 py-2 px-4 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3"
     >
       <span class="font-semibold text-sm">
         {mapState.scratchPointCount} point{mapState.scratchPointCount === 1

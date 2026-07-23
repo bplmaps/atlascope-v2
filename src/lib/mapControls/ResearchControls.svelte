@@ -1,11 +1,17 @@
 <script>
-
   import LightIconButton from "../ui/LightIconButton.svelte";
   import ResearchDropupMenu from "./ResearchDropupMenu.svelte";
-  import { faPenToSquare, faMapPin, faMagnifyingGlassArrowRight } from "@fortawesome/free-solid-svg-icons";
+  import {
+    faPenToSquare,
+    faMapPin,
+    faMagnifyingGlassArrowRight,
+  } from "@fortawesome/free-solid-svg-icons";
   import { mapState } from "../state.svelte.js";
   import { loadScratchData } from "../map/mapActions.js";
-  import { searchConnectors, dataConnectors } from "../../config/research-connections.js";
+  import {
+    searchConnectors,
+    dataConnectors,
+  } from "../../config/research-connections.js";
   import { annotationsEnabled } from "../../config/features.js";
 
   // Which dropup menu is open ("search" | "data" | null). Owned here so that
@@ -30,14 +36,13 @@
     if (!mapState.extent) return;
     loadScratchData(connector, mapState.extent);
   }
-
 </script>
 
 <div>
   <h2 class="md:hidden text-xl font-bold mb-2">Research</h2>
 
-  {#if annotationsEnabled}
-    <div class="flex flex-wrap mb-2">
+  <div class="flex flex-wrap items-start gap-2">
+    {#if annotationsEnabled}
       <LightIconButton
         label="Annotate map"
         icon={faPenToSquare}
@@ -52,10 +57,8 @@
           mapState.annotationRead = true;
         }}
       />
-    </div>
-  {/if}
+    {/if}
 
-  <div class="flex flex-wrap items-start gap-2">
     {#if searchConnectors.length > 0}
       <ResearchDropupMenu
         triggerLabel="Search this location for …"
