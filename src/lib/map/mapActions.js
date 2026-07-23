@@ -1,6 +1,7 @@
 import { fromLonLat } from "ol/proj";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import GeoJSON from "ol/format/GeoJSON";
 
 import { mapState } from "../state.svelte.js";
 import { loadAllmapsLayer } from "./layerSwitching.js";
@@ -11,6 +12,11 @@ import { loadAllmapsLayer } from "./layerSwitching.js";
 // URL-param handling don't lose their request.
 let registered = null;
 let pending = null;
+
+// The dataConnector definition currently rendered on the scratch layer. Kept
+// in module scope (not reactive state) because it carries functions; the UI
+// only needs its name, which lives in mapState.activeDataConnectorName.
+let activeConnector = null;
 
 export function registerMap(instances) {
   registered = instances;
@@ -83,4 +89,62 @@ export function applyMapState({
     rotation: rotation !== null ? rotation : view.getRotation(),
     duration: animate,
   });
+}
+
+// Fetches a dataConnector's GeoJSON for the given bbox ([w,s,e,n] EPSG:4326)
+// and renders its Point features on the scratch layer, replacing whatever was
+// there before. Each feature carries a `_label` (drawn on the map) and a
+// `_targetUrl` (opened from the click popup). Returns the number of points
+// rendered so the caller can report "0 results". Records the connector as the
+// active one so the view-change reload prompt knows what to re-run.
+export async function loadScratchData(connector, bbox) {
+  if (!registered || !bbox) {
+    return 0;
+  }
+  const { scratchSource } = registered;
+  const res = await fetch(connector.queryUrl(bbox));
+  const json = await res.json();
+  const features = new GeoJSON()
+    .readFeatures(json, {
+      dataProjection: "EPSG:4326",
+      featureProjection: "EPSG:3857",
+    })
+    .filter((f) => f.getGeometry()?.getType() === "Point");
+
+  features.forEach((f) => {
+    const props = f.getProperties();
+    // Guard against null/undefined AND whitespace-only labels.
+    const rawLabel = connector.label(props);
+    const label = (typeof rawLabel === "string" ? rawLabel : "").trim();
+    f.set("_label", label || "Unnamed resource");
+    f.set("_targetUrl", connector.targetUrl(props));
+  });
+
+  scratchSource.clear();
+  scratchSource.addFeatures(features);
+
+  activeConnector = connector;
+  mapState.activeDataConnectorName = connector.name;
+  mapState.scratchPointCount = features.length;
+  mapState.scratchReloadAvailable = false;
+
+  return features.length;
+}
+
+// Re-runs the active dataConnector at a new bbox (invoked by the reload
+// prompt). No-op when nothing is loaded.
+export async function reloadScratchData(bbox) {
+  if (!activeConnector) {
+    return 0;
+  }
+  return loadScratchData(activeConnector, bbox);
+}
+
+// Removes all loaded scratch data and dismisses any pending reload prompt.
+export function clearScratchData() {
+  registered?.scratchSource.clear();
+  activeConnector = null;
+  mapState.activeDataConnectorName = null;
+  mapState.scratchPointCount = 0;
+  mapState.scratchReloadAvailable = false;
 }

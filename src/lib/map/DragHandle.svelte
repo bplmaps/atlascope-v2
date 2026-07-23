@@ -81,11 +81,18 @@
     window.addEventListener("mouseup", stopDragging);
     window.addEventListener("touchend", stopDragging);
 
+    // Suppress text selection across the whole document while dragging — the
+    // window-level move listeners otherwise let the browser drag-select text
+    // on elements the pointer passes over.
+    const prevUserSelect = document.body.style.userSelect;
+    document.body.style.userSelect = "none";
+
     return () => {
       window.removeEventListener("mousemove", manipulateDrag);
       window.removeEventListener("touchmove", manipulateDrag);
       window.removeEventListener("mouseup", stopDragging);
       window.removeEventListener("touchend", stopDragging);
+      document.body.style.userSelect = prevUserSelect;
     };
   });
 </script>
@@ -97,7 +104,10 @@
     ? 'hidden'
     : ''}"
   style="left: {dragXY[0]}px; top: {dragXY[1]}px"
-  onmousedown={() => {
+  onmousedown={(e) => {
+    // Stop the browser from starting a text selection on mousedown; the
+    // window-level move listener would otherwise extend it across the page.
+    e.preventDefault();
     draggingFlag = true;
   }}
   ontouchstart={() => {

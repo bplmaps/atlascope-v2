@@ -38,11 +38,37 @@ Every instance-specific value lives here.
 
 ## 2. `src/config/research-connections.js`
 
-External bbox-driven search links shown in the Research tab. Each entry has a
-`name`, a `searchFunction(bbox)` returning a URL, and `hiddenOnMobile`.
-Replace the Boston/Massachusetts entries (Digital Commonwealth, MassMapper)
-with your region's equivalents, or export an empty array. When the array is
-empty **and** annotations are disabled, the Research tab is hidden.
+Research-tab connectors, exported as **two** arrays.
+
+`searchConnectors` — items in the "Search this location for …" dropdown. Each
+opens an external web app for the current map view. Fields:
+
+- `name` — dropdown label.
+- `queryType` — `"bbox"` or `"centerpoint"`.
+- `hiddenOnMobile` — boolean.
+- `urlFunction(geo)` — returns the URL to open. `geo` is
+  `[west, south, east, north]` (EPSG:4326) when `queryType` is `"bbox"`, or
+  `[lon, lat]` (EPSG:4326) when `queryType` is `"centerpoint"`.
+
+`dataConnectors` — items in the "Load data from …" dropdown. Each fetches
+POINT data from an API and renders it as a clickable scratch layer on the map.
+Fields:
+
+- `name` — dropdown label.
+- `hiddenOnMobile` — boolean.
+- `queryUrl(bbox)` — request URL, where `bbox` is `[west, south, east, north]`
+  (EPSG:4326). The request MUST return GeoJSON (e.g. an ArcGIS FeatureServer
+  query with `f=geojson`). Only Point geometries in the response are rendered.
+- `label(props)` — returns the text label drawn on each point.
+- `targetUrl(props)` — returns the URL the point's popup links to.
+
+For both `label` and `targetUrl`, `props` is a GeoJSON feature's `properties`
+object.
+
+Replace the Boston/Massachusetts entries (Digital Commonwealth, MassMapper,
+MACRIS) with your region's equivalents, or export an empty array to hide that
+dropdown. The Research tab is hidden only when **both** `searchConnectors` and
+`dataConnectors` are empty **and** annotations are disabled.
 
 ## 3. Environment variables (`.env`)
 

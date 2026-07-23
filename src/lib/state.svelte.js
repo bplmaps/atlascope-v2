@@ -40,7 +40,15 @@ export const mapState = $state({
     zoom: null,
     extent: null,
     rotation: null,
-    lockLayers: false
+    lockLayers: false,
+    // Name of the dataConnector currently loaded onto the scratch layer (null
+    // when none). Drives the persistent on-map badge.
+    activeDataConnectorName: null,
+    // Number of points currently displayed on the scratch layer.
+    scratchPointCount: 0,
+    // False immediately after a (re)load; set true on the first map move since,
+    // which enables the badge's "reload data for this area" button.
+    scratchReloadAvailable: false
 })
 
 // Layer metadata is a large array of TopoJSON features (geometries included),
