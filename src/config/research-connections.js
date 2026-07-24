@@ -54,8 +54,13 @@ export const dataConnectors = [
             `https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/MHC_Inventory_GDB/FeatureServer/0/query` +
             `?where=1%3D1&outFields=*&geometry=${bbox.join(",")}&geometryType=esriGeometryEnvelope` +
             `&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson`,
-        label: (props) => props.HISTORIC_N || props.COMMON_NAM || props.ADDRESS || "Unnamed resource",
-        // MHCN looks like "BOS.2624". Confirm this detail-page pattern for your instance.
+        // MACRIS returns whitespace-only strings (e.g. " ") for empty fields,
+        // which are truthy — so a plain `a || b` chain stops at the first blank
+        // field. Trim each candidate and take the first that has real content.
+        label: (props) =>
+            [props.HISTORIC_N, props.COMMON_NAM, props.ADDRESS, props.MHCN]
+                .map((v) => (typeof v === "string" ? v.trim() : ""))
+                .find((v) => v) || "Unnamed resource",
         targetUrl: (props) => `https://mhc-macris.net/details?mhcid=${props.MHCN}`,
     },
 ];
