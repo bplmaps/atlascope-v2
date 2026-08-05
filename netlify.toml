@@ -4,3 +4,11 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Pinned so `netlify dev` doesn't stop on an interactive prompt: both Vite and
+# Svelte match its framework detection, and it can't choose between them.
+[dev]
+  command = "npm run dev"
+  framework = "#custom"
+  targetPort = 5173
+  port = 8888

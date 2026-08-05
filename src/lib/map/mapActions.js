@@ -5,6 +5,7 @@ import GeoJSON from "ol/format/GeoJSON";
 
 import { mapState } from "../state.svelte.js";
 import { loadAllmapsLayer } from "./layerSwitching.js";
+import { uploadMapImage } from "./exportImage.js";
 
 // Non-reactive references to the live OpenLayers objects, registered by
 // Map.svelte on mount. A request made before the map exists is held
@@ -40,6 +41,16 @@ export async function loadAllmapsAnnotation(slot, annotation, url) {
   }
   const { warpedLayers, olLayers } = registered;
   await loadAllmapsLayer(warpedLayers, olLayers, slot, annotation, url);
+}
+
+// Uploads the current map view as a PNG and resolves with the share URL built
+// from urlTemplate. Like loadAllmapsAnnotation, this exists so UI components
+// don't have to reach for the live map themselves.
+export async function shareMapImage(urlTemplate, options) {
+  if (!registered) {
+    throw new Error("the map isn't ready yet.");
+  }
+  return uploadMapImage(registered.map, urlTemplate, options);
 }
 
 // Imperatively applies a requested map state: drops a pin, switches
