@@ -108,7 +108,7 @@
              Svelte reads `{hash}` in attribute position as an interpolation. -->
       <ExportShareButton
         label="Save and export"
-        urlTemplate={"https://www.google.com?q={hash}"}
+        urlTemplate={"https://leventhalmap.donorsupport.co/page/FUNRPRNESZF?image-id={hash}&fundraiseupLivemode=no"}
       />
     </div>
   </div>
