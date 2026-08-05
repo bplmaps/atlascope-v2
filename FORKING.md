@@ -83,6 +83,61 @@ The Supabase project needs a `tours` table (`id`, `published`,
 `email`). With both features off, no Supabase client is ever created and the
 supabase-js chunk is never fetched.
 
+### Map image sharing (`ExportShareButton`)
+
+`src/lib/mapControls/ExportShareButton.svelte` composites the map to a PNG,
+writes it to an S3-compatible bucket, and opens an outbound URL built from the
+stored object's random hash. Two props:
+
+- `urlTemplate` — the URL to open, with `{hash}` standing in for the stored
+  filename. Pass it as a JS string — `urlTemplate={"https://example.org/view/{hash}"}`
+  — not as a bare attribute, since Svelte reads `{hash}` in attribute position
+  as an interpolation.
+- `label` — the button text.
+
+Optional: `icon` (defaults to a camera), `busyLabel`, `collapsibleLabel`,
+`hideableOnMobile`. Because the template is a prop rather than instance config,
+the same button can be dropped in more than once pointing at different
+services. `MapControls.svelte` has a working example in the Controls tab.
+
+The upload is signed by `netlify/functions/sign-image-upload.js`, so these are
+**server-side** variables (set in the Netlify UI, not `VITE_`-prefixed — they
+must never reach the browser bundle):
+
+- `WASABI_ACCESS_KEY_ID`
+- `WASABI_SECRET_ACCESS_KEY`
+- `WASABI_REGION` — e.g. `us-east-2`
+- `WASABI_BUCKET`
+- `WASABI_PREFIX` — directory the images are written under
+- `ALLOWED_ORIGINS` — optional comma-separated origin allowlist, e.g.
+  `https://atlascope.org,http://localhost:8888`
+
+Unset any of the first five and the button fails with a message rather than
+half-working. Shift+Alt+E, which downloads the same composited PNG instead of
+uploading it, is unaffected and needs no configuration.
+
+The endpoint is unauthenticated, so the credential should be scoped to
+`s3:PutObject` on `<bucket>/<prefix>/*` only — no `ListBucket`, no
+`DeleteObject`, no access outside the prefix. `ALLOWED_ORIGINS` is a speed bump,
+not security. The function, not the browser, picks the object key, so callers
+can't overwrite existing objects.
+
+The bucket also needs a CORS rule, or the browser's PUT dies at the preflight:
+
+```xml
+<CORSConfiguration>
+  <CORSRule>
+    <AllowedOrigin>https://atlascope.org</AllowedOrigin>
+    <AllowedOrigin>http://localhost:8888</AllowedOrigin>
+    <AllowedMethod>PUT</AllowedMethod>
+    <AllowedHeader>Content-Type</AllowedHeader>
+  </CORSRule>
+</CORSConfiguration>
+```
+
+Local development needs `npx netlify dev` (port 8888) rather than `npm run dev`,
+since `vite` alone doesn't serve the function.
+
 ## 4. Hosted data files
 
 The three URLs in `instance.json` point at data you host (S3 or similar):

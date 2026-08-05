@@ -9,6 +9,15 @@
         "export PATH=\"$HOME/.nvm/versions/node/v22.13.0/bin:$PATH\" && npm run dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "dev-netlify",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.13.0/bin:$PATH\" && npm run dev:netlify"
+      ],
+      "port": 8888
     }
   ]
 }
