@@ -1,6 +1,5 @@
 <script>
     import ViewModeDropupMenu from "./ViewModeDropupMenu.svelte";
-    import ExportShareButton from "./ExportShareButton.svelte";
     import LightIconButton from "../ui/LightIconButton.svelte";
     import Fa from "svelte-fa";
     import { faPlus, faMinus, faRotateRight, faSearchLocation, faLocationArrow, faArrowUp } from "@fortawesome/free-solid-svg-icons";
@@ -81,11 +80,6 @@
             appState.modals.geolocation = true;
           }}
         />
-        <!-- The template must be passed as a JS string, not a bare attribute:
-             Svelte reads `{hash}` in attribute position as an interpolation. -->
-        <ExportShareButton
-          label="Share image"
-          urlTemplate={"https://www.google.com?q={hash}"}
-        />
+
       </div>
 </div>
