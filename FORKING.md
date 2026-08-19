@@ -38,11 +38,37 @@ Every instance-specific value lives here.
 
 ## 2. `src/config/research-connections.js`
 
-External bbox-driven search links shown in the Research tab. Each entry has a
-`name`, a `searchFunction(bbox)` returning a URL, and `hiddenOnMobile`.
-Replace the Boston/Massachusetts entries (Digital Commonwealth, MassMapper)
-with your region's equivalents, or export an empty array. When the array is
-empty **and** annotations are disabled, the Research tab is hidden.
+Research-tab connectors, exported as **two** arrays.
+
+`searchConnectors` — items in the "Search this location for …" dropdown. Each
+opens an external web app for the current map view. Fields:
+
+- `name` — dropdown label.
+- `queryType` — `"bbox"` or `"centerpoint"`.
+- `hiddenOnMobile` — boolean.
+- `urlFunction(geo)` — returns the URL to open. `geo` is
+  `[west, south, east, north]` (EPSG:4326) when `queryType` is `"bbox"`, or
+  `[lon, lat]` (EPSG:4326) when `queryType` is `"centerpoint"`.
+
+`dataConnectors` — items in the "Load data from …" dropdown. Each fetches
+POINT data from an API and renders it as a clickable scratch layer on the map.
+Fields:
+
+- `name` — dropdown label.
+- `hiddenOnMobile` — boolean.
+- `queryUrl(bbox)` — request URL, where `bbox` is `[west, south, east, north]`
+  (EPSG:4326). The request MUST return GeoJSON (e.g. an ArcGIS FeatureServer
+  query with `f=geojson`). Only Point geometries in the response are rendered.
+- `label(props)` — returns the text label drawn on each point.
+- `targetUrl(props)` — returns the URL the point's popup links to.
+
+For both `label` and `targetUrl`, `props` is a GeoJSON feature's `properties`
+object.
+
+Replace the Boston/Massachusetts entries (Digital Commonwealth, MassMapper,
+MACRIS) with your region's equivalents, or export an empty array to hide that
+dropdown. The Research tab is hidden only when **both** `searchConnectors` and
+`dataConnectors` are empty **and** annotations are disabled.
 
 ## 3. Environment variables (`.env`)
 
@@ -56,6 +82,61 @@ The Supabase project needs a `tours` table (`id`, `published`,
 `body`, `extent`, `layer`, `cX`, `cY`, `max_x`, `max_y`, `min_x`, `min_y`,
 `email`). With both features off, no Supabase client is ever created and the
 supabase-js chunk is never fetched.
+
+### Map image sharing (`ExportShareButton`)
+
+`src/lib/mapControls/ExportShareButton.svelte` composites the map to a PNG,
+writes it to an S3-compatible bucket, and opens an outbound URL built from the
+stored object's random hash. Two props:
+
+- `urlTemplate` — the URL to open, with `{hash}` standing in for the stored
+  filename. Pass it as a JS string — `urlTemplate={"https://example.org/view/{hash}"}`
+  — not as a bare attribute, since Svelte reads `{hash}` in attribute position
+  as an interpolation.
+- `label` — the button text.
+
+Optional: `icon` (defaults to a camera), `busyLabel`, `collapsibleLabel`,
+`hideableOnMobile`. Because the template is a prop rather than instance config,
+the same button can be dropped in more than once pointing at different
+services. `MapControls.svelte` has a working example in the Controls tab.
+
+The upload is signed by `netlify/functions/sign-image-upload.js`, so these are
+**server-side** variables (set in the Netlify UI, not `VITE_`-prefixed — they
+must never reach the browser bundle):
+
+- `WASABI_ACCESS_KEY_ID`
+- `WASABI_SECRET_ACCESS_KEY`
+- `WASABI_REGION` — e.g. `us-east-2`
+- `WASABI_BUCKET`
+- `WASABI_PREFIX` — directory the images are written under
+- `ALLOWED_ORIGINS` — optional comma-separated origin allowlist, e.g.
+  `https://atlascope.org,http://localhost:8888`
+
+Unset any of the first five and the button fails with a message rather than
+half-working. Shift+Alt+E, which downloads the same composited PNG instead of
+uploading it, is unaffected and needs no configuration.
+
+The endpoint is unauthenticated, so the credential should be scoped to
+`s3:PutObject` on `<bucket>/<prefix>/*` only — no `ListBucket`, no
+`DeleteObject`, no access outside the prefix. `ALLOWED_ORIGINS` is a speed bump,
+not security. The function, not the browser, picks the object key, so callers
+can't overwrite existing objects.
+
+The bucket also needs a CORS rule, or the browser's PUT dies at the preflight:
+
+```xml
+<CORSConfiguration>
+  <CORSRule>
+    <AllowedOrigin>https://atlascope.org</AllowedOrigin>
+    <AllowedOrigin>http://localhost:8888</AllowedOrigin>
+    <AllowedMethod>PUT</AllowedMethod>
+    <AllowedHeader>Content-Type</AllowedHeader>
+  </CORSRule>
+</CORSConfiguration>
+```
+
+Local development needs `npx netlify dev` (port 8888) rather than `npm run dev`,
+since `vite` alone doesn't serve the function.
 
 ## 4. Hosted data files
 

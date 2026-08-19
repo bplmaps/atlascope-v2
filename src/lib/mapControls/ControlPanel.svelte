@@ -18,7 +18,7 @@
 
   import instanceVariables from "../../config/instance.json";
   import { annotationsEnabled } from "../../config/features.js";
-  import { bboxFunctions } from "../../config/research-connections.js";
+  import { searchConnectors, dataConnectors } from "../../config/research-connections.js";
 
   // The Research tab only appears when the instance gives it content:
   // annotation tools and/or external bbox search links
@@ -31,7 +31,8 @@
     (cg) =>
       cg.id !== "research-controls" ||
       annotationsEnabled ||
-      bboxFunctions.length > 0,
+      searchConnectors.length > 0 ||
+      dataConnectors.length > 0,
   );
 
   let panelShown = $state(null);

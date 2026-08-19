@@ -9,11 +9,13 @@
   import "ol/ol.css";
   import { Map, View } from "ol";
   import TileLayer from "ol/layer/Tile";
+  import Overlay from "ol/Overlay";
   import { WarpedMapLayer } from "@allmaps/openlayers";
   import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
   import VectorSource from "ol/source/Vector";
   import VectorLayer from "ol/layer/Vector";
   import { Fill, Stroke, Style, Circle } from "ol/style";
+  import Icon from "ol/style/Icon";
 
   import { intersector, bboxesOverlap } from "./helpers/intersector";
 
@@ -55,6 +57,10 @@
   // annotation code out of the bundle for instances that disable it
   let MapAnnotations = $state(null);
 
+  // The loaded-data badge is code-split into its own chunk, fetched on mount so
+  // it's ready by the time a research data query is triggered.
+  let DataLayerBadge = $state(null);
+
   let markerGeometrySource = new VectorSource({ wrapX: false });
   let markerLayer = new VectorLayer({
     source: markerGeometrySource,
@@ -65,6 +71,41 @@
         fill: new Fill({ color: "rgba(255, 203, 230, 0.5)" }),
       }),
     }),
+  });
+
+  // Scratch layer holding point data loaded from a research dataConnector.
+  // Each feature carries a `_label` and `_targetUrl` (both surfaced in the
+  // click popup, set in mapActions.loadScratchData). Points are unlabeled on
+  // the map itself and drawn as a hand-built "+" SVG marker (white halo under
+  // an indigo plus for contrast over both historic and modern basemaps).
+  // #4338ca is Tailwind's indigo-700, matching the data-layer badge.
+  const plusIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+      <circle cx="9" cy="9" r="7.25" fill="#ffffff" stroke="#4338ca" stroke-width="1.5"/>
+      <path d="M9 5.5 V12.5 M5.5 9 H12.5" stroke="#4338ca" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+  let scratchSource = new VectorSource({ wrapX: false });
+  let scratchLayer = new VectorLayer({
+    source: scratchSource,
+    style: new Style({
+      image: new Icon({
+        src: "data:image/svg+xml;utf8," + encodeURIComponent(plusIconSvg),
+      }),
+    }),
+  });
+
+  // Click popup for scratch points. `popupEl` is bound to the DOM node used by
+  // an ol/Overlay; `scratchPopup` drives its reactive content.
+  let popupEl;
+  let popupOverlay;
+  let scratchPopup = $state({ visible: false, label: "", url: "" });
+
+  // Dismiss a lingering point popup when the scratch layer is cleared — its
+  // feature no longer exists on the map.
+  $effect(() => {
+    if (!mapState.activeDataConnectorName && scratchPopup.visible) {
+      scratchPopup = { visible: false, label: "", url: "" };
+      popupOverlay?.setPosition(undefined);
+    }
   });
 
   // Debounce timer for mapMoved function
@@ -92,6 +133,13 @@
         "EPSG:4326",
       );
       mapState.extent = extent;
+
+      // Loaded scratch data never auto-refreshes; the first map move after a
+      // (re)load enables the badge's "reload data for this area" button. (A
+      // fresh load doesn't move the map, so this only fires on user navigation.)
+      if (mapState.activeDataConnectorName) {
+        mapState.scratchReloadAvailable = true;
+      }
 
       const visibility = {};
       allLayers.layers.forEach((lyr) => {
@@ -143,7 +191,36 @@
         warpedLayers.base,
         olLayers.overlay,
         markerLayer,
+        scratchLayer,
       ],
+    });
+
+    // Popup overlay for scratch points, and a click handler that shows it when
+    // a scratch feature is hit (and dismisses it on an empty click).
+    popupOverlay = new Overlay({
+      element: popupEl,
+      positioning: "bottom-center",
+      offset: [0, -12],
+      stopEvent: true,
+    });
+    map.addOverlay(popupOverlay);
+
+    map.on("singleclick", (evt) => {
+      const feature = map.forEachFeatureAtPixel(evt.pixel, (f) => f, {
+        layerFilter: (l) => l === scratchLayer,
+        hitTolerance: 6,
+      });
+      if (feature) {
+        scratchPopup = {
+          visible: true,
+          label: feature.get("_label") || "",
+          url: feature.get("_targetUrl") || "",
+        };
+        popupOverlay.setPosition(evt.coordinate);
+      } else if (scratchPopup.visible) {
+        scratchPopup = { visible: false, label: "", url: "" };
+        popupOverlay.setPosition(undefined);
+      }
     });
 
     changeLayer("base", mapState.layers.base.id, true);
@@ -172,10 +249,15 @@
       });
     }
 
+    import("./mapControls/DataLayerBadge.svelte").then((m) => {
+      DataLayerBadge = m.default;
+    });
+
     registerMap({
       map,
       view,
       markerSource: markerGeometrySource,
+      scratchSource,
       changeLayer,
       warpedLayers,
       olLayers,
@@ -204,6 +286,36 @@
 
 <section id="map">
   <div id="map-div"></div>
+
+  <div
+    bind:this={popupEl}
+    class="scratch-popup {scratchPopup.visible ? '' : 'hidden'}"
+  >
+    {#if scratchPopup.visible}
+      <button
+        class="scratch-popup-close"
+        aria-label="Close"
+        onclick={() => {
+          scratchPopup = { visible: false, label: "", url: "" };
+          popupOverlay.setPosition(undefined);
+        }}>×</button
+      >
+      {#if scratchPopup.url}
+        <a
+          href={scratchPopup.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-700 font-semibold hover:underline">{scratchPopup.label}</a
+        >
+      {:else}
+        <span class="font-semibold text-gray-900">{scratchPopup.label}</span>
+      {/if}
+    {/if}
+  </div>
+
+  {#if DataLayerBadge}
+    <DataLayerBadge />
+  {/if}
 
   <DragHandle
     bind:dragXY
@@ -255,5 +367,43 @@
     width: 100%;
     height: 100%;
     margin: 0;
+  }
+
+  .scratch-popup {
+    position: relative;
+    background: white;
+    padding: 8px 26px 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    max-width: 240px;
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .scratch-popup::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid white;
+  }
+
+  .scratch-popup-close {
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .scratch-popup-close:hover {
+    color: #111827;
   }
 </style>

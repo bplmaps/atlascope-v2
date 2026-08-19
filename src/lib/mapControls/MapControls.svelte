@@ -80,5 +80,6 @@
             appState.modals.geolocation = true;
           }}
         />
+
       </div>
 </div>

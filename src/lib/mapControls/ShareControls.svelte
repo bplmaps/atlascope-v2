@@ -7,6 +7,7 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import LightIconButton from "../ui/LightIconButton.svelte";
+  import ExportShareButton from "./ExportShareButton.svelte";
 
   let showView = $state(true);
 
@@ -85,9 +86,8 @@
         >
       </div>
     </div>
-
-    {#if navigator.share}
-      <div class="flex flex-wrap mt-2">
+    <div class="flex flex-wrap mt-2">
+      {#if navigator.share}
         <LightIconButton
           label="Share app"
           icon={faMobileAlt}
@@ -102,8 +102,17 @@
             navigator.share({ title: "Atlascope", url: shareURLs.view });
           }}
         />
-      </div>
-    {/if}
+      {/if}
+
+      <!-- The template must be passed as a JS string, not a bare attribute:
+             Svelte reads `{hash}` in attribute position as an interpolation. -->
+      <!-- <ExportShareButton
+        label="Save and export"
+        urlTemplate={"https://leventhalmap.donorsupport.co/page/FUNRPRNESZF?image-id={hash}&fundraiseupLivemode=no"}
+      /> -->
+
+      
+    </div>
   </div>
 </div>
 
