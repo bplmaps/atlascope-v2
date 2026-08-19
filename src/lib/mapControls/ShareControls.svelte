@@ -106,10 +106,12 @@
 
       <!-- The template must be passed as a JS string, not a bare attribute:
              Svelte reads `{hash}` in attribute position as an interpolation. -->
-      <ExportShareButton
+      <!-- <ExportShareButton
         label="Save and export"
         urlTemplate={"https://leventhalmap.donorsupport.co/page/FUNRPRNESZF?image-id={hash}&fundraiseupLivemode=no"}
-      />
+      /> -->
+
+      
     </div>
   </div>
 </div>
