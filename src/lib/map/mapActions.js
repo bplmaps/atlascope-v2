@@ -5,7 +5,7 @@ import GeoJSON from "ol/format/GeoJSON";
 
 import { mapState } from "../state.svelte.js";
 import { loadAllmapsLayer } from "./layerSwitching.js";
-import { uploadMapImage } from "./exportImage.js";
+import { storeMapImage, uploadMapImage } from "./exportImage.js";
 
 // Non-reactive references to the live OpenLayers objects, registered by
 // Map.svelte on mount. A request made before the map exists is held
@@ -51,6 +51,18 @@ export async function shareMapImage(urlTemplate, options) {
     throw new Error("the map isn't ready yet.");
   }
   return uploadMapImage(registered.map, urlTemplate, options);
+}
+
+// Saves the current map view as a PNG in object storage and resolves with its
+// storage key. Same readiness guard and user-legible failure as shareMapImage;
+// this is the path for callers that hand the key straight to another service
+// instead of pasting it into a URL. The guard message is duplicated rather than
+// shared because it's user-facing copy, and the two buttons shouldn't drift.
+export async function saveMapImage() {
+  if (!registered) {
+    throw new Error("the map isn't ready yet.");
+  }
+  return storeMapImage(registered.map);
 }
 
 // Imperatively applies a requested map state: drops a pin, switches

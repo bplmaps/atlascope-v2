@@ -5,6 +5,8 @@
   import MapControls from "./mapControls/ControlPanel.svelte";
   import GeolocationModal from "./modals/GeolocationModal.svelte";
   import DragHandle from "./map/DragHandle.svelte";
+  // TEMPORARY fundraising campaign UI; see src/lib/fundraiser/.
+  import ShareYourWhere from "./fundraiser/ShareYourWhere.svelte";
 
   import "ol/ol.css";
   import { Map, View } from "ol";
@@ -26,6 +28,19 @@
   import { createLayerSwitcher, pickBestOverlayLayer } from "./map/layerSwitching.js";
   import { createViewModeHandlers } from "./map/viewModeRendering.js";
   import { exportMapImage } from "./map/exportImage.js";
+
+  // TEMPORARY: whether the fundraising badge shows. Hidden where it would be a
+  // visual defect rather than acceptable overlap — behind the translucent modal
+  // scrim (ModalWrapper is only bg-black/20, so it would glow through the splash
+  // screen), during a tour, and in opacity view mode, where DragHandle's
+  // #opacity-control-holder covers the top-right third of the map. The
+  // annotation and geolocation panels share this corner and simply overlap it.
+  let fundraiserVisible = $derived(
+    mapState.mounted &&
+      !Object.values(appState.modals).some(Boolean) &&
+      !appState.tour.active &&
+      mapState.viewMode !== "opacity",
+  );
 
   let map;
   let olLayers = {
@@ -346,6 +361,10 @@
 
   {#if MapAnnotations && mapState.mounted}
     <MapAnnotations getMap={() => map} getView={() => view} {changeLayer} />
+  {/if}
+
+  {#if fundraiserVisible}
+    <ShareYourWhere />
   {/if}
 
   {#if !mapState.annotationEntry && !mapState.annotationsListShowing && !appState.tour.active}

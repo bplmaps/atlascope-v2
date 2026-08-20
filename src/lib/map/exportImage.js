@@ -1,10 +1,15 @@
-// Flattens the map's layer canvases into a single PNG. Two consumers:
-// exportMapImage downloads the file (Shift+Alt+E in Map.svelte), and
-// uploadMapImage writes it to object storage and returns a share URL built
-// from the storage key (reached through shareMapImage in mapActions.js, which
-// is what ExportShareButton calls).
+// Flattens the map's layer canvases into a single PNG. Three consumers:
+// exportMapImage downloads the file (Shift+Alt+E in Map.svelte), storeMapImage
+// writes it to object storage and returns the storage key, and uploadMapImage
+// builds a share URL from that key (reached through shareMapImage in
+// mapActions.js, which is what ExportShareButton calls).
 
 const SIGN_ENDPOINT = "/.netlify/functions/sign-image-upload";
+
+// Ceiling on the rendercomplete wait in storeMapImage, so a stalled tile
+// surfaces as an error the caller can show instead of a promise that never
+// settles.
+const RENDER_TIMEOUT_MS = 20000;
 
 // Waits for the next completed render, then composites every canvas inside
 // #map-div onto one canvas, preserving each layer's opacity and transform.
@@ -101,24 +106,25 @@ export async function exportMapImage(map) {
 }
 
 // Uploads the composited image to object storage and resolves with the storage
-// hash plus the share URL built from urlTemplate, whose {hash} placeholder is
-// replaced with the storage key. onUrl fires as soon as the URL is known so
-// the caller can navigate a tab it opened up front — see the popup-blocker
-// note in ExportShareButton. Rejects with a message fit to show a user.
+// key the server chose for it. This is the primitive: callers that only need to
+// hand the key to another service use it directly, while uploadMapImage layers
+// URL building on top. Rejects with a message fit to show a user.
 /**
  * @param {import("ol").Map} map
- * @param {string} urlTemplate
- * @param {{ onUrl?: (url: string) => void }} [options]
- * @returns {Promise<{ hash: string, url: string }>}
+ * @returns {Promise<string>}
  */
-export async function uploadMapImage(map, urlTemplate, { onUrl } = {}) {
-  if (!urlTemplate || !urlTemplate.includes("{hash}")) {
-    throw new Error(
-      "this share button has no URL template with a {hash} placeholder.",
-    );
-  }
-
-  const canvas = await composeMapCanvas(map);
+export async function storeMapImage(map) {
+  // A stalled tile would leave composeMapCanvas's rendercomplete promise
+  // unsettled forever, and with it whatever busy state the caller is showing.
+  const canvas = await Promise.race([
+    composeMapCanvas(map),
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error("the map took too long to render.")),
+        RENDER_TIMEOUT_MS,
+      ),
+    ),
+  ]);
   const blob = await canvasToPngBlob(canvas);
 
   const signResponse = await fetch(SIGN_ENDPOINT, { method: "POST" });
@@ -146,6 +152,30 @@ export async function uploadMapImage(map, urlTemplate, { onUrl } = {}) {
     throw new Error(`Storing the map image failed (${putResponse.status}).`);
   }
 
+  return hash;
+}
+
+// Uploads the composited image and resolves with the storage hash plus the
+// share URL built from urlTemplate, whose {hash} placeholder is replaced with
+// the storage key. onUrl fires as soon as the URL is known so the caller can
+// navigate a tab it opened up front — see the popup-blocker note in
+// ExportShareButton. Rejects with a message fit to show a user.
+/**
+ * @param {import("ol").Map} map
+ * @param {string} urlTemplate
+ * @param {{ onUrl?: (url: string) => void }} [options]
+ * @returns {Promise<{ hash: string, url: string }>}
+ */
+export async function uploadMapImage(map, urlTemplate, { onUrl } = {}) {
+  // Checked before the upload, not after: a misconfigured button should fail
+  // without having written an object nothing will ever link to.
+  if (!urlTemplate || !urlTemplate.includes("{hash}")) {
+    throw new Error(
+      "this share button has no URL template with a {hash} placeholder.",
+    );
+  }
+
+  const hash = await storeMapImage(map);
   const url = urlTemplate.replaceAll("{hash}", hash);
   if (onUrl) onUrl(url);
   return { hash, url };
