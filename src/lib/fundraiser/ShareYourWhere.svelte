@@ -96,8 +96,7 @@
   {#if expanded}
     <div id="fundraiser-body" class="min-h-0 grow overflow-y-auto px-4 py-3">
       <p class="text-xs leading-snug text-gray-700">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.
+        Short and sweet lead in text here. Blah blah  Blah blah  Blah blah  Blah blah  Blah blah  Blah blah  Blah blah 
       </p>
       {#if errorMessage}
         <p role="alert" class="mt-2 text-xs font-semibold text-red-700">
