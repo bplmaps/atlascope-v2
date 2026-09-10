@@ -100,9 +100,10 @@
 
   {#if expanded}
     <div id="fundraiser-body" class="min-h-0 grow overflow-y-auto px-4 py-3">
-      <p class="text-md leading-snug text-gray-700">
-Support the Leventhal Center’s teaching programs with a donation and see your favorite Atlascope view on the wall of our Learning Center, just in time for the opening of our Where Workshop.
-Navigate to a place that’s meaningful to you in Atlascope. Then, click below and we’ll honor your gift by displaying this view and your own caption in our space for the first three weeks of the new exhibition.      </p>
+      <p class="text-md leading-snug text-gray-700 font-bold">
+Support the Leventhal Center’s teaching programs with a donation and see your favorite Atlascope view on the wall of our Learning Center, just in time for the opening of our Where Workshop.</p>
+<p class="text-sm leading-snug text-gray-600">
+Navigate to a place that’s meaningful to you in Atlascope. Then, click below and we’ll honor your gift by displaying this view and your own caption in our space for the first three weeks of the new exhibition.</p>
       {#if errorMessage}
         <p role="alert" class="mt-2 text-xs font-semibold text-red-700">
           {errorMessage}
