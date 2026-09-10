@@ -83,7 +83,7 @@
      layer (ModalWrapper and AnnotationEntryForm are z-50). -->
 <div
   class="absolute top-5 right-5 z-30 overflow-hidden shadow-lg {expanded
-    ? 'flex flex-col rounded-xl bg-white w-[85vw] max-w-xs max-h-[45vh] md:w-[40vw] md:min-w-64 md:max-w-md md:max-h-[max(20vh,16rem)]'
+    ? 'flex flex-col rounded-xl bg-white w-[85vw] max-w-xs max-h-[45vh] md:w-[40vw] md:min-w-64 md:max-w-md md:max-h-[max(40vh,16rem)]'
     : 'rounded-full'}"
 >
   <div
@@ -92,7 +92,7 @@
     onclick={toggle}
     aria-expanded={expanded}
     aria-controls="fundraiser-body"
-    class="flex w-full shrink-0 cursor-pointer items-center gap-2 px-4 py-2 text-left text-sm font-bold text-white bg-linear-to-br from-pink-600 to-red-700 hover:from-pink-500 hover:to-red-600 focus:ring-2 focus:ring-inset focus:ring-white focus:outline-none"
+    class="flex w-full shrink-0 cursor-pointer items-center gap-2 px-4 py-2 text-left text-md font-bold text-white bg-linear-to-br from-pink-600 to-red-700 hover:from-pink-500 hover:to-red-600 focus:ring-2 focus:ring-inset focus:ring-white focus:outline-none"
   >
     <span aria-hidden="true"><Fa icon={faImage} /></span>
     <span>Share Your Where</span>
@@ -100,7 +100,7 @@
 
   {#if expanded}
     <div id="fundraiser-body" class="min-h-0 grow overflow-y-auto px-4 py-3">
-      <p class="text-xs leading-snug text-gray-700">
+      <p class="text-md leading-snug text-gray-700">
 Support the Leventhal Center’s teaching programs with a donation and see your favorite Atlascope view on the wall of our Learning Center, just in time for the opening of our Where Workshop.
 Navigate to a place that’s meaningful to you in Atlascope. Then, click below and we’ll honor your gift by displaying this view and your own caption in our space for the first three weeks of the new exhibition.      </p>
       {#if errorMessage}
