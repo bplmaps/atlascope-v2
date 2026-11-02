@@ -291,6 +291,14 @@
       ) {
         event.preventDefault();
         exportMapImage(map);
+      } else if (
+        // code, not key: with Option held, key is the composed character.
+        event.code === "Digit2" &&
+        event.shiftKey &&
+        event.altKey
+      ) {
+        event.preventDefault();
+        exportMapImage(map, { scale: 2 });
       }
     };
 
