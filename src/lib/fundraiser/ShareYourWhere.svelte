@@ -1,12 +1,11 @@
 <script>
-  // TEMPORARY campaign UI. A floating badge that expands into a short pitch and
+  // Campaign UI. A floating badge that expands into a short pitch and
   // a call to action: it uploads the current map view, then opens the Fundraise
   // Up checkout with the stored image's key prefilled as a custom field, so the
   // gift is tied to the place the donor was looking at.
   //
-  // To remove when the drive ends: delete this directory, the import/visible/
-  // render block in Map.svelte, and the Fundraise Up loader in index.html. The
-  // storeMapImage/saveMapImage split in map/ is a general improvement and stays.
+  // Dormant between drives: set "enabled" in src/config/fundraiser.json to turn
+  // it on, which also injects the Fundraise Up loader (see vite.config.js).
   import Fa from "svelte-fa";
   import { faImage } from "@fortawesome/free-solid-svg-icons";
 
@@ -14,11 +13,12 @@
   import { saveMapImage } from "../map/mapActions.js";
   import { shareViewURL } from "../helpers/shareURLs.js";
   import { mapState } from "../state.svelte.js";
+  import fundraiser from "../../config/fundraiser.json";
 
-  // The Fundraise Up campaign this badge donates to, and the name of the custom
-  // field it fills in. The field has to exist on the campaign in the Fundraise
-  // Up dashboard or the value is silently dropped.
-  const CAMPAIGN = "FUNRPRNESZF";
+  // The Fundraise Up campaign this badge donates to, and the names of the custom
+  // fields it fills in. The fields have to exist on the campaign in the
+  // Fundraise Up dashboard or the values are silently dropped.
+  const CAMPAIGN = fundraiser.campaign;
   const IMAGE_FIELD = "image-id";
   const LINK_FIELD = "image-link";
 

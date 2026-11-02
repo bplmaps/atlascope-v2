@@ -5,8 +5,6 @@
   import MapControls from "./mapControls/ControlPanel.svelte";
   import GeolocationModal from "./modals/GeolocationModal.svelte";
   import DragHandle from "./map/DragHandle.svelte";
-  // TEMPORARY fundraising campaign UI; see src/lib/fundraiser/.
-  import ShareYourWhere from "./fundraiser/ShareYourWhere.svelte";
 
   import "ol/ol.css";
   import { Map, View } from "ol";
@@ -29,7 +27,14 @@
   import { createViewModeHandlers } from "./map/viewModeRendering.js";
   import { exportMapImage } from "./map/exportImage.js";
 
-  // TEMPORARY: whether the fundraising badge shows. Hidden where it would be a
+  // Fundraising campaign UI, switched by src/config/fundraiser.json. The flag is
+  // a build-time literal, so with the campaign off this import is dead code and
+  // the component never reaches the bundle.
+  const ShareYourWhere = __FUNDRAISER_ENABLED__
+    ? import("./fundraiser/ShareYourWhere.svelte").then((m) => m.default)
+    : null;
+
+  // Whether the fundraising badge shows. Hidden where it would be a
   // visual defect rather than acceptable overlap — behind the translucent modal
   // scrim (ModalWrapper is only bg-black/20, so it would glow through the splash
   // screen), during a tour, and in opacity view mode, where DragHandle's
@@ -363,8 +368,10 @@
     <MapAnnotations getMap={() => map} getView={() => view} {changeLayer} />
   {/if}
 
-  {#if fundraiserVisible}
-    <ShareYourWhere />
+  {#if ShareYourWhere && fundraiserVisible}
+    {#await ShareYourWhere then Fundraiser}
+      <Fundraiser />
+    {/await}
   {/if}
 
   {#if !mapState.annotationEntry && !mapState.annotationsListShowing && !appState.tour.active}
