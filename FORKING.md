@@ -158,3 +158,14 @@ The three URLs in `instance.json` point at data you host (S3 or similar):
 - `public/favicon.png` — replace with your instance's favicon.
 - The logo is generic (`src/lib/ui/AtlascopeLogo.svelte` renders the
   Atlascope wordmark).
+
+## 6. `src/config/fundraiser.json`
+
+Controls the "Share Your Where" Fundraise Up badge (`src/lib/fundraiser/`).
+Forks should leave `enabled` false.
+
+| Key | Purpose |
+| --- | --- |
+| `enabled` | Read at build time. When false, neither the badge component nor the Fundraise Up loader script is included in the build. |
+| `fundraiseUpAccount` | Fundraise Up account code for the loader script. |
+| `campaign` | Fundraise Up campaign the badge opens checkout for. It needs `image-id` and `image-link` custom fields defined in the Fundraise Up dashboard. |

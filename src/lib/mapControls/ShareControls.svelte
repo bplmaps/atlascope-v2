@@ -7,20 +7,16 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import LightIconButton from "../ui/LightIconButton.svelte";
-  import ExportShareButton from "./ExportShareButton.svelte";
 
   let showView = $state(true);
 
-  import { mapState } from "../state.svelte.js";
-  import instanceVariables from "../../config/instance.json";
+  import { appURL, shareViewURL } from "../helpers/shareURLs.js";
 
   let urlField;
 
   let shareURLs = $derived({
-    app: instanceVariables.baseURL,
-    view: `${instanceVariables.baseURL}/#/view:share$mode:${mapState.viewMode}$center:${mapState.center.map((c) => c.toFixed(6)).join(",")}$zoom:${mapState.zoom.toFixed(2)}$base:${
-      mapState.layers.base.id
-    }$overlay:${mapState.layers.overlay.id}`,
+    app: appURL,
+    view: shareViewURL(),
   });
 
   function copyURL() {
@@ -104,14 +100,6 @@
         />
       {/if}
 
-      <!-- The template must be passed as a JS string, not a bare attribute:
-             Svelte reads `{hash}` in attribute position as an interpolation. -->
-      <!-- <ExportShareButton
-        label="Save and export"
-        urlTemplate={"https://leventhalmap.donorsupport.co/page/FUNRPRNESZF?image-id={hash}&fundraiseupLivemode=no"}
-      /> -->
-
-      
     </div>
   </div>
 </div>
