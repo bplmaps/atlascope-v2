@@ -7,6 +7,7 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import LightIconButton from "../ui/LightIconButton.svelte";
+  import SaveImageButton from "./SaveImageButton.svelte";
 
   let showView = $state(true);
 
@@ -99,7 +100,7 @@
           }}
         />
       {/if}
-
+      <SaveImageButton />
     </div>
   </div>
 </div>

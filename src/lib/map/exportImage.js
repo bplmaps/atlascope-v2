@@ -6,7 +6,9 @@ import { toSize } from "ol/size";
 
 // Flattens the map's layer canvases into a single PNG. Three consumers:
 // exportMapImage downloads the file (Shift+Alt+E in Map.svelte, or Shift+Alt+2
-// for a 2x render with deeper tiles), storeMapImage
+// for a 2x render with deeper tiles, both without the credit; the Save image
+// button in ShareControls reaches it through downloadMapImage in mapActions.js,
+// with the credit), storeMapImage
 // writes it to object storage and returns the storage key, and uploadMapImage
 // builds a share URL from that key (reached through shareMapImage in
 // mapActions.js, which is what ExportShareButton calls).
@@ -17,6 +19,8 @@ const SIGN_ENDPOINT = "/.netlify/functions/sign-image-upload";
 // surfaces as an error the caller can show instead of a promise that never
 // settles.
 const RENDER_TIMEOUT_MS = 20000;
+
+const CREDIT_LINES = ["Leventhal Map & Education Center", "atlascope.org"];
 
 // Composites every canvas inside #map-div onto one canvas as they stand right
 // now, preserving each layer's opacity and transform. The output is the map's
@@ -192,6 +196,42 @@ function freezeViewport(map) {
   return () => still.remove();
 }
 
+// Stamps CREDIT_LINES 10px in from the bottom-left corner as 10px black text
+// on a white box. Sizes are in CSS pixels, so the credit keeps its proportion to the
+// map at any export scale.
+function drawCredit(canvas, scale) {
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Couldn't get a drawing context for the credit.");
+  }
+
+  const fontSize = 10;
+  const lineHeight = 12;
+  const padding = 4;
+  const inset = 10;
+
+  context.setTransform(scale, 0, 0, scale, 0, 0);
+  context.font = `${fontSize}px "Inter Variable", sans-serif`;
+  context.textBaseline = "top";
+
+  const textWidth = Math.max(
+    ...CREDIT_LINES.map((line) => context.measureText(line).width),
+  );
+  const boxWidth = textWidth + padding * 2;
+  const boxHeight = lineHeight * CREDIT_LINES.length + padding * 2;
+  const left = inset;
+  const top = canvas.height / scale - boxHeight - inset;
+
+  context.fillStyle = "white";
+  context.fillRect(left, top, boxWidth, boxHeight);
+  context.fillStyle = "black";
+  CREDIT_LINES.forEach((line, i) => {
+    context.fillText(line, left + padding, top + padding + i * lineHeight);
+  });
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+}
+
 function canvasToPngBlob(canvas) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -201,28 +241,26 @@ function canvasToPngBlob(canvas) {
   });
 }
 
-// Downloads the composited image. Failures stay silent to the user, as they
-// were before this was promise-based — nothing has visibly started, so there's
-// nothing hanging that needs explaining. A scale above 1 re-renders the map
-// with deeper tiles (see composeScaledMapCanvas) rather than upsampling.
+// Downloads the composited image, optionally stamped with the credit (see
+// drawCredit). A scale above 1 re-renders the map with deeper tiles (see
+// composeScaledMapCanvas) rather than upsampling. Rejects with a message fit
+// to show a user.
 /**
  * @param {import("ol").Map} map
- * @param {{ scale?: number }} [options]
+ * @param {{ scale?: number, credit?: boolean }} [options]
  */
-export async function exportMapImage(map, { scale = 1 } = {}) {
-  try {
-    const canvas =
-      scale === 1
-        ? await composeMapCanvas(map)
-        : await composeScaledMapCanvas(map, scale);
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download =
-      scale === 1 ? "atlascope-map.png" : `atlascope-map@${scale}x.png`;
-    link.click();
-  } catch (error) {
-    console.error("Map image export failed:", error);
-  }
+export async function exportMapImage(map, { scale = 1, credit = false } = {}) {
+  const canvas =
+    scale === 1
+      ? await composeWithTimeout(map)
+      : await composeScaledMapCanvas(map, scale);
+  if (credit) drawCredit(canvas, scale);
+
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download =
+    scale === 1 ? "atlascope-map.png" : `atlascope-map@${scale}x.png`;
+  link.click();
 }
 
 // Uploads the composited image to object storage and resolves with the storage
