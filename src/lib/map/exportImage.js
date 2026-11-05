@@ -20,6 +20,9 @@ const SIGN_ENDPOINT = "/.netlify/functions/sign-image-upload";
 // settles.
 const RENDER_TIMEOUT_MS = 20000;
 
+// How long a download's blob URL outlives the click before it's revoked.
+const BLOB_URL_LIFETIME_MS = 60000;
+
 const CREDIT_LINES = ["Leventhal Map & Education Center", "atlascope.org"];
 
 // Composites every canvas inside #map-div onto one canvas as they stand right
@@ -256,11 +259,16 @@ export async function exportMapImage(map, { scale = 1, credit = false } = {}) {
       : await composeScaledMapCanvas(map, scale);
   if (credit) drawCredit(canvas, scale);
 
+  // A blob URL rather than a data URL: iOS Safari offers to view or download
+  // a large data URL and then silently does neither.
+  const objectUrl = URL.createObjectURL(await canvasToPngBlob(canvas));
   const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/png");
+  link.href = objectUrl;
   link.download =
     scale === 1 ? "atlascope-map.png" : `atlascope-map@${scale}x.png`;
   link.click();
+  // Revoking in the same tick can cancel the download in Safari.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), BLOB_URL_LIFETIME_MS);
 }
 
 // Uploads the composited image to object storage and resolves with the storage
