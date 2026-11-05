@@ -283,6 +283,11 @@
       olLayers,
     });
 
+    // Keyboard exports fail silently to the user: nothing visibly started, so
+    // there's nothing hanging that needs explaining.
+    const logExportFailure = (error) =>
+      console.error("Map image export failed:", error);
+
     const handleKeydown = (event) => {
       if (
         event.code === "KeyE" &&
@@ -290,7 +295,15 @@
         event.altKey
       ) {
         event.preventDefault();
-        exportMapImage(map);
+        exportMapImage(map).catch(logExportFailure);
+      } else if (
+        // code, not key: with Option held, key is the composed character.
+        event.code === "Digit2" &&
+        event.shiftKey &&
+        event.altKey
+      ) {
+        event.preventDefault();
+        exportMapImage(map, { scale: 2 }).catch(logExportFailure);
       }
     };
 

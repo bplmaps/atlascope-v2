@@ -5,7 +5,11 @@ import GeoJSON from "ol/format/GeoJSON";
 
 import { mapState } from "../state.svelte.js";
 import { loadAllmapsLayer } from "./layerSwitching.js";
-import { storeMapImage, uploadMapImage } from "./exportImage.js";
+import {
+  exportMapImage,
+  storeMapImage,
+  uploadMapImage,
+} from "./exportImage.js";
 
 // Non-reactive references to the live OpenLayers objects, registered by
 // Map.svelte on mount. A request made before the map exists is held
@@ -51,6 +55,15 @@ export async function shareMapImage(urlTemplate, options) {
     throw new Error("the map isn't ready yet.");
   }
   return uploadMapImage(registered.map, urlTemplate, options);
+}
+
+// Downloads the current map view as a PNG; options pass through to
+// exportMapImage (scale, credit). Same readiness guard as shareMapImage.
+export async function downloadMapImage(options) {
+  if (!registered) {
+    throw new Error("the map isn't ready yet.");
+  }
+  return exportMapImage(registered.map, options);
 }
 
 // Saves the current map view as a PNG in object storage and resolves with its
