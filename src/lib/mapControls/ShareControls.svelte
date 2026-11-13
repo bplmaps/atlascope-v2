@@ -9,9 +9,12 @@
   import LightIconButton from "../ui/LightIconButton.svelte";
   import SaveImageButton from "./SaveImageButton.svelte";
 
-  let showView = $state(true);
-
   import { appURL, shareViewURL } from "../helpers/shareURLs.js";
+  import { hasCustomLayer } from "../map/layerSwitching.js";
+
+  let viewPreferred = $state(true);
+  let viewDisabled = $derived(hasCustomLayer());
+  let showView = $derived(viewPreferred && !viewDisabled);
 
   let urlField;
 
@@ -47,12 +50,18 @@
             class="mr-2 text-sm font-medium {!showView
               ? 'text-red-900'
               : 'text-gray-500'} text-center cursor-pointer"
-            onclick={() => (showView = false)}>App link</span
+            onclick={() => (viewPreferred = false)}>App link</span
           >
-          <label class="relative inline-flex items-center cursor-pointer">
+          <label
+            class="relative inline-flex items-center {viewDisabled
+              ? 'cursor-not-allowed opacity-50'
+              : 'cursor-pointer'}"
+          >
             <input
               type="checkbox"
-              bind:checked={showView}
+              checked={showView}
+              disabled={viewDisabled}
+              onchange={(e) => (viewPreferred = e.currentTarget.checked)}
               class="sr-only peer"
             />
             <div
@@ -60,10 +69,17 @@
             ></div>
           </label>
           <span
-            class="ml-2 text-sm font-medium {showView
-              ? 'text-red-900'
-              : 'text-gray-500'} text-center cursor-pointer"
-            onclick={() => (showView = true)}>View link</span
+            class="ml-2 text-sm font-medium {viewDisabled
+              ? 'text-gray-300 cursor-not-allowed'
+              : showView
+                ? 'text-red-900 cursor-pointer'
+                : 'text-gray-500 cursor-pointer'} text-center"
+            title={viewDisabled
+              ? "View links can't include an Allmaps layer"
+              : undefined}
+            onclick={() => {
+              if (!viewDisabled) viewPreferred = true;
+            }}>View link</span
           >
         </div>
       </div>
@@ -92,13 +108,15 @@
             navigator.share({ title: "Atlascope", url: shareURLs.app });
           }}
         />
-        <LightIconButton
-          label="Share view"
-          icon={faStreetView}
-          onclick={() => {
-            navigator.share({ title: "Atlascope", url: shareURLs.view });
-          }}
-        />
+        {#if !viewDisabled}
+          <LightIconButton
+            label="Share view"
+            icon={faStreetView}
+            onclick={() => {
+              navigator.share({ title: "Atlascope", url: shareURLs.view });
+            }}
+          />
+        {/if}
       {/if}
       <SaveImageButton />
     </div>

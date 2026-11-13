@@ -12,6 +12,9 @@ export const getLayerDataById = (layerId) => {
 // rather than a tile layer from the curated list.
 export const isCustomLayer = (slot) => mapState.layers[slot].type === "allmaps";
 
+export const hasCustomLayer = () =>
+  isCustomLayer("base") || isCustomLayer("overlay");
+
 // Returns a changeLayer(layer, id, force) function bound to the component's
 // pair of OpenLayers TileLayers ({ base, overlay }) and, optionally, the
 // paired WarpedMapLayers used for custom Allmaps annotations.

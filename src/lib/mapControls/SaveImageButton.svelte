@@ -4,12 +4,19 @@
 
   import LoadingSpinner from "../ui/LoadingSpinner.svelte";
   import { downloadMapImage } from "../map/mapActions.js";
+  import { hasCustomLayer } from "../map/layerSwitching.js";
 
   let highRes = $state(false);
   let busy = $state(false);
 
   function save() {
     if (busy) return;
+    if (hasCustomLayer()) {
+      window.alert(
+        "You can't save an image when an Allmaps layer is active. Select two standard atlas layers instead.",
+      );
+      return;
+    }
     busy = true;
 
     downloadMapImage({ scale: highRes ? 2 : 1, credit: true })
