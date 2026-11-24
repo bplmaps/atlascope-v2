@@ -2,6 +2,7 @@
 
   import { appState } from "../state.svelte.js";
   import { loadAllmapsAnnotation } from "../map/mapActions.js";
+  import AllmapsSuggestions from "./AllmapsSuggestions.svelte";
 
   const ERROR_MSG =
     "Something went wrong, and I couldn't load a valid annotation from this URL.";
@@ -32,12 +33,21 @@
     close();
   }
 
-  async function submit() {
+  function submit() {
+    return loadFromUrl(url);
+  }
+
+  function selectSuggestion(suggestionUrl) {
+    url = suggestionUrl;
+    return loadFromUrl(suggestionUrl);
+  }
+
+  async function loadFromUrl(href) {
     error = "";
 
     let parsed;
     try {
-      parsed = new URL(url);
+      parsed = new URL(href);
     } catch {
       error = ERROR_MSG;
       return;
@@ -86,6 +96,8 @@
           onkeydown={handleKeydown}
         />
       </div>
+
+      <AllmapsSuggestions onselect={selectSuggestion} disabled={loading} />
 
       {#if error}
         <p class="text-red-600 text-sm my-3">{error}</p>
