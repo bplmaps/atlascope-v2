@@ -1,31 +1,31 @@
 {
     "baseURL": "https://atlascope.org",
-    "name": "Boston",
-    "tagline": "is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time",
-    "geographicCoverage": "the Boston metropolitan area",
-    "institutionalShortName": "Leventhal Map & Education Center",
-    "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
+    "name": "Portland",
+    "tagline": "is a tool for exploring historic urban atlases in Portland, Maine n and telling stories about how places have changed over time",
+    "geographicCoverage": "the city of Portland",
+    "institutionalShortName": "Leventhal Map & Education Center and Osher Map Library",
+    "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org) and the [Osher Map Library at the University of Southern Maine](https://oshermaps.org).",
     "maxExtent": [
-        -72.1536,
-        41.5895,
-        -70.7953,
-        42.6132
+        -70.385502,
+        43.778783,
+        -70.052904,
+        43.613034
     ],
     "defaultStartLocation": {
-        "name": "BPL",
+        "name": "Post Office Park",
         "center": [
-            -71.07733477136398,
-            42.34962571323688
+            -70.25488714518656,
+            43.658067746769994
         ],
         "zoom": 18,
-        "overlayLayerId": "ark:/76611/al7rtfm98",
+        "overlayLayerId": "ark:/76611/amwtbtch0",
         "baseLayerId": "maptiler-streets"
     },
     "features": {
-        "annotations": true,
-        "tours": true
+        "annotations": false,
+        "tours": false
     },
-    "contactEmail": "frontdesk@leventhalmap.org",
+    "contactEmail": "oml-usm@maine.edu",
     "map": {
         "minZoom": 14,
         "fallbackBaseLayerId": "maptiler-streets",
@@ -35,15 +35,15 @@
     },
     "geocoder": {
         "bbox": [
-            -73.508,
-            41.237,
-            -69.928,
-            42.886
+            -70.385502,
+            43.778783,
+            -70.052904,
+            43.613034
         ],
         "country": "us"
     },
-    "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
-    "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/boston-volume-extents.topojson",
+    "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/coverage-list.json",
+    "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/portland-volume-extents.topojson",
     "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/extents-dissolved.geojson",
     "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
@@ -52,18 +52,18 @@
         "text": "Help us extend the coverage in Atlascope by sponsoring an atlas"
     },
     "splashPageNoteMessage": {
-        "url": "https://www.leventhalmap.org/donate/sponsor-an-atlas/",
-        "text": "Help us extend the coverage in Atlascope by sponsoring an atlas"
+        "url": "https://oshermaps.org/browse-maps",
+        "text": "See other maps in the collections"
     },
-    "gaMeasurementId": "G-5K9LGW88CS",
+    "gaMeasurementId": "G-9E1W25N6Q0",
     "metaTags": {
-        "title": "Atlascope Boston",
-        "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
-        "canonical": "https://www.atlascope.org",
+        "title": "Atlascope Portland",
+        "description": "Atlascope Portland is a tool for exploring historic urban atlases in Portland, Maine and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library and the Osher Map Library.",
+        "canonical": "https://portland.atlascope.org",
         "openGraph": {
-            "url": "https://www.atlascope.org",
-            "title": "Atlascope Boston",
-            "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
+            "url": "https://portland.atlascope.org",
+            "title": "Atlascope Portland",
+            "description": "Atlascope Portland is a tool for exploring historic urban atlases in Portland, Maine and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library and the Osher Map Library.",
             "images": [
                 {
                     "url": "https://iiif.digitalcommonwealth.org/iiif/2/commonwealth:9g54z607b/913,353,4051,2501/,800/0/default.jpg",
@@ -75,11 +75,9 @@
             "site_name": "Leventhal Map & Education Center"
         },
         "twitter": {
-            "handle": "@bplmaps",
-            "site": "@bplmaps",
             "cardType": "summary_large_image",
-            "title": "Atlascope Boston",
-            "description": "Atlascope Boston is a tool for exploring historic urban atlases in metropolitan Boston and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library.",
+            "title": "Atlascope Portland",
+            "description": "Atlascope Portland is a tool for exploring historic urban atlases in Portland, Maine and telling stories about how places have changed over time. A project of the Leventhal Map & Education Center at the Boston Public Library and the Osher Map Library.",
             "image": "https://iiif.digitalcommonwealth.org/iiif/2/commonwealth:9g54z607b/913,353,4051,2501/,800/0/default.jpg",
             "imageAlt": "Excerpt from an 1898 atlas plate showing the Boston Public Library and buildings, streets, and other urban features nearby in Copley Square."
         }
