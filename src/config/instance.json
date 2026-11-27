@@ -32,7 +32,7 @@
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/coverage-list.json",
     "volumeExtentsFile": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/portland-volume-extents.topojson",
-    "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/extents-dissolved.geojson",
+    "footprintsDissolved": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/extents-dissolved.geojson",
     "geocodeKey": "DY88zutnCSJjg1OmMrUF",
     "aboutPage": "https://www.leventhalmap.org/projects/digital-projects/atlascope/",
     "outOfBoundsMessage": {
