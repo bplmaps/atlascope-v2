@@ -5,12 +5,6 @@
     "geographicCoverage": "the Boston metropolitan area",
     "institutionalShortName": "Leventhal Map & Education Center",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org)",
-    "maxExtent": [
-        -72.1536,
-        41.5895,
-        -70.7953,
-        42.6132
-    ],
     "defaultStartLocation": {
         "name": "BPL",
         "center": [
@@ -34,12 +28,6 @@
         ]
     },
     "geocoder": {
-        "bbox": [
-            -73.508,
-            41.237,
-            -69.928,
-            42.886
-        ],
         "country": "us"
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/urbanatlases/extents/coverage-list.json",
