@@ -5,12 +5,6 @@
     "geographicCoverage": "the city of Portland",
     "institutionalShortName": "Leventhal Map & Education Center and Osher Map Library",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org) and the [Osher Map Library at the University of Southern Maine](https://oshermaps.org).",
-    "maxExtent": [
-        -70.385502,
-        43.778783,
-        -70.052904,
-        43.613034
-    ],
     "defaultStartLocation": {
         "name": "Post Office Park",
         "center": [
@@ -34,12 +28,6 @@
         ]
     },
     "geocoder": {
-        "bbox": [
-            -70.385502,
-            43.613034,
-            -70.052904,
-            43.778783
-        ],
         "country": "us"
     },
     "coverageDescriptiveList": "https://s3.us-east-2.wasabisys.com/oml-urbanatlases/extents/coverage-list.json",

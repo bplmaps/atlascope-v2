@@ -16,7 +16,6 @@ Every instance-specific value lives here.
 | `geographicCoverage` | Phrase describing the covered region on the splash screen |
 | `institutionalShortName` | Institution name in the page title |
 | `institutionalCredit` | Markdown credit line on the splash screen |
-| `maxExtent` | `[w, s, e, n]` lon/lat bounding box of the instance's coverage |
 | `defaultStartLocation` | `name` (button label), `center`, `zoom`, `overlayLayerId`, `baseLayerId` for the "Start at …" button |
 | `features.annotations` | Enables the user-annotation feature (Supabase-backed). Absent = off. |
 | `features.tours` | Enables guided tours (Supabase-backed). Absent = off. |
@@ -24,11 +23,10 @@ Every instance-specific value lives here.
 | `map.minZoom` | Minimum map zoom |
 | `map.fallbackBaseLayerId` | Base layer swapped in when the current base falls below 40% viewport coverage |
 | `map.tileSize512LayerIds` | TileJSON layer identifiers that serve 512px tiles |
-| `geocoder.bbox` | `[w, s, e, n]` bbox constraining MapTiler geocoding queries |
 | `geocoder.country` | ISO country code for geocoding; omit to search without a country filter |
 | `coverageDescriptiveList` | URL of a JSON array of named places (`name`, `center`, optional `new`, `neighborhood`) for the splash combobox; omit to hide the combobox |
 | `volumeExtentsFile` | URL of the layer-extents TopoJSON (see §4) |
-| `footprintsDissolved` | URL of a dissolved-coverage GeoJSON used to filter geocoder results |
+| `footprintsDissolved` | URL of a dissolved-coverage GeoJSON; its bbox constrains MapTiler geocoding queries and its polygon filters the results |
 | `geocodeKey` | MapTiler API key |
 | `aboutPage` | External "About & Credits" URL |
 | `outOfBoundsMessage` | `{url, text}` banner link when no layers cover the viewport |
@@ -151,7 +149,9 @@ The three URLs in `instance.json` point at data you host (S3 or similar):
   base layer).
 - **`coverageDescriptiveList`** — JSON array for the splash search combobox.
 - **`footprintsDissolved`** — GeoJSON `GeometryCollection` whose first
-  geometry is the dissolved coverage polygon (gates geocoder results).
+  geometry is the dissolved coverage polygon. Its bounding box is the
+  geocoder's query region and the polygon filters geocoder results, so
+  no hand-written bbox is needed in `instance.json`.
 
 ## 5. Static assets
 

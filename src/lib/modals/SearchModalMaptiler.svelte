@@ -1,8 +1,8 @@
 <script module>
-  // The dissolved-footprints GeoJSON gates searching; the modal is
-  // re-mounted on every open, so cache the fetch at module level to load
-  // it once per session instead of once per open
-  let footprintsPromise;
+  // The dissolved-footprints GeoJSON sets both the geocoder's query bbox and
+  // the polygon its results are filtered by; the modal is re-mounted on every
+  // open, so cache the fetch at module level to load it once per session
+  let coveragePromise;
 </script>
 
 <script>
@@ -13,6 +13,7 @@
   } from "@fortawesome/free-solid-svg-icons";
 
   import instanceVariables from "../../config/instance.json";
+  import bbox from "@turf/bbox";
   import { insideChecker } from "../helpers/intersector";
 
   import { appState, mapState } from "../state.svelte.js";
@@ -21,7 +22,7 @@
   let searchText = $state("");
   let results = $state([]);
   let selected = -1;
-  let atlasExtentsGeometry = $state(false);
+  let coverageError = $state(false);
   let key = instanceVariables.geocodeKey;
   let debounceTimer;
 
@@ -34,21 +35,24 @@
   }
 
   async function executeSearch(value) {
-    if (atlasExtentsGeometry) {
-      if (value.length < 3) {
-        results = [];
-        return;
-      }
+    if (value.length < 3) {
+      results = [];
+      return;
+    }
+    let coverage;
+    try {
+      coverage = await coveragePromise;
+    } catch {
+      return;
     }
     const mapTilerPlaceTypes =
       "joint_municipality,joint_submunicipality,municipality,municipal_district,locality,neighbourhood,place,postal_code,address,road,poi";
-    // The instance's geocoder bbox caps the initial query region; country
-    // narrows results further and is omitted when the instance doesn't set it
-    const bbox = instanceVariables.geocoder.bbox.join(",");
+    // The coverage bbox caps the query region; country narrows results
+    // further and is omitted when the instance doesn't set it
     const countryParam = instanceVariables.geocoder.country
       ? `&country=${instanceVariables.geocoder.country}`
       : "";
-    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${bbox}${countryParam}`;
+    const url = `https://api.maptiler.com/geocoding/${encodeURIComponent(value)}.json?key=${key}&types=${encodeURIComponent(mapTilerPlaceTypes)}&limit=10&bbox=${coverage.bbox.join(",")}${countryParam}`;
 
     try {
       const res = await fetch(url);
@@ -56,7 +60,7 @@
       const candidates = data.features || [];
       candidates.forEach((candidate) => {
         let point = candidate.geometry.coordinates;
-        if (insideChecker(point, atlasExtentsGeometry)) {
+        if (insideChecker(point, coverage.geometry)) {
           results.push(candidate);
         }
       });
@@ -66,14 +70,21 @@
     }
   }
 
-  // load this once per session, and we'll prevent search from occurring before it's loaded
+  // A failed load is dropped from the cache so the next open retries it
+  coveragePromise ??= fetch(instanceVariables.footprintsDissolved)
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((d) => {
+      const geometry = d.geometries[0];
+      return { geometry, bbox: bbox(geometry) };
+    });
 
-  footprintsPromise ??= fetch(instanceVariables.footprintsDissolved)
-    .then((d) => d.json())
-    .then((d) => d.geometries[0]);
-
-  footprintsPromise.then((geometry) => {
-    atlasExtentsGeometry = geometry;
+  coveragePromise.catch((err) => {
+    console.error("Coverage footprint load error:", err);
+    coverageError = true;
+    coveragePromise = null;
   });
 
   function handleSelection(result) {
@@ -120,7 +131,13 @@
           onkeydown={handleKeydown}
         />
       </div>
-      {#if results && results.length > 0}
+      {#if coverageError}
+        <div>
+          <i class="text-gray-700 text-sm ml-2"
+            >Search is unavailable right now. Please try again later.</i
+          >
+        </div>
+      {:else if results && results.length > 0}
         <div>
           <ul>
             {#each results as result (result.id || result.place_name)}
