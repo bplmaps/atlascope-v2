@@ -1,7 +1,7 @@
 {
     "baseURL": "https://portland.atlascope.org",
     "name": "Portland",
-    "tagline": "is a tool for exploring historic urban atlases in Portland, Maine n and telling stories about how places have changed over time",
+    "tagline": "is a tool for exploring historic urban atlases in Portland, Maine and telling stories about how places have changed over time",
     "geographicCoverage": "the city of Portland",
     "institutionalShortName": "Leventhal Map & Education Center and Osher Map Library",
     "institutionalCredit": "A project of the [Leventhal Map & Education Center at the Boston Public Library](https://www.leventhalmap.org) and the [Osher Map Library at the University of Southern Maine](https://oshermaps.org).",
